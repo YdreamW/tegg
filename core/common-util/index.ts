@@ -9,3 +9,4 @@ export * from './src/ModuleConfig';
 export * from './src/ModuleConfigs';
 export * from './src/TimerUtil';
 export * from './src/RuntimeConfig';
+export * from './src/QuickSort';
