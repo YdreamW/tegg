@@ -1,15 +1,19 @@
-import assert from 'assert';
+import assert from 'node:assert';
+import mm from 'mm';
 import { EggPrototypeFactory } from '@eggjs/tegg-metadata';
+import { LoadUnitInstance } from '@eggjs/tegg-types';
 import { EggTestContext } from './fixtures/EggTestContext';
 import TestUtil from './util';
-import { EggContainerFactory, LoadUnitInstance } from '..';
+import { EggContainerFactory } from '..';
 import CountController from './fixtures/modules/module-for-load-unit-instance/CountController';
 import AppService from './fixtures/modules/multi-module/multi-module-service/AppService';
 import { Bar, Foo } from './fixtures/modules/extends-module/Base';
-import mm from 'mm';
 import { ContextHandler } from '../src/model/ContextHandler';
 import { EggContextStorage } from './fixtures/EggContextStorage';
 import { FOO_ATTRIBUTE, FooLogger } from './fixtures/modules/multi-instance-module/MultiInstance';
+import { FooLoggerConstructor } from './fixtures/modules/multi-instance-module/MultiInstanceConstructor';
+import path from 'node:path';
+import { LoaderUtil } from '@eggjs/module-test-util';
 
 describe('test/LoadUnit/LoadUnitInstance.test.ts', () => {
   describe('ModuleLoadUnitInstance', () => {
@@ -100,6 +104,43 @@ describe('test/LoadUnit/LoadUnitInstance.test.ts', () => {
 
       await TestUtil.destroyLoadUnitInstance(instance);
     });
+
+    it('should load multi instance with constructor', async () => {
+      const instance = await TestUtil.createLoadUnitInstance('multi-instance-module');
+      const foo1Proto = EggPrototypeFactory.instance.getPrototype('fooConstructor', instance.loadUnit, [{
+        attribute: FOO_ATTRIBUTE,
+        value: 'foo1',
+      }]);
+      const foo1Obj = await EggContainerFactory.getOrCreateEggObject(foo1Proto, foo1Proto.name);
+      const foo1 = foo1Obj.obj as FooLoggerConstructor;
+
+      const foo2Proto = EggPrototypeFactory.instance.getPrototype('fooConstructor', instance.loadUnit, [{
+        attribute: FOO_ATTRIBUTE,
+        value: 'foo2',
+      }]);
+      const foo2Obj = await EggContainerFactory.getOrCreateEggObject(foo2Proto, foo2Proto.name);
+      const foo2 = foo2Obj.obj as FooLoggerConstructor;
+      assert(foo1);
+      assert(foo2);
+      assert(foo1 !== foo2);
+      assert(foo1.foo === 'foo1');
+      assert(foo2.foo === 'foo2');
+      assert(foo1.bar === 'bar');
+      assert(foo2.foo === 'foo2');
+
+      const obj1 = await EggContainerFactory.getOrCreateEggObjectFromClazz(FooLogger, 'fooConstructor', [{
+        attribute: FOO_ATTRIBUTE,
+        value: 'foo1',
+      }]);
+      const obj2 = await EggContainerFactory.getOrCreateEggObjectFromClazz(FooLogger, 'fooConstructor', [{
+        attribute: FOO_ATTRIBUTE,
+        value: 'foo2',
+      }]);
+      assert(foo1Obj === obj1);
+      assert(foo2Obj === obj2);
+
+      await TestUtil.destroyLoadUnitInstance(instance);
+    });
   });
 
   describe('MultiModule', () => {
@@ -109,9 +150,14 @@ describe('test/LoadUnit/LoadUnitInstance.test.ts', () => {
 
     before(async () => {
       EggContextStorage.register();
-      commonInstance = await TestUtil.createLoadUnitInstance('multi-module/multi-module-common');
-      repoInstance = await TestUtil.createLoadUnitInstance('multi-module/multi-module-repo');
-      serviceInstance = await TestUtil.createLoadUnitInstance('multi-module/multi-module-service');
+      LoaderUtil.buildGlobalGraph([
+        path.join(__dirname, 'fixtures/modules/multi-module/multi-module-common'),
+        path.join(__dirname, 'fixtures/modules/multi-module/multi-module-repo'),
+        path.join(__dirname, 'fixtures/modules/multi-module/multi-module-service'),
+      ]);
+      commonInstance = await TestUtil.createLoadUnitInstance('multi-module/multi-module-common', false);
+      repoInstance = await TestUtil.createLoadUnitInstance('multi-module/multi-module-repo', false);
+      serviceInstance = await TestUtil.createLoadUnitInstance('multi-module/multi-module-service', false);
     });
 
     after(async () => {

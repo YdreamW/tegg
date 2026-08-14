@@ -3,6 +3,1295 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.87.0](https://github.com/eggjs/tegg/compare/v3.86.0...v3.87.0) (2026-08-13)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.86.0](https://github.com/eggjs/tegg/compare/v3.85.2...v3.86.0) (2026-08-05)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.85.2](https://github.com/eggjs/tegg/compare/v3.85.1...v3.85.2) (2026-07-31)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.85.1](https://github.com/eggjs/tegg/compare/v3.85.0...v3.85.1) (2026-07-29)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.85.0](https://github.com/eggjs/tegg/compare/v3.84.4...v3.85.0) (2026-07-22)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.84.4](https://github.com/eggjs/tegg/compare/v3.84.2...v3.84.4) (2026-07-13)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.84.3](https://github.com/eggjs/tegg/compare/v3.84.2...v3.84.3) (2026-07-13)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.84.2](https://github.com/eggjs/tegg/compare/v3.84.1...v3.84.2) (2026-06-26)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.84.1](https://github.com/eggjs/tegg/compare/v3.84.0...v3.84.1) (2026-06-23)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.84.0](https://github.com/eggjs/tegg/compare/v3.83.0...v3.84.0) (2026-06-18)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.83.0](https://github.com/eggjs/tegg/compare/v3.82.2...v3.83.0) (2026-06-17)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.82.2](https://github.com/eggjs/tegg/compare/v3.82.1...v3.82.2) (2026-06-10)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.82.1](https://github.com/eggjs/tegg/compare/v3.82.0...v3.82.1) (2026-06-10)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.82.0](https://github.com/eggjs/tegg/compare/v3.81.0...v3.82.0) (2026-06-10)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.81.0](https://github.com/eggjs/tegg/compare/v3.80.1...v3.81.0) (2026-06-10)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.80.1](https://github.com/eggjs/tegg/compare/v3.80.0...v3.80.1) (2026-06-08)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.80.0](https://github.com/eggjs/tegg/compare/v3.79.3...v3.80.0) (2026-06-03)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.79.3](https://github.com/eggjs/tegg/compare/v3.79.2...v3.79.3) (2026-05-27)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.79.2](https://github.com/eggjs/tegg/compare/v3.79.1...v3.79.2) (2026-05-14)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.79.1](https://github.com/eggjs/tegg/compare/v3.79.0...v3.79.1) (2026-05-13)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.79.0](https://github.com/eggjs/tegg/compare/v3.78.17...v3.79.0) (2026-05-13)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.78.17](https://github.com/eggjs/tegg/compare/v3.78.16...v3.78.17) (2026-05-07)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.78.16](https://github.com/eggjs/tegg/compare/v3.78.15...v3.78.16) (2026-05-06)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.78.15](https://github.com/eggjs/tegg/compare/v3.78.14...v3.78.15) (2026-04-23)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.78.14](https://github.com/eggjs/tegg/compare/v3.78.13...v3.78.14) (2026-04-21)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.78.13](https://github.com/eggjs/tegg/compare/v3.78.12...v3.78.13) (2026-04-21)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.78.12](https://github.com/eggjs/tegg/compare/v3.78.11...v3.78.12) (2026-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.78.11](https://github.com/eggjs/tegg/compare/v3.78.10...v3.78.11) (2026-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.78.10](https://github.com/eggjs/tegg/compare/v3.78.9...v3.78.10) (2026-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.78.9](https://github.com/eggjs/tegg/compare/v3.78.8...v3.78.9) (2026-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.78.8](https://github.com/eggjs/tegg/compare/v3.78.7...v3.78.8) (2026-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.78.7](https://github.com/eggjs/tegg/compare/v3.78.6...v3.78.7) (2026-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.78.6](https://github.com/eggjs/tegg/compare/v3.78.4...v3.78.6) (2026-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.78.5](https://github.com/eggjs/tegg/compare/v3.78.4...v3.78.5) (2026-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.78.4](https://github.com/eggjs/tegg/compare/v3.78.3...v3.78.4) (2026-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.78.3](https://github.com/eggjs/tegg/compare/v3.78.2...v3.78.3) (2026-04-15)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.78.2](https://github.com/eggjs/tegg/compare/v3.78.1...v3.78.2) (2026-04-09)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.78.1](https://github.com/eggjs/tegg/compare/v3.78.0...v3.78.1) (2026-04-09)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.78.0](https://github.com/eggjs/tegg/compare/v3.77.2...v3.78.0) (2026-04-09)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.77.2](https://github.com/eggjs/tegg/compare/v3.77.1...v3.77.2) (2026-04-07)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.77.1](https://github.com/eggjs/tegg/compare/v3.77.0...v3.77.1) (2026-04-01)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.77.0](https://github.com/eggjs/tegg/compare/v3.76.1...v3.77.0) (2026-04-01)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.76.1](https://github.com/eggjs/tegg/compare/v3.76.0...v3.76.1) (2026-04-01)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.76.0](https://github.com/eggjs/tegg/compare/v3.75.1...v3.76.0) (2026-04-01)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.75.1](https://github.com/eggjs/tegg/compare/v3.75.0...v3.75.1) (2026-04-01)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.75.0](https://github.com/eggjs/tegg/compare/v3.74.0...v3.75.0) (2026-03-30)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.74.0](https://github.com/eggjs/tegg/compare/v3.73.0...v3.74.0) (2026-03-30)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.73.0](https://github.com/eggjs/tegg/compare/v3.72.0...v3.73.0) (2026-03-25)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.72.0](https://github.com/eggjs/tegg/compare/v3.71.2...v3.72.0) (2026-02-04)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.71.2](https://github.com/eggjs/tegg/compare/v3.71.1...v3.71.2) (2026-01-30)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.71.1](https://github.com/eggjs/tegg/compare/v3.71.0...v3.71.1) (2026-01-28)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.71.0](https://github.com/eggjs/tegg/compare/v3.70.1...v3.71.0) (2026-01-26)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.70.1](https://github.com/eggjs/tegg/compare/v3.70.0...v3.70.1) (2026-01-14)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.70.0](https://github.com/eggjs/tegg/compare/v3.69.0...v3.70.0) (2026-01-07)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.69.0](https://github.com/eggjs/tegg/compare/v3.68.0...v3.69.0) (2026-01-06)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.68.0](https://github.com/eggjs/tegg/compare/v3.67.2...v3.68.0) (2025-12-29)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.67.2](https://github.com/eggjs/tegg/compare/v3.67.1...v3.67.2) (2025-12-24)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.67.1](https://github.com/eggjs/tegg/compare/v3.67.0...v3.67.1) (2025-12-23)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.67.0](https://github.com/eggjs/tegg/compare/v3.66.0...v3.67.0) (2025-12-18)
+
+
+### Features
+
+* **schedule:** module schedule unregister on module destroy ([#377](https://github.com/eggjs/tegg/issues/377)) ([098e889](https://github.com/eggjs/tegg/commit/098e889db4f9c1e227d2e8c6390b83e7596b3e69))
+
+
+
+
+
+# [3.66.0](https://github.com/eggjs/tegg/compare/v3.65.3...v3.66.0) (2025-12-16)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.65.3](https://github.com/eggjs/tegg/compare/v3.65.2...v3.65.3) (2025-12-16)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.65.2](https://github.com/eggjs/tegg/compare/v3.65.1...v3.65.2) (2025-12-16)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.65.1](https://github.com/eggjs/tegg/compare/v3.65.0...v3.65.1) (2025-12-16)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.65.0](https://github.com/eggjs/tegg/compare/v3.64.5...v3.65.0) (2025-12-10)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.64.5](https://github.com/eggjs/tegg/compare/v3.64.4...v3.64.5) (2025-12-08)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.64.4](https://github.com/eggjs/tegg/compare/v3.64.3...v3.64.4) (2025-12-06)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.64.3](https://github.com/eggjs/tegg/compare/v3.64.2...v3.64.3) (2025-12-06)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.64.2](https://github.com/eggjs/tegg/compare/v3.64.1...v3.64.2) (2025-11-27)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.64.1](https://github.com/eggjs/tegg/compare/v3.64.0...v3.64.1) (2025-11-27)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.64.0](https://github.com/eggjs/tegg/compare/v3.63.2...v3.64.0) (2025-11-27)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.63.2](https://github.com/eggjs/tegg/compare/v3.63.0...v3.63.2) (2025-11-18)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.63.1](https://github.com/eggjs/tegg/compare/v3.63.0...v3.63.1) (2025-11-18)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.63.0](https://github.com/eggjs/tegg/compare/v3.62.3...v3.63.0) (2025-11-18)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.62.3](https://github.com/eggjs/tegg/compare/v3.62.1...v3.62.3) (2025-11-05)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.62.2](https://github.com/eggjs/tegg/compare/v3.62.1...v3.62.2) (2025-11-05)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.62.1](https://github.com/eggjs/tegg/compare/v3.62.0...v3.62.1) (2025-11-03)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.62.0](https://github.com/eggjs/tegg/compare/v3.61.0...v3.62.0) (2025-09-24)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.61.0](https://github.com/eggjs/tegg/compare/v3.60.3...v3.61.0) (2025-08-15)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.60.3](https://github.com/eggjs/tegg/compare/v3.60.2...v3.60.3) (2025-08-06)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.60.2](https://github.com/eggjs/tegg/compare/v3.60.1...v3.60.2) (2025-08-06)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.60.1](https://github.com/eggjs/tegg/compare/v3.60.0...v3.60.1) (2025-07-28)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.60.0](https://github.com/eggjs/tegg/compare/v3.59.1...v3.60.0) (2025-07-28)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.59.1](https://github.com/eggjs/tegg/compare/v3.59.0...v3.59.1) (2025-07-16)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.59.0](https://github.com/eggjs/tegg/compare/v3.58.0...v3.59.0) (2025-07-07)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.58.0](https://github.com/eggjs/tegg/compare/v3.57.14...v3.58.0) (2025-07-01)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.57.14](https://github.com/eggjs/tegg/compare/v3.57.13...v3.57.14) (2025-06-18)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.57.13](https://github.com/eggjs/tegg/compare/v3.57.12...v3.57.13) (2025-06-18)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.57.12](https://github.com/eggjs/tegg/compare/v3.57.11...v3.57.12) (2025-06-16)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.57.11](https://github.com/eggjs/tegg/compare/v3.57.10...v3.57.11) (2025-06-16)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.57.10](https://github.com/eggjs/tegg/compare/v3.57.9...v3.57.10) (2025-06-12)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.57.9](https://github.com/eggjs/tegg/compare/v3.57.8...v3.57.9) (2025-05-29)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.57.8](https://github.com/eggjs/tegg/compare/v3.57.7...v3.57.8) (2025-05-29)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.57.7](https://github.com/eggjs/tegg/compare/v3.57.6...v3.57.7) (2025-05-28)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.57.6](https://github.com/eggjs/tegg/compare/v3.57.5...v3.57.6) (2025-05-27)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.57.5](https://github.com/eggjs/tegg/compare/v3.57.4...v3.57.5) (2025-05-15)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.57.4](https://github.com/eggjs/tegg/compare/v3.57.3...v3.57.4) (2025-05-14)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.57.3](https://github.com/eggjs/tegg/compare/v3.57.2...v3.57.3) (2025-05-13)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.57.2](https://github.com/eggjs/tegg/compare/v3.57.1...v3.57.2) (2025-05-13)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.57.1](https://github.com/eggjs/tegg/compare/v3.57.0...v3.57.1) (2025-05-13)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.57.0](https://github.com/eggjs/tegg/compare/v3.56.3...v3.57.0) (2025-05-09)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.56.3](https://github.com/eggjs/tegg/compare/v3.56.2...v3.56.3) (2025-05-07)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.56.2](https://github.com/eggjs/tegg/compare/v3.56.1...v3.56.2) (2025-05-01)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.56.1](https://github.com/eggjs/tegg/compare/v3.56.0...v3.56.1) (2025-04-29)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.56.0](https://github.com/eggjs/tegg/compare/v3.55.0...v3.56.0) (2025-04-29)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.55.0](https://github.com/eggjs/tegg/compare/v3.53.0...v3.55.0) (2025-04-29)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.54.0](https://github.com/eggjs/tegg/compare/v3.53.0...v3.54.0) (2025-04-29)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.53.0](https://github.com/eggjs/tegg/compare/v3.52.1...v3.53.0) (2025-04-21)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.52.1](https://github.com/eggjs/tegg/compare/v3.52.0...v3.52.1) (2025-03-14)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.52.0](https://github.com/eggjs/tegg/compare/v3.51.2...v3.52.0) (2024-12-30)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.51.2](https://github.com/eggjs/tegg/compare/v3.51.1...v3.51.2) (2024-12-09)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.51.1](https://github.com/eggjs/tegg/compare/v3.51.0...v3.51.1) (2024-11-06)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.51.0](https://github.com/eggjs/tegg/compare/v3.50.1...v3.51.0) (2024-10-30)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.50.1](https://github.com/eggjs/tegg/compare/v3.50.0...v3.50.1) (2024-10-23)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.50.0](https://github.com/eggjs/tegg/compare/v3.49.0...v3.50.0) (2024-10-22)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.49.0](https://github.com/eggjs/tegg/compare/v3.48.1...v3.49.0) (2024-10-21)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.48.1](https://github.com/eggjs/tegg/compare/v3.48.0...v3.48.1) (2024-10-14)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.48.0](https://github.com/eggjs/tegg/compare/v3.47.2...v3.48.0) (2024-10-10)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.47.2](https://github.com/eggjs/tegg/compare/v3.47.1...v3.47.2) (2024-10-10)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.47.1](https://github.com/eggjs/tegg/compare/v3.47.0...v3.47.1) (2024-10-10)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.47.0](https://github.com/eggjs/tegg/compare/v3.46.4...v3.47.0) (2024-10-10)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.46.4](https://github.com/eggjs/tegg/compare/v3.46.3...v3.46.4) (2024-10-09)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.46.3](https://github.com/eggjs/tegg/compare/v3.46.2...v3.46.3) (2024-10-08)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.46.2](https://github.com/eggjs/tegg/compare/v3.46.1...v3.46.2) (2024-10-07)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.46.1](https://github.com/eggjs/tegg/compare/v3.46.0...v3.46.1) (2024-09-30)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.46.0](https://github.com/eggjs/tegg/compare/v3.45.0...v3.46.0) (2024-09-29)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.45.0](https://github.com/eggjs/tegg/compare/v3.44.1...v3.45.0) (2024-09-29)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.44.1](https://github.com/eggjs/tegg/compare/v3.44.0...v3.44.1) (2024-09-29)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.44.0](https://github.com/eggjs/tegg/compare/v3.43.2...v3.44.0) (2024-09-29)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.43.2](https://github.com/eggjs/tegg/compare/v3.43.1...v3.43.2) (2024-09-14)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.43.1](https://github.com/eggjs/tegg/compare/v3.43.0...v3.43.1) (2024-09-14)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.43.0](https://github.com/eggjs/tegg/compare/v3.42.0...v3.43.0) (2024-09-13)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.42.0](https://github.com/eggjs/tegg/compare/v3.41.0...v3.42.0) (2024-09-10)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.41.0](https://github.com/eggjs/tegg/compare/v3.40.1...v3.41.0) (2024-08-26)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.40.1](https://github.com/eggjs/tegg/compare/v3.40.0...v3.40.1) (2024-08-23)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.40.0](https://github.com/eggjs/tegg/compare/v3.39.5...v3.40.0) (2024-08-22)
+
+
+### Features
+
+* @Middleware support Advice ([#231](https://github.com/eggjs/tegg/issues/231)) ([613a89d](https://github.com/eggjs/tegg/commit/613a89da7ea6dd70d50e34aa9f4152358a622625))
+
+
+
+
+
+## [3.39.5](https://github.com/eggjs/tegg/compare/v3.39.4...v3.39.5) (2024-08-09)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.39.4](https://github.com/eggjs/tegg/compare/v3.39.3...v3.39.4) (2024-07-09)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.39.3](https://github.com/eggjs/tegg/compare/v3.39.2...v3.39.3) (2024-04-28)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.39.2](https://github.com/eggjs/tegg/compare/v3.39.1...v3.39.2) (2024-04-28)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.39.1](https://github.com/eggjs/tegg/compare/v3.39.0...v3.39.1) (2024-04-28)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.39.0](https://github.com/eggjs/tegg/compare/v3.38.0...v3.39.0) (2024-04-19)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.38.0](https://github.com/eggjs/tegg/compare/v3.37.3...v3.38.0) (2024-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.37.3](https://github.com/eggjs/tegg/compare/v3.37.2...v3.37.3) (2024-04-17)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.37.2](https://github.com/eggjs/tegg/compare/v3.37.1...v3.37.2) (2024-04-17)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.37.1](https://github.com/eggjs/tegg/compare/v3.37.0...v3.37.1) (2024-04-16)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.37.0](https://github.com/eggjs/tegg/compare/v3.36.3...v3.37.0) (2024-04-16)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.36.3](https://github.com/eggjs/tegg/compare/v3.36.2...v3.36.3) (2024-04-10)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.36.2](https://github.com/eggjs/tegg/compare/v3.36.1...v3.36.2) (2024-04-08)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.36.1](https://github.com/eggjs/tegg/compare/v3.36.0...v3.36.1) (2024-04-07)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.36.0](https://github.com/eggjs/tegg/compare/v3.35.1...v3.36.0) (2024-04-02)
+
+
+### Features
+
+* impl ajv + typebox Validator ([#201](https://github.com/eggjs/tegg/issues/201)) ([9fd585d](https://github.com/eggjs/tegg/commit/9fd585de9b613466c96b73494a08a494db34ea57))
+
+
+
+
+
+## [3.35.1](https://github.com/eggjs/tegg/compare/v3.35.0...v3.35.1) (2024-03-26)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.35.0](https://github.com/eggjs/tegg/compare/v3.34.0...v3.35.0) (2024-03-26)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.34.0](https://github.com/eggjs/tegg/compare/v3.33.1...v3.34.0) (2024-03-22)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.33.1](https://github.com/eggjs/tegg/compare/v3.33.0...v3.33.1) (2024-03-22)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.33.0](https://github.com/eggjs/tegg/compare/v3.32.0...v3.33.0) (2024-03-22)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.32.0](https://github.com/eggjs/tegg/compare/v3.31.0...v3.32.0) (2024-02-19)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.31.0](https://github.com/eggjs/tegg/compare/v3.30.1...v3.31.0) (2024-01-31)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+## [3.30.1](https://github.com/eggjs/tegg/compare/v3.30.0...v3.30.1) (2024-01-25)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.30.0](https://github.com/eggjs/tegg/compare/v3.29.0...v3.30.0) (2024-01-17)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
+# [3.29.0](https://github.com/eggjs/tegg/compare/v3.28.2...v3.29.0) (2023-12-26)
+
+**Note:** Version bump only for package @eggjs/tegg-schedule-plugin
+
+
+
+
+
 ## [3.28.2](https://github.com/eggjs/tegg/compare/v3.28.1...v3.28.2) (2023-12-12)
 
 **Note:** Version bump only for package @eggjs/tegg-schedule-plugin

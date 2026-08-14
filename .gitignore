@@ -11,6 +11,7 @@ run
 .DS_Store
 .tmp
 .vscode
+codex-logs/
 
 package-lock.json
 yarn.lock
@@ -27,10 +28,15 @@ plugin/**/dist
 
 plugin/oneapi/test/fixtures/modules/*/oneapi
 plugin/dal/test/fixtures/modules/*/dal/
+core/dal-runtime/test/fixtures/modules/*/dal
+core/dal-runtime/test/fixtures/modules/*/src/dal/
+!core/dal-runtime/test/fixtures/modules/generate_codes_not_overwrite_dao/dal/extension/FooExtension.ts
+!core/dal-runtime/test/fixtures/modules/generate_codes_not_overwrite_dao/dal/dao/FooDAO.ts
 
 plugin/tegg/test/fixtures/apps/**/*.js
 !core/common-util/test/fixtures/**/node_modules
 !core/common-util/test/fixtures/**/node_modules/**/*.js
+!core/*/typings/*.d.ts
 !plugin/*/test/fixtures/**/*.js
 !plugin/*/typings/*.d.ts
 !plugin/*/test/fixtures/apps/*/config/*.js
@@ -40,3 +46,7 @@ plugin/tegg/test/fixtures/apps/**/*.js
 !benchmark/**/*.js
 !standalone/standalone/test/fixtures/**/node_modules
 !standalone/standalone/test/fixtures/**/node_modules/**/*.js
+!plugin/tegg/test/fixtures/**/node_modules
+!plugin/config/test/fixtures/**/node_modules
+.node
+.egg

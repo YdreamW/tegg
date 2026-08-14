@@ -1,4 +1,5 @@
-import { EggProtoImplClass, PrototypeUtil } from '@eggjs/core-decorator';
+import { PrototypeUtil } from '@eggjs/core-decorator';
+import type { EggProtoImplClass } from '@eggjs/tegg-types';
 import BuiltinModule from 'module';
 import is from 'is-type-of';
 
@@ -16,6 +17,10 @@ export class LoaderUtil {
   static config: LoaderUtilConfig = {};
   static setConfig(config: LoaderUtilConfig) {
     this.config = config;
+  }
+
+  static get extension() {
+    return Object.keys((Module as any)._extensions).find(t => t === '.ts') ? '.ts' : '.js';
   }
 
   static filePattern(): string[] {

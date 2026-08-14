@@ -1,22 +1,20 @@
-import { AccessLevel, Inject, SingletonProto } from '@eggjs/core-decorator';
+import { Inject, SingletonProto } from '@eggjs/core-decorator';
 import { EventBus, Events, EventWaiter, EventName, CORK_ID } from '@eggjs/eventbus-decorator';
-import { ContextHandler, EggContext } from '@eggjs/tegg-runtime';
+import type { Arguments } from '@eggjs/eventbus-decorator';
+import { ContextHandler } from '@eggjs/tegg-runtime';
 import type { EggLogger } from 'egg';
+import { AccessLevel } from '@eggjs/tegg-types';
+import type { EggRuntimeContext } from '@eggjs/tegg-types';
 import { EventContextFactory } from './EventContextFactory';
 import { EventHandlerFactory } from './EventHandlerFactory';
 import { EventEmitter } from 'events';
 import awaitEvent from 'await-event';
 import awaitFirst from 'await-first';
 
-// from typed-emitter
-type Array<T> = [ T ] extends [ (...args: infer U) => any ]
-  ? U
-  : [ T ] extends [ void ] ? [] : [ T ];
-
 export interface Event {
   name: EventName;
   args: Array<any>;
-  context?: EggContext;
+  context?: EggRuntimeContext;
 }
 
 export interface CorkEvents {
@@ -56,15 +54,15 @@ export class SingletonEventBus implements EventBus, EventWaiter {
     return this;
   }
 
-  async await<E extends keyof Events>(event: E): Promise<Array<Events[E]>> {
+  async await<E extends keyof Events>(event: E): Promise<Arguments<Events[E]>> {
     return awaitEvent(this.emitter, event);
   }
 
-  awaitFirst<E extends keyof Events>(...e: Array<E>): Promise<{ event: EventName, args: Array<Events[E]> }> {
+  awaitFirst<E extends keyof Events>(...e: Array<E>): Promise<{ event: EventName, args: Arguments<Events[E]> }> {
     return awaitFirst(this.emitter, e);
   }
 
-  emit<E extends keyof Events>(event: E, ...args: Array<Events[E]>): boolean {
+  emit<E extends keyof Events>(event: E, ...args: Arguments<Events[E]>): boolean {
     const ctx = this.eventContextFactory.createContext();
     const hasListener = this.eventHandlerFactory.hasListeners(event);
     this.doEmit(ctx, event, args);
@@ -112,7 +110,7 @@ export class SingletonEventBus implements EventBus, EventWaiter {
     corkdEvents.events.push(event);
   }
 
-  emitWithContext<E extends keyof Events>(parentContext: EggContext, event: E, args: Array<Events[E]>): boolean {
+  emitWithContext<E extends keyof Events>(parentContext: EggRuntimeContext, event: E, args: Arguments<Events[E]>): boolean {
     const corkId = parentContext.get(CORK_ID);
     const hasListener = this.eventHandlerFactory.hasListeners(event);
     if (corkId) {
@@ -122,7 +120,7 @@ export class SingletonEventBus implements EventBus, EventWaiter {
     return this.doEmitWithContext(parentContext, event, args);
   }
 
-  private doEmitWithContext(parentContext: EggContext, event: EventName, args: Array<any>): boolean {
+  private doEmitWithContext(parentContext: EggRuntimeContext, event: EventName, args: Array<any>): boolean {
     const hasListener = this.eventHandlerFactory.hasListeners(event);
     const ctx = this.eventContextFactory.createContext(parentContext);
     this.doEmit(ctx, event, args);
@@ -138,20 +136,20 @@ export class SingletonEventBus implements EventBus, EventWaiter {
     }
   }
 
-  private async doEmit(ctx: EggContext, event: EventName, args: Array<any>) {
+  private async doEmit(ctx: EggRuntimeContext, event: EventName, args: Array<any>) {
     await ContextHandler.run(ctx, async () => {
       const lifecycle = {};
       if (ctx.init) {
         await ctx.init(lifecycle);
       }
       try {
-        const handlers = await this.eventHandlerFactory.getHandlers(event);
-        await Promise.all(handlers.map(async handler => {
+        const handlerProtos = this.eventHandlerFactory.getHandlerProtos(event);
+        await Promise.all(handlerProtos.map(async proto => {
           try {
-            await Reflect.apply(handler.handle, handler, args);
+            await this.eventHandlerFactory.handle(event, proto, args);
           } catch (e) {
             // should wait all handlers done then destroy ctx
-            e.message = `[EventBus] process event ${String(event)} failed: ${e.message}`;
+            e.message = `[EventBus] process event ${String(event)} for handler ${String(proto.name)} failed: ${e.message}`;
             this.logger.error(e);
           }
         }));

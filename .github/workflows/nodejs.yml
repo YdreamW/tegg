@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [ 14, 16, 18, 20 ]
+        node-version: [ 16, 18, 20 ]
     steps:
     - name: Checkout Git Source
       uses: actions/checkout@master
@@ -30,16 +30,16 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Install Npm
-      run: npm i -g npm@9
+    - name: Install Utoo
+      uses: utooland/setup-utoo@v1
 
     - name: Install Dependencies
-      run: npm i
+      run: ut install --ignore-scripts
 
     - name: Continuous integration
       run: |
-        npm run ci
-        npm run tsc:pub
+        ut ci
+        ut tsc:pub
 
     - name: Code Coverage
       uses: codecov/codecov-action@v1
@@ -51,7 +51,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [ 14, 16, 18, 20 ]
+        node-version: [ 16, 18, 20 ]
     steps:
       - name: Checkout Git Source
         uses: actions/checkout@master
@@ -62,50 +62,52 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install Mysql
-        run: brew install mysql@5.7
+        run: brew install mysql
 
       - name: Start Mysql
-        run: /usr/local/opt/mysql@5.7/bin/mysql.server start
+        ## arm64/x86 homebrew mysql path different
+        run: brew services start mysql
 
-      - name: Install Npm
-        run: npm i -g npm@9
+      - name: Install Utoo
+        uses: utooland/setup-utoo@v1
 
       - name: Install Dependencies
-        run: npm i
+        run: ut install --ignore-scripts
 
       - name: Continuous integration
-        run: npm run ci
+        run: ut ci
 
       - name: Code Coverage
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-  Runner-windows:
-    runs-on: windows-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: [ 14, 16, 18, 20 ]
-    steps:
-      - name: Checkout Git Source
-        uses: actions/checkout@master
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
-
-      - name: Install Npm
-        run: npm i -g npm@8
-
-      - name: Install Dependencies
-        run: npm i
-
-      - name: Continuous integration
-        run: npm run ci
-
-      - name: Code Coverage
-        uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+# GitHub mysql service not support windows
+#  Runner-windows:
+#    runs-on: windows-latest
+#
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        node-version: [ 16, 18, 20 ]
+#    steps:
+#      - name: Checkout Git Source
+#        uses: actions/checkout@master
+#
+#      - name: Setup Node.js
+#        uses: actions/setup-node@v1
+#        with:
+#          node-version: ${{ matrix.node-version }}
+#
+#      - name: Install Npm
+#        run: npm i -g npm@8
+#
+#      - name: Install Dependencies
+#        run: npm i
+#
+#      - name: Continuous integration
+#        run: npm run ci
+#
+#      - name: Code Coverage
+#        uses: codecov/codecov-action@v1
+#        with:
+#          token: ${{ secrets.CODECOV_TOKEN }}

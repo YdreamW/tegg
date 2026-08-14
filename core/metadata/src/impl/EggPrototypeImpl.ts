@@ -1,13 +1,17 @@
-import { EggPrototype, InjectObjectProto } from '../model/EggPrototype';
-import {
+import { InjectType, MetadataUtil, QualifierAttribute } from '@eggjs/core-decorator';
+import type {
   AccessLevel,
   EggProtoImplClass,
-  EggPrototypeName, MetaDataKey, MetadataUtil,
+  EggPrototype,
+  EggPrototypeName,
+  Id,
+  InjectConstructorProto,
+  InjectObjectProto,
+  MetaDataKey,
   ObjectInitTypeLike,
-  QualifierInfo, QualifierValue,
-} from '@eggjs/core-decorator';
-import { Id } from '@eggjs/tegg-lifecycle';
-
+  QualifierInfo,
+  QualifierValue,
+} from '@eggjs/tegg-types';
 
 export class EggPrototypeImpl implements EggPrototype {
   private readonly clazz: EggProtoImplClass;
@@ -18,9 +22,12 @@ export class EggPrototypeImpl implements EggPrototype {
   readonly name: EggPrototypeName;
   readonly initType: ObjectInitTypeLike;
   readonly accessLevel: AccessLevel;
-  readonly injectObjects: InjectObjectProto[];
+  readonly injectObjects: Array<InjectObjectProto | InjectConstructorProto>;
+  readonly injectType: InjectType;
   readonly loadUnitId: Id;
   readonly className?: string;
+  readonly multiInstanceConstructorIndex?: number;
+  readonly multiInstanceConstructorAttributes?: QualifierAttribute[];
 
   constructor(
     id: string,
@@ -29,10 +36,13 @@ export class EggPrototypeImpl implements EggPrototype {
     filepath: string,
     initType: ObjectInitTypeLike,
     accessLevel: AccessLevel,
-    injectObjectMap: InjectObjectProto[],
+    injectObjectMap: Array<InjectObjectProto | InjectConstructorProto>,
     loadUnitId: Id,
     qualifiers: QualifierInfo[],
     className?: string,
+    injectType?: InjectType,
+    multiInstanceConstructorIndex?: number,
+    multiInstanceConstructorAttributes?: QualifierAttribute[],
   ) {
     this.id = id;
     this.clazz = clazz;
@@ -44,6 +54,9 @@ export class EggPrototypeImpl implements EggPrototype {
     this.loadUnitId = loadUnitId;
     this.qualifiers = qualifiers;
     this.className = className;
+    this.injectType = injectType || InjectType.PROPERTY;
+    this.multiInstanceConstructorIndex = multiInstanceConstructorIndex;
+    this.multiInstanceConstructorAttributes = multiInstanceConstructorAttributes;
   }
 
   verifyQualifiers(qualifiers: QualifierInfo[]): boolean {
@@ -64,8 +77,8 @@ export class EggPrototypeImpl implements EggPrototype {
     return this.qualifiers.find(t => t.attribute === attribute)?.value;
   }
 
-  constructEggObject(): object {
-    return Reflect.construct(this.clazz, []);
+  constructEggObject(...args: any): object {
+    return Reflect.construct(this.clazz, args);
   }
 
   getMetaData<T>(metadataKey: MetaDataKey): T | undefined {

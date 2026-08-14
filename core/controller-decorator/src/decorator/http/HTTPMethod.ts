@@ -1,14 +1,8 @@
-import assert from 'assert';
-import { EggProtoImplClass } from '@eggjs/core-decorator';
+import assert from 'node:assert';
+import { ControllerType } from '@eggjs/tegg-types';
+import type { EggProtoImplClass, HTTPMethodParams } from '@eggjs/tegg-types';
 import HTTPInfoUtil from '../../util/HTTPInfoUtil';
-import { ControllerType, HTTPMethodEnum } from '../../model';
 import MethodInfoUtil from '../../util/MethodInfoUtil';
-
-export interface HTTPMethodParams {
-  method: HTTPMethodEnum;
-  path: string;
-  priority?: number;
-}
 
 export function HTTPMethod(param: HTTPMethodParams) {
   return function(target: any, propertyKey: PropertyKey) {
@@ -19,6 +13,9 @@ export function HTTPMethod(param: HTTPMethodParams) {
     MethodInfoUtil.setMethodControllerType(controllerClazz, methodName, ControllerType.HTTP);
     HTTPInfoUtil.setHTTPMethodPath(param.path, controllerClazz, methodName);
     HTTPInfoUtil.setHTTPMethodMethod(param.method, controllerClazz, methodName);
+    if (param.timeout) {
+      MethodInfoUtil.setMethodTimeout(param.timeout, controllerClazz, methodName);
+    }
     if (param.priority !== undefined) {
       HTTPInfoUtil.setHTTPMethodPriority(param.priority, controllerClazz, methodName);
     }

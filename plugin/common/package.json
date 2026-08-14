@@ -1,6 +1,6 @@
 {
   "name": "@eggjs/egg-module-common",
-  "version": "3.28.2",
+  "version": "3.87.0",
   "description": "common module",
   "keywords": [
     "egg",
@@ -16,9 +16,9 @@
   "types": "index.d.ts",
   "scripts": {
     "clean": "tsc -b --clean",
-    "tsc": "npm run clean && tsc -p ./tsconfig.json",
-    "tsc:pub": "npm run clean && tsc -p ./tsconfig.pub.json",
-    "prepublishOnly": "npm run tsc:pub"
+    "tsc": "ut run clean && tsc -p ./tsconfig.json",
+    "tsc:pub": "ut run clean && tsc -p ./tsconfig.pub.json",
+    "prepublishOnly": "ut tsc:pub"
   },
   "author": "killagu <killa123@126.com>",
   "license": "MIT",
@@ -44,5 +44,6 @@
     "mocha": "^10.2.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
-  }
+  },
+  "gitHead": "240a3e9f40fda65ebb7589727d197db5ce17916c"
 }

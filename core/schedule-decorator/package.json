@@ -1,6 +1,6 @@
 {
   "name": "@eggjs/tegg-schedule-decorator",
-  "version": "3.28.2",
+  "version": "3.87.0",
   "description": "tegg schedule decorator",
   "main": "dist/index.js",
   "files": [
@@ -16,9 +16,9 @@
   ],
   "scripts": {
     "clean": "tsc -b --clean",
-    "tsc": "npm run clean && tsc -p ./tsconfig.json",
-    "tsc:pub": "npm run clean && tsc -p ./tsconfig.pub.json",
-    "prepublishOnly": "npm run tsc:pub"
+    "tsc": "ut run clean && tsc -p ./tsconfig.json",
+    "tsc:pub": "ut run clean && tsc -p ./tsconfig.pub.json",
+    "prepublishOnly": "ut tsc:pub"
   },
   "author": "killagu <killa123@126.com>",
   "license": "MIT",
@@ -35,9 +35,10 @@
     "node": ">=14.0.0"
   },
   "dependencies": {
-    "@eggjs/core-decorator": "^3.28.2",
-    "@eggjs/tegg-common-util": "^3.28.2",
-    "@eggjs/tegg-metadata": "^3.28.2",
+    "@eggjs/core-decorator": "^3.87.0",
+    "@eggjs/tegg-common-util": "^3.87.0",
+    "@eggjs/tegg-metadata": "^3.87.0",
+    "@eggjs/tegg-types": "^3.87.0",
     "cron-parser": "^2.18.0"
   },
   "devDependencies": {
@@ -51,5 +52,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "240a3e9f40fda65ebb7589727d197db5ce17916c"
 }

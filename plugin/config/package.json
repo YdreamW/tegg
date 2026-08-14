@@ -3,7 +3,7 @@
   "eggPlugin": {
     "name": "teggConfig"
   },
-  "version": "3.28.2",
+  "version": "3.87.0",
   "description": "module config plugin for egg",
   "keywords": [
     "egg",
@@ -17,6 +17,8 @@
     "app.js",
     "app.d.ts",
     "typings/index.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.d.ts",
     "agent.js",
     "agent.d.ts"
   ],
@@ -24,9 +26,9 @@
   "scripts": {
     "test": "cross-env NODE_ENV=test NODE_OPTIONS='--no-deprecation' mocha",
     "clean": "tsc -b --clean",
-    "tsc": "npm run clean && tsc -p ./tsconfig.json",
-    "tsc:pub": "npm run clean && tsc -p ./tsconfig.pub.json",
-    "prepublishOnly": "npm run tsc:pub"
+    "tsc": "ut run clean && tsc -p ./tsconfig.json",
+    "tsc:pub": "ut run clean && tsc -p ./tsconfig.pub.json",
+    "prepublishOnly": "ut tsc:pub"
   },
   "homepage": "https://github.com/eggjs/tegg",
   "bugs": {
@@ -41,7 +43,7 @@
     "node": ">=14.0.0"
   },
   "dependencies": {
-    "@eggjs/tegg-common-util": "^3.28.2"
+    "@eggjs/tegg-common-util": "^3.87.0"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.1",
@@ -54,5 +56,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "240a3e9f40fda65ebb7589727d197db5ce17916c"
 }

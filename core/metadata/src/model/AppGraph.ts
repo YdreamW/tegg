@@ -1,21 +1,14 @@
 import assert from 'node:assert';
 import util from 'node:util';
-import { Graph, GraphNode, GraphNodeObj, ModuleConfigUtil, ModuleReference } from '@eggjs/tegg-common-util';
-import {
-  AccessLevel,
-  EggProtoImplClass,
-  EggPrototypeName,
-  INIT_TYPE_TRY_ORDER,
-  InitTypeQualifierAttribute,
-  LoadUnitNameQualifierAttribute,
-  PrototypeUtil,
-  QualifierInfo,
-  QualifierUtil,
-} from '@eggjs/core-decorator';
+import { Graph, GraphNode, ModuleConfigUtil } from '@eggjs/tegg-common-util';
+import { PrototypeUtil, QualifierUtil } from '@eggjs/core-decorator';
+import { AccessLevel, INIT_TYPE_TRY_ORDER, InitTypeQualifierAttribute, LoadUnitNameQualifierAttribute } from '@eggjs/tegg-types';
+import type { EggProtoImplClass, EggPrototypeName, GraphNodeObj, ModuleReference, QualifierInfo } from '@eggjs/tegg-types';
 
 export interface InstanceClazzMeta {
   name: PropertyKey;
   qualifiers: QualifierInfo[];
+  properQualifiers: Record<PropertyKey, QualifierInfo[]>;
   accessLevel: AccessLevel,
   instanceModule: GraphNode<ModuleNode>;
   ownerModule: GraphNode<ModuleNode>;
@@ -58,19 +51,23 @@ export class ClazzMap {
           for (const instanceNode of graph.nodes.values()) {
             const property = PrototypeUtil.getMultiInstanceProperty(clazz, {
               unitPath: instanceNode.val.moduleConfig.path,
+              moduleName: instanceNode.val.moduleConfig.name,
             });
             assert(property, `multi instance property not found for ${clazz.name}`);
             for (const info of property.objects) {
+              const instanceQualifiers = [
+                ...qualifiers,
+                ...info.qualifiers,
+              ];
               clazzMap[info.name] = clazzMap[info.name] || [];
               clazzMap[info.name].push({
                 name: info.name,
                 accessLevel: PrototypeUtil.getAccessLevel(clazz, {
                   unitPath: instanceNode.val.moduleConfig.path,
+                  moduleName: instanceNode.val.moduleConfig.name,
                 }) as AccessLevel,
-                qualifiers: [
-                  ...qualifiers,
-                  ...info.qualifiers,
-                ],
+                qualifiers: instanceQualifiers,
+                properQualifiers: info.properQualifiers || {},
                 instanceModule: instanceNode,
                 ownerModule: ownerNode,
               });
@@ -84,8 +81,10 @@ export class ClazzMap {
             name: property.name,
             accessLevel: PrototypeUtil.getAccessLevel(clazz, {
               unitPath: ownerNode.val.moduleConfig.path,
+              moduleName: ownerNode.val.moduleConfig.name,
             }) as AccessLevel,
             qualifiers,
+            properQualifiers: {},
             ownerModule: ownerNode,
             instanceModule: ownerNode,
           });
@@ -158,7 +157,7 @@ export class ClazzMap {
 
     for (const obj of mayObjs) {
       result.add(obj.instanceModule);
-      result.add(obj.ownerModule);
+      // result.add(obj.ownerModule);
     }
     return Array.from(result);
   }
@@ -181,17 +180,20 @@ export class ModuleNode implements GraphNodeObj {
     if (!this.clazzList.includes(clazz)) {
       this.clazzList.push(clazz);
     }
-    const defaultQualifier = [{
-      attribute: InitTypeQualifierAttribute,
-      value: PrototypeUtil.getInitType(clazz, {
-        unitPath: this.moduleConfig.path,
-      })!,
-    }, {
-      attribute: LoadUnitNameQualifierAttribute,
-      value: this.name,
-    }];
-    for (const qualifier of defaultQualifier) {
-      QualifierUtil.addProtoQualifier(clazz, qualifier.attribute, qualifier.value);
+    if (!PrototypeUtil.isEggMultiInstancePrototype(clazz)) {
+      const defaultQualifier = [{
+        attribute: InitTypeQualifierAttribute,
+        value: PrototypeUtil.getInitType(clazz, {
+          unitPath: this.moduleConfig.path,
+          moduleName: this.moduleConfig.name,
+        })!,
+      }, {
+        attribute: LoadUnitNameQualifierAttribute,
+        value: this.name,
+      }];
+      for (const qualifier of defaultQualifier) {
+        QualifierUtil.addProtoQualifier(clazz, qualifier.attribute, qualifier.value);
+      }
     }
   }
 
@@ -219,6 +221,16 @@ export class AppGraph {
     }
   }
 
+  getClazzList(): readonly EggProtoImplClass[] {
+    const clazzSet = new Set<EggProtoImplClass>();
+    for (const node of this.graph.nodes.values()) {
+      for (const clazz of node.val.getClazzList()) {
+        clazzSet.add(clazz);
+      }
+    }
+    return Array.from(clazzSet);
+  }
+
   build() {
     this.clazzMap = new ClazzMap(this.graph);
 
@@ -229,13 +241,38 @@ export class AppGraph {
         const injectObjects = PrototypeUtil.getInjectObjects(clazz);
         // 3. iterate all inject objects
         for (const injectObject of injectObjects) {
-          const properQualifiers = QualifierUtil.getProperQualifiers(clazz, injectObject.refName);
-          // 4. find dependency module
-          const dependencyModules = this.clazzMap.findDependencyModule(injectObject.objName, properQualifiers, node);
-          for (const moduleNode of dependencyModules) {
-            // 5. add edge
-            if (node !== moduleNode) {
-              this.graph.addEdge(node, moduleNode);
+          if (PrototypeUtil.isEggMultiInstancePrototype(clazz)) {
+            for (const instanceNode of this.graph.nodes.values()) {
+              const property = PrototypeUtil.getMultiInstanceProperty(clazz, {
+                unitPath: instanceNode.val.moduleConfig.path,
+                moduleName: instanceNode.val.moduleConfig.name,
+              });
+              for (const info of property?.objects || []) {
+                const properQualifiers = [
+                  ...QualifierUtil.getProperQualifiers(clazz, injectObject.refName),
+                  ...info.properQualifiers?.[injectObject.refName] ?? [],
+                ];
+                // 4. find dependency module
+                const dependencyModules = this.clazzMap.findDependencyModule(injectObject.objName, properQualifiers, node);
+                for (const moduleNode of dependencyModules) {
+                  // 5. add edge
+                  if (instanceNode !== moduleNode) {
+                    this.graph.addEdge(instanceNode, moduleNode);
+                  }
+                }
+              }
+            }
+          } else {
+            const properQualifiers = [
+              ...QualifierUtil.getProperQualifiers(clazz, injectObject.refName),
+            ];
+            // 4. find dependency module
+            const dependencyModules = this.clazzMap.findDependencyModule(injectObject.objName, properQualifiers, node);
+            for (const moduleNode of dependencyModules) {
+              // 5. add edge
+              if (node !== moduleNode) {
+                this.graph.addEdge(node, moduleNode);
+              }
             }
           }
         }
@@ -249,6 +286,9 @@ export class AppGraph {
       throw new Error('module has recursive deps: ' + loopPath);
     }
     this.moduleConfigList = this.graph.sort()
+      .filter(t => {
+        return t.val.moduleConfig.optional !== true || t.fromNodeMap.size > 0;
+      })
       .map(t => t.val.moduleConfig);
   }
 }

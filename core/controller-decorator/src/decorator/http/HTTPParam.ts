@@ -1,7 +1,7 @@
-import assert from 'assert';
-import { HTTPParamType } from '../../model';
+import assert from 'node:assert';
+import { HTTPParamType } from '@eggjs/tegg-types';
+import type { EggProtoImplClass, HTTPParamParams, HTTPQueriesParams, HTTPQueryParams } from '@eggjs/tegg-types';
 import HTTPInfoUtil from '../../util/HTTPInfoUtil';
-import { EggProtoImplClass } from '@eggjs/core-decorator';
 import { ObjectUtils } from '@eggjs/tegg-common-util';
 
 // TODO url params
@@ -18,12 +18,14 @@ export function HTTPBody() {
   };
 }
 
-export interface HTTPQueryParams {
-  name?: string;
-}
-
-export interface HTTPQueriesParams {
-  name?: string;
+export function HTTPHeaders() {
+  return function(target: any, propertyKey: PropertyKey, parameterIndex: number) {
+    assert(typeof propertyKey === 'string',
+      `[controller/${target.name}] expect method name be typeof string, but now is ${String(propertyKey)}`);
+    const methodName = propertyKey as string;
+    const controllerClazz = target.constructor as EggProtoImplClass;
+    HTTPInfoUtil.setHTTPMethodParamType(HTTPParamType.HEADERS, parameterIndex, controllerClazz, methodName);
+  };
 }
 
 export function HTTPQuery(param?: HTTPQueryParams) {
@@ -52,10 +54,6 @@ export function HTTPQueries(param?: HTTPQueriesParams) {
   };
 }
 
-export interface HTTPParamParams {
-  name?: string;
-}
-
 export function HTTPParam(param?: HTTPParamParams) {
   return function(target: any, propertyKey: PropertyKey, parameterIndex: number) {
     assert(typeof propertyKey === 'string',
@@ -79,5 +77,15 @@ export function Request() {
     const methodName = propertyKey as string;
     const controllerClazz = target.constructor as EggProtoImplClass;
     HTTPInfoUtil.setHTTPMethodParamType(HTTPParamType.REQUEST, parameterIndex, controllerClazz, methodName);
+  };
+}
+
+export function Cookies() {
+  return function(target: any, propertyKey: PropertyKey, parameterIndex: number) {
+    assert(typeof propertyKey === 'string',
+      `[controller/${target.name}] expect method name be typeof string, but now is ${String(propertyKey)}`);
+    const methodName = propertyKey as string;
+    const controllerClazz = target.constructor as EggProtoImplClass;
+    HTTPInfoUtil.setHTTPMethodParamType(HTTPParamType.COOKIES, parameterIndex, controllerClazz, methodName);
   };
 }

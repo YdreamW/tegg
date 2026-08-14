@@ -3,6 +3,1764 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.87.0](https://github.com/eggjs/tegg/compare/v3.86.0...v3.87.0) (2026-08-13)
+
+
+### Features
+
+* support mcp proxy connect timeout config ([#467](https://github.com/eggjs/tegg/issues/467)) ([f905185](https://github.com/eggjs/tegg/commit/f9051852331c9cdbb011424ad3612719422d901d))
+
+
+
+
+
+# [3.86.0](https://github.com/eggjs/tegg/compare/v3.85.2...v3.86.0) (2026-08-05)
+
+
+### Features
+
+* **mcp:** support tool output schema ([#466](https://github.com/eggjs/tegg/issues/466)) ([2d14184](https://github.com/eggjs/tegg/commit/2d14184ce08c6807056d42b9f9165a08ca4d0259))
+
+
+
+
+
+## [3.85.2](https://github.com/eggjs/tegg/compare/v3.85.1...v3.85.2) (2026-07-31)
+
+
+### Performance Improvements
+
+* **agent-runtime:** skip thinking token progress persistence ([#465](https://github.com/eggjs/tegg/issues/465)) ([82c1e1f](https://github.com/eggjs/tegg/commit/82c1e1fc910c615515c0b9d1759bff896584832d))
+
+
+
+
+
+## [3.85.1](https://github.com/eggjs/tegg/compare/v3.85.0...v3.85.1) (2026-07-29)
+
+
+### Performance Improvements
+
+* **agent-runtime:** avoid full thread reads for resume checks ([#464](https://github.com/eggjs/tegg/issues/464)) ([4971057](https://github.com/eggjs/tegg/commit/49710579601243eadf4ca948fd61950fe22a9fbd))
+
+
+
+
+
+# [3.85.0](https://github.com/eggjs/tegg/compare/v3.84.4...v3.85.0) (2026-07-22)
+
+
+### Features
+
+* **mcp:** support UI metadata for tool registration ([#463](https://github.com/eggjs/tegg/issues/463)) ([caebf68](https://github.com/eggjs/tegg/commit/caebf688b2923b11ff8a9f88b191612dcd463962))
+
+
+
+
+
+## [3.84.4](https://github.com/eggjs/tegg/compare/v3.84.2...v3.84.4) (2026-07-13)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+## [3.84.3](https://github.com/eggjs/tegg/compare/v3.84.2...v3.84.3) (2026-07-13)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+## [3.84.2](https://github.com/eggjs/tegg/compare/v3.84.1...v3.84.2) (2026-06-26)
+
+
+### Bug Fixes
+
+* clean idle mcp stream proxy sessions ([#461](https://github.com/eggjs/tegg/issues/461)) ([717a41a](https://github.com/eggjs/tegg/commit/717a41a06c6d8793d4faa735bf727335abc836f2))
+
+
+
+
+
+## [3.84.1](https://github.com/eggjs/tegg/compare/v3.84.0...v3.84.1) (2026-06-23)
+
+
+### Bug Fixes
+
+* cleanup idle mcp stream sessions ([#459](https://github.com/eggjs/tegg/issues/459)) ([bc57964](https://github.com/eggjs/tegg/commit/bc57964e8f103d4dc66c9062ffb12c5c617cd71c))
+
+
+
+
+
+# [3.84.0](https://github.com/eggjs/tegg/compare/v3.83.0...v3.84.0) (2026-06-18)
+
+
+### Features
+
+* **agent-runtime:** expose per-message/tool/run timing via eggExt namespace ([#457](https://github.com/eggjs/tegg/issues/457)) ([9f94e2e](https://github.com/eggjs/tegg/commit/9f94e2e21764def338a1cad644170689c60122a3))
+
+
+
+
+
+# [3.83.0](https://github.com/eggjs/tegg/compare/v3.82.2...v3.83.0) (2026-06-17)
+
+
+### Features
+
+* **agent-runtime:** mirror a run's transcript to thread storage incrementally ([#456](https://github.com/eggjs/tegg/issues/456)) ([bf89468](https://github.com/eggjs/tegg/commit/bf89468eb05833989f5f38fb616cec9963d6d050))
+* support context decorator in MCP controllers ([#458](https://github.com/eggjs/tegg/issues/458)) ([283a331](https://github.com/eggjs/tegg/commit/283a331c6ee29f37e85a4900c878105a539e62aa))
+
+
+
+
+
+## [3.82.2](https://github.com/eggjs/tegg/compare/v3.82.1...v3.82.2) (2026-06-10)
+
+
+### Bug Fixes
+
+* **mcp:** reject pending SSE promises on session close to prevent con… ([#455](https://github.com/eggjs/tegg/issues/455)) ([322dc84](https://github.com/eggjs/tegg/commit/322dc84204add1d89fd19a2a73434da0f58d80e3))
+
+
+
+
+
+## [3.82.1](https://github.com/eggjs/tegg/compare/v3.82.0...v3.82.1) (2026-06-10)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+# [3.82.0](https://github.com/eggjs/tegg/compare/v3.81.0...v3.82.0) (2026-06-10)
+
+
+### Features
+
+* **agent-runtime:** support run thread metadata ([#454](https://github.com/eggjs/tegg/issues/454)) ([d4c2cdc](https://github.com/eggjs/tegg/commit/d4c2cdc579f21206efe5d457902cde45b028560f))
+
+
+
+
+
+# [3.81.0](https://github.com/eggjs/tegg/compare/v3.80.1...v3.81.0) (2026-06-10)
+
+
+### Features
+
+* **agent-runtime:** add getLatestRunId to resolve a thread's latest run ([#451](https://github.com/eggjs/tegg/issues/451)) ([14a4f2e](https://github.com/eggjs/tegg/commit/14a4f2e48cda2514261d2cf9550cf7c713f267d0))
+
+
+
+
+
+## [3.80.1](https://github.com/eggjs/tegg/compare/v3.80.0...v3.80.1) (2026-06-08)
+
+
+### Bug Fixes
+
+* **agent-runtime:** persist partial transcript when a run fails mid-turn ([#449](https://github.com/eggjs/tegg/issues/449)) ([f474495](https://github.com/eggjs/tegg/commit/f47449570705db6a7b6617fae58e7de95002acfa))
+* mcp memory leak error ([#453](https://github.com/eggjs/tegg/issues/453)) ([36c980a](https://github.com/eggjs/tegg/commit/36c980a8adf5af5d0dfca9a438d3cec1528ba58d))
+
+
+
+
+
+# [3.80.0](https://github.com/eggjs/tegg/compare/v3.79.3...v3.80.0) (2026-06-03)
+
+
+### Features
+
+* add mcp request unit test helper ([#450](https://github.com/eggjs/tegg/issues/450)) ([3345a68](https://github.com/eggjs/tegg/commit/3345a682f94c6309ca49c54d524ae230bd86121c))
+
+
+
+
+
+## [3.79.3](https://github.com/eggjs/tegg/compare/v3.79.2...v3.79.3) (2026-05-27)
+
+
+### Bug Fixes
+
+* mcp memory ([#448](https://github.com/eggjs/tegg/issues/448)) ([8e5f477](https://github.com/eggjs/tegg/commit/8e5f477d1ec6d2800fe7a8057edc689bde90372b))
+
+
+
+
+
+## [3.79.2](https://github.com/eggjs/tegg/compare/v3.79.1...v3.79.2) (2026-05-14)
+
+
+### Bug Fixes
+
+* service worker initialize ([#447](https://github.com/eggjs/tegg/issues/447)) ([f3fe5f4](https://github.com/eggjs/tegg/commit/f3fe5f465c78002fd37de9c4c5d5b3bdfde4f0c8))
+
+
+
+
+
+## [3.79.1](https://github.com/eggjs/tegg/compare/v3.79.0...v3.79.1) (2026-05-13)
+
+
+### Bug Fixes
+
+* **agent-runtime:** support thread metadata ([#446](https://github.com/eggjs/tegg/issues/446)) ([b8606c5](https://github.com/eggjs/tegg/commit/b8606c517adbdd034911e625f19a0361df7e23e1)), closes [eggjs/egg#5949](https://github.com/eggjs/egg/issues/5949)
+
+
+
+
+
+# [3.79.0](https://github.com/eggjs/tegg/compare/v3.78.17...v3.79.0) (2026-05-13)
+
+
+### Features
+
+* **agent-runtime:** per-thread creation-time index ([#445](https://github.com/eggjs/tegg/issues/445)) ([6319191](https://github.com/eggjs/tegg/commit/63191912b4b3cab8c4ec076e16e093f3e85c0ca7))
+
+
+
+
+
+## [3.78.17](https://github.com/eggjs/tegg/compare/v3.78.16...v3.78.17) (2026-05-07)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+## [3.78.16](https://github.com/eggjs/tegg/compare/v3.78.15...v3.78.16) (2026-05-06)
+
+
+### Bug Fixes
+
+* proxy detail is null ([#442](https://github.com/eggjs/tegg/issues/442)) ([01d741d](https://github.com/eggjs/tegg/commit/01d741df18c7735940e6c944caf8c69c05f946aa))
+
+
+
+
+
+## [3.78.15](https://github.com/eggjs/tegg/compare/v3.78.14...v3.78.15) (2026-04-23)
+
+
+### Bug Fixes
+
+* **agent-runtime:** hold cancelRun until executor session is committed ([#441](https://github.com/eggjs/tegg/issues/441)) ([4e02a28](https://github.com/eggjs/tegg/commit/4e02a28bdfe9b924c1190482fd3d85f8cad1fcfa))
+
+
+
+
+
+## [3.78.14](https://github.com/eggjs/tegg/compare/v3.78.13...v3.78.14) (2026-04-21)
+
+
+### Bug Fixes
+
+* mcp path ([3835288](https://github.com/eggjs/tegg/commit/3835288e9b78e3d2f422e91e3e56bf4ead0c4372))
+* mcp sse connect clear ([#440](https://github.com/eggjs/tegg/issues/440)) ([4c59d6a](https://github.com/eggjs/tegg/commit/4c59d6a13cf066dec70173494bd09c30a5052712))
+
+
+
+
+
+## [3.78.13](https://github.com/eggjs/tegg/compare/v3.78.12...v3.78.13) (2026-04-21)
+
+
+### Bug Fixes
+
+* **agent-runtime:** persist thread messages when a run is aborted ([#439](https://github.com/eggjs/tegg/issues/439)) ([384ab1b](https://github.com/eggjs/tegg/commit/384ab1bf3c344177d8eb2593d35dab41361a31dc))
+
+
+
+
+
+## [3.78.12](https://github.com/eggjs/tegg/compare/v3.78.11...v3.78.12) (2026-04-18)
+
+
+### Bug Fixes
+
+* del debug log ([a7d8e06](https://github.com/eggjs/tegg/commit/a7d8e0608d709a733ea463c75ca955184ae4c552))
+
+
+
+
+
+## [3.78.11](https://github.com/eggjs/tegg/compare/v3.78.10...v3.78.11) (2026-04-18)
+
+
+### Bug Fixes
+
+* limit mcp version ([8627372](https://github.com/eggjs/tegg/commit/86273726bbf4f33e0856dc726aa3f7ff963e9e99))
+
+
+
+
+
+## [3.78.10](https://github.com/eggjs/tegg/compare/v3.78.9...v3.78.10) (2026-04-18)
+
+
+### Bug Fixes
+
+* import ([c7ed1b7](https://github.com/eggjs/tegg/commit/c7ed1b78f9c0ee308c85029e79d5187fd7fd1bd4))
+
+
+
+
+
+## [3.78.9](https://github.com/eggjs/tegg/compare/v3.78.8...v3.78.9) (2026-04-18)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+## [3.78.8](https://github.com/eggjs/tegg/compare/v3.78.7...v3.78.8) (2026-04-18)
+
+
+### Bug Fixes
+
+* remove egg module ([#438](https://github.com/eggjs/tegg/issues/438)) ([c82c26e](https://github.com/eggjs/tegg/commit/c82c26ebfa8272e32477f9b5be51da85e70904a6))
+
+
+
+
+
+## [3.78.7](https://github.com/eggjs/tegg/compare/v3.78.6...v3.78.7) (2026-04-18)
+
+
+### Bug Fixes
+
+* ts ([4e9baaa](https://github.com/eggjs/tegg/commit/4e9baaad4a78e98148979fc3336e24f872300c7d))
+
+
+
+
+
+## [3.78.6](https://github.com/eggjs/tegg/compare/v3.78.4...v3.78.6) (2026-04-18)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+## [3.78.5](https://github.com/eggjs/tegg/compare/v3.78.4...v3.78.5) (2026-04-18)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+## [3.78.4](https://github.com/eggjs/tegg/compare/v3.78.3...v3.78.4) (2026-04-18)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+## [3.78.3](https://github.com/eggjs/tegg/compare/v3.78.2...v3.78.3) (2026-04-15)
+
+
+### Bug Fixes
+
+* mcp_client_dispatcher ([#435](https://github.com/eggjs/tegg/issues/435)) ([82cdf41](https://github.com/eggjs/tegg/commit/82cdf41230af10b15758c56ec59756d2c5885e5e))
+
+
+
+
+
+## [3.78.2](https://github.com/eggjs/tegg/compare/v3.78.1...v3.78.2) (2026-04-09)
+
+
+### Bug Fixes
+
+* **agent-runtime:** filter stream_event in all appendMessages calls ([#434](https://github.com/eggjs/tegg/issues/434)) ([c3b81bd](https://github.com/eggjs/tegg/commit/c3b81bdb108d07528a40fbf14162fcbeb3338c60)), closes [#433](https://github.com/eggjs/tegg/issues/433)
+
+
+
+
+
+## [3.78.1](https://github.com/eggjs/tegg/compare/v3.78.0...v3.78.1) (2026-04-09)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+# [3.78.0](https://github.com/eggjs/tegg/compare/v3.77.2...v3.78.0) (2026-04-09)
+
+
+### Features
+
+* **agent-runtime:** rewrite streamRun with StreamEvent format and reconnection ([#432](https://github.com/eggjs/tegg/issues/432)) ([d03dac2](https://github.com/eggjs/tegg/commit/d03dac2ddd78641acb47e19275488ad9fbfcda2a))
+
+
+
+
+
+## [3.77.2](https://github.com/eggjs/tegg/compare/v3.77.1...v3.77.2) (2026-04-07)
+
+
+### Bug Fixes
+
+* streamable get timeout ([#431](https://github.com/eggjs/tegg/issues/431)) ([ebacefa](https://github.com/eggjs/tegg/commit/ebacefaa0512cfe9a0d5e7465a0386041cb9d07c))
+
+
+
+
+
+## [3.77.1](https://github.com/eggjs/tegg/compare/v3.77.0...v3.77.1) (2026-04-01)
+
+
+### Bug Fixes
+
+* **agent-runtime:** handle all content_block_start and delta subtypes in normalizeContentBlocks ([#430](https://github.com/eggjs/tegg/issues/430)) ([119ba38](https://github.com/eggjs/tegg/commit/119ba3889a52b3577bf0aa23b6123c4d2fd4a23c))
+
+
+
+
+
+# [3.77.0](https://github.com/eggjs/tegg/compare/v3.76.1...v3.77.0) (2026-04-01)
+
+
+### Features
+
+* **agent-runtime:** add normalizeContentBlocks for Anthropic SDK stream events ([#429](https://github.com/eggjs/tegg/issues/429)) ([d780fdb](https://github.com/eggjs/tegg/commit/d780fdba3cc243db4811af6733fda737f8c1dc4a))
+
+
+
+
+
+## [3.76.1](https://github.com/eggjs/tegg/compare/v3.76.0...v3.76.1) (2026-04-01)
+
+
+### Bug Fixes
+
+* **agent-runtime:** merge content blocks and support accumulate control ([#428](https://github.com/eggjs/tegg/issues/428)) ([f4f904e](https://github.com/eggjs/tegg/commit/f4f904e357497fc5ad9a2c7d2ece4e9b305f5738))
+
+
+
+
+
+# [3.76.0](https://github.com/eggjs/tegg/compare/v3.75.1...v3.76.0) (2026-04-01)
+
+
+### Features
+
+* **agent-runtime:** support custom SSE event types in streamRun ([#427](https://github.com/eggjs/tegg/issues/427)) ([2efe539](https://github.com/eggjs/tegg/commit/2efe539cd2673e27dc91cb4597751e6e0a9d4b67))
+
+
+
+
+
+## [3.75.1](https://github.com/eggjs/tegg/compare/v3.75.0...v3.75.1) (2026-04-01)
+
+
+### Bug Fixes
+
+* **agent-runtime:** preserve non-text content blocks in MessageConverter ([#426](https://github.com/eggjs/tegg/issues/426)) ([8c4382f](https://github.com/eggjs/tegg/commit/8c4382f33f68534218049cfbfadfd4f6800a348c))
+
+
+
+
+
+# [3.75.0](https://github.com/eggjs/tegg/compare/v3.74.0...v3.75.0) (2026-03-30)
+
+
+### Features
+
+* **agent-tracing:** add typesVersions for moduleResolution:node compatibility ([#424](https://github.com/eggjs/tegg/issues/424)) ([25b282c](https://github.com/eggjs/tegg/commit/25b282c947e5ce567ad72516d9c612cfb949d891))
+
+
+
+
+
+# [3.74.0](https://github.com/eggjs/tegg/compare/v3.73.0...v3.74.0) (2026-03-30)
+
+
+### Bug Fixes
+
+* **agent-runtime:** set isResume based on thread message history ([#419](https://github.com/eggjs/tegg/issues/419)) ([8a7eacc](https://github.com/eggjs/tegg/commit/8a7eacca79a94815251a0d660f828ebef443d12a))
+* **agent-tracing:** add eggModule declaration for tegg module scanning ([#416](https://github.com/eggjs/tegg/issues/416)) ([d169cab](https://github.com/eggjs/tegg/commit/d169cabeb0580b96c320ac6c067d3d9828639a32))
+* **agent-tracing:** separate traceId and sessionId in createSession ([#417](https://github.com/eggjs/tegg/issues/417)) ([c760776](https://github.com/eggjs/tegg/commit/c7607761d1e85cbf91cb74878e90af898672db3a))
+
+
+### Features
+
+* **agent-tracing:** collect assistant messages into root run outputs ([#421](https://github.com/eggjs/tegg/issues/421)) ([8dcebaf](https://github.com/eggjs/tegg/commit/8dcebafa19061d4a91161272409a2ac729d78341))
+* **agent-tracing:** rename TraceSession to Trace and support inputs in createTrace ([#420](https://github.com/eggjs/tegg/issues/420)) ([5471bda](https://github.com/eggjs/tegg/commit/5471bda05bd21ed5c60d82182a2807d09f9be097))
+
+
+
+
+
+# [3.73.0](https://github.com/eggjs/tegg/compare/v3.72.0...v3.73.0) (2026-03-25)
+
+
+### Bug Fixes
+
+* compatibility with @modelcontextprotocol/sdk 1.26  ([#404](https://github.com/eggjs/tegg/issues/404)) ([dbda39a](https://github.com/eggjs/tegg/commit/dbda39ad2f4be5879f1e0540cf26a242cecd05e3))
+* mcp helper init ([#415](https://github.com/eggjs/tegg/issues/415)) ([58f15e1](https://github.com/eggjs/tegg/commit/58f15e176edf3e8229d2bcddcf034fd7d96d5f14))
+
+
+### Features
+
+* add @eggjs/agent-tracing package for AI agent tracing ([#412](https://github.com/eggjs/tegg/issues/412)) ([56f460d](https://github.com/eggjs/tegg/commit/56f460d17007a42b8643d8d5dd25d25c3f52dcc1))
+* add agent-runtime package with @AgentController decorator ([#411](https://github.com/eggjs/tegg/issues/411)) ([d4d0006](https://github.com/eggjs/tegg/commit/d4d00061e90230f82c0958bcf5268f8a511395db))
+* add tegg vitest workspace ([#401](https://github.com/eggjs/tegg/issues/401)) ([c853090](https://github.com/eggjs/tegg/commit/c853090c8da22c158b684d4e0ccabf0cba4c17b8))
+* **agent-runtime:** add isResume flag to CreateRunInput ([#414](https://github.com/eggjs/tegg/issues/414)) ([29ac989](https://github.com/eggjs/tegg/commit/29ac98995c0a37bb34d33f7ad81af7c664a67bce))
+
+
+
+
+
+# [3.72.0](https://github.com/eggjs/tegg/compare/v3.71.2...v3.72.0) (2026-02-04)
+
+
+### Features
+
+* add structured tool ([#387](https://github.com/eggjs/tegg/issues/387)) ([56c23ad](https://github.com/eggjs/tegg/commit/56c23adb0af25ce0fd3624491eaf7af3fb1570cf))
+
+
+
+
+
+## [3.71.2](https://github.com/eggjs/tegg/compare/v3.71.1...v3.71.2) (2026-01-30)
+
+
+### Bug Fixes
+
+* duplicate wrap tracer ([#398](https://github.com/eggjs/tegg/issues/398)) ([c20f55c](https://github.com/eggjs/tegg/commit/c20f55c8ad26ee2236911b3153466cfc17c95c19))
+
+
+
+
+
+## [3.71.1](https://github.com/eggjs/tegg/compare/v3.71.0...v3.71.1) (2026-01-28)
+
+
+### Bug Fixes
+
+* mcp proxy header ([#397](https://github.com/eggjs/tegg/issues/397)) ([d79cf73](https://github.com/eggjs/tegg/commit/d79cf735e535fe41756a4a349e1b04a556f81ce9))
+
+
+
+
+
+# [3.71.0](https://github.com/eggjs/tegg/compare/v3.70.1...v3.71.0) (2026-01-26)
+
+
+### Features
+
+* add trace to log ([#395](https://github.com/eggjs/tegg/issues/395)) ([bcfb895](https://github.com/eggjs/tegg/commit/bcfb89554f1ad0d83acba6e1fc424edbe93ad774))
+
+
+
+
+
+## [3.70.1](https://github.com/eggjs/tegg/compare/v3.70.0...v3.70.1) (2026-01-14)
+
+
+### Bug Fixes
+
+* add stream log and fix add node options ([#394](https://github.com/eggjs/tegg/issues/394)) ([9fce038](https://github.com/eggjs/tegg/commit/9fce038b876100f22344ced707a8c8039594aa3b))
+
+
+
+
+
+# [3.70.0](https://github.com/eggjs/tegg/compare/v3.69.0...v3.70.0) (2026-01-07)
+
+
+### Features
+
+* set default retry time to 3 for dal init ([#390](https://github.com/eggjs/tegg/issues/390)) ([afde48c](https://github.com/eggjs/tegg/commit/afde48c39990f5b000520cb1ba3ba1a336222ce2))
+
+
+
+
+
+# [3.69.0](https://github.com/eggjs/tegg/compare/v3.68.0...v3.69.0) (2026-01-06)
+
+
+### Features
+
+* dns cache logger ([#388](https://github.com/eggjs/tegg/issues/388)) ([e9c1180](https://github.com/eggjs/tegg/commit/e9c1180424df18c48c73615133bbf6ed2f930e7a))
+
+
+
+
+
+# [3.68.0](https://github.com/eggjs/tegg/compare/v3.67.2...v3.68.0) (2025-12-29)
+
+
+### Features
+
+* impl dns cache plugin ([#385](https://github.com/eggjs/tegg/issues/385)) ([d319448](https://github.com/eggjs/tegg/commit/d31944827c02cb967f4335b0ac66eeea4e10251c))
+* impl iterator of moduleConfigs ([#386](https://github.com/eggjs/tegg/issues/386)) ([ee1f1a2](https://github.com/eggjs/tegg/commit/ee1f1a27a5a7de09bc6ee2c35376211541be409b))
+
+
+
+
+
+## [3.67.2](https://github.com/eggjs/tegg/compare/v3.67.1...v3.67.2) (2025-12-24)
+
+
+### Bug Fixes
+
+* langchain version ([#384](https://github.com/eggjs/tegg/issues/384)) ([2bdb3b4](https://github.com/eggjs/tegg/commit/2bdb3b49a1891bdbd9bb24c30ca52295ef4833d4))
+
+
+
+
+
+## [3.67.1](https://github.com/eggjs/tegg/compare/v3.67.0...v3.67.1) (2025-12-23)
+
+
+### Bug Fixes
+
+* zod v4 ([#381](https://github.com/eggjs/tegg/issues/381)) ([43614c8](https://github.com/eggjs/tegg/commit/43614c8734084a98b1a25c6e907c9c12ff41cb8f))
+
+
+
+
+
+# [3.67.0](https://github.com/eggjs/tegg/compare/v3.66.0...v3.67.0) (2025-12-18)
+
+
+### Features
+
+* **schedule:** module schedule unregister on module destroy ([#377](https://github.com/eggjs/tegg/issues/377)) ([098e889](https://github.com/eggjs/tegg/commit/098e889db4f9c1e227d2e8c6390b83e7596b3e69))
+
+
+
+
+
+# [3.66.0](https://github.com/eggjs/tegg/compare/v3.65.3...v3.66.0) (2025-12-16)
+
+
+### Features
+
+* use langchain for deepagents ([#376](https://github.com/eggjs/tegg/issues/376)) ([0af84c7](https://github.com/eggjs/tegg/commit/0af84c7b143cba9234dceb6675ea14004b8b3c9c))
+
+
+
+
+
+## [3.65.3](https://github.com/eggjs/tegg/compare/v3.65.2...v3.65.3) (2025-12-16)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+## [3.65.2](https://github.com/eggjs/tegg/compare/v3.65.1...v3.65.2) (2025-12-16)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+## [3.65.1](https://github.com/eggjs/tegg/compare/v3.65.0...v3.65.1) (2025-12-16)
+
+
+### Bug Fixes
+
+* hono node v16 ([#374](https://github.com/eggjs/tegg/issues/374)) ([870b5e3](https://github.com/eggjs/tegg/commit/870b5e34f41399a44023756614b8bb5c59efc6ee))
+
+
+
+
+
+# [3.65.0](https://github.com/eggjs/tegg/compare/v3.64.5...v3.65.0) (2025-12-10)
+
+
+### Features
+
+* add parameterized query ([#366](https://github.com/eggjs/tegg/issues/366)) ([6d7d8d8](https://github.com/eggjs/tegg/commit/6d7d8d8383f4eea574d13e87ee03c57a33a319e7))
+
+
+
+
+
+## [3.64.5](https://github.com/eggjs/tegg/compare/v3.64.4...v3.64.5) (2025-12-08)
+
+
+### Bug Fixes
+
+* langchain build bug ([#373](https://github.com/eggjs/tegg/issues/373)) ([3d32355](https://github.com/eggjs/tegg/commit/3d323550cefe950c1b0025296670ea33d7afc242))
+
+
+
+
+
+## [3.64.4](https://github.com/eggjs/tegg/compare/v3.64.3...v3.64.4) (2025-12-06)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+## [3.64.3](https://github.com/eggjs/tegg/compare/v3.64.2...v3.64.3) (2025-12-06)
+
+
+### Bug Fixes
+
+* update trace logger check ([#372](https://github.com/eggjs/tegg/issues/372)) ([b974762](https://github.com/eggjs/tegg/commit/b974762dfccf1bb7b188c233be33014b6336bfee))
+
+
+
+
+
+## [3.64.2](https://github.com/eggjs/tegg/compare/v3.64.1...v3.64.2) (2025-11-27)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+## [3.64.1](https://github.com/eggjs/tegg/compare/v3.64.0...v3.64.1) (2025-11-27)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+# [3.64.0](https://github.com/eggjs/tegg/compare/v3.63.2...v3.64.0) (2025-11-27)
+
+
+### Bug Fixes
+
+* add ping config ([#364](https://github.com/eggjs/tegg/issues/364)) ([c2757fc](https://github.com/eggjs/tegg/commit/c2757fc568599f7da9a65b2b8fd2ebf3f4522f9d))
+* mcp zod type and langchain test version ([#369](https://github.com/eggjs/tegg/issues/369)) ([8178168](https://github.com/eggjs/tegg/commit/81781685c392346d21c56b649bfe8bb7a99bc9fb))
+
+
+### Features
+
+* add langchain decorator ([#356](https://github.com/eggjs/tegg/issues/356)) ([b176c73](https://github.com/eggjs/tegg/commit/b176c7325009c372ce9d17f348b4fc1f1b6d7fb1))
+
+
+
+
+
+## [3.63.2](https://github.com/eggjs/tegg/compare/v3.63.0...v3.63.2) (2025-11-18)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+## [3.63.1](https://github.com/eggjs/tegg/compare/v3.63.0...v3.63.1) (2025-11-18)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+# [3.63.0](https://github.com/eggjs/tegg/compare/v3.62.3...v3.63.0) (2025-11-18)
+
+
+### Features
+
+* add MiddlewareGraphHook to handle controller middleware depende… ([#361](https://github.com/eggjs/tegg/issues/361)) ([7ab3eae](https://github.com/eggjs/tegg/commit/7ab3eae1af20e14101e1df63628a426cb5f6d3db))
+
+
+
+
+
+## [3.62.3](https://github.com/eggjs/tegg/compare/v3.62.1...v3.62.3) (2025-11-05)
+
+
+### Bug Fixes
+
+* mcp args chinese ([61dad90](https://github.com/eggjs/tegg/commit/61dad903b2ba6140dd52a5b5600a36caef26373f))
+* mcp chinese args ([#359](https://github.com/eggjs/tegg/issues/359)) ([b3c6ff1](https://github.com/eggjs/tegg/commit/b3c6ff178e1e3c76c34cedfe936d40475514708e))
+* **typings:** fix getEggObjectFromName return type to Promise<T> ([#358](https://github.com/eggjs/tegg/issues/358)) ([919b72b](https://github.com/eggjs/tegg/commit/919b72b48e7966226a5e970c7e297ee6c3d1f081))
+
+
+
+
+
+## [3.62.2](https://github.com/eggjs/tegg/compare/v3.62.1...v3.62.2) (2025-11-05)
+
+
+### Bug Fixes
+
+* mcp args chinese ([61dad90](https://github.com/eggjs/tegg/commit/61dad903b2ba6140dd52a5b5600a36caef26373f))
+* mcp chinese args ([#359](https://github.com/eggjs/tegg/issues/359)) ([b3c6ff1](https://github.com/eggjs/tegg/commit/b3c6ff178e1e3c76c34cedfe936d40475514708e))
+* **typings:** fix getEggObjectFromName return type to Promise<T> ([#358](https://github.com/eggjs/tegg/issues/358)) ([919b72b](https://github.com/eggjs/tegg/commit/919b72b48e7966226a5e970c7e297ee6c3d1f081))
+
+
+
+
+
+## [3.62.1](https://github.com/eggjs/tegg/compare/v3.62.0...v3.62.1) (2025-11-03)
+
+
+### Bug Fixes
+
+* multi mcp client ([#357](https://github.com/eggjs/tegg/issues/357)) ([f9e4728](https://github.com/eggjs/tegg/commit/f9e47289160dffc5b47e93b60128a25ffd94fb4e))
+
+
+### Reverts
+
+* Revert "chore: add release scripts (#347)" ([f8bce5c](https://github.com/eggjs/tegg/commit/f8bce5cad484db185f6568bec25a352a9ea94bbe)), closes [#347](https://github.com/eggjs/tegg/issues/347)
+
+
+
+
+
+# [3.62.0](https://github.com/eggjs/tegg/compare/v3.61.0...v3.62.0) (2025-09-24)
+
+
+### Bug Fixes
+
+* deduplicate modules reference ([#343](https://github.com/eggjs/tegg/issues/343)) ([aa5daf7](https://github.com/eggjs/tegg/commit/aa5daf7e8db49c8b273ba2102c127fd14a2de044))
+
+
+### Features
+
+* add mcp middleware hook ([#344](https://github.com/eggjs/tegg/issues/344)) ([7215645](https://github.com/eggjs/tegg/commit/72156452a2d69ff8f31b4fe76324dd4164761698))
+
+
+
+
+
+# [3.61.0](https://github.com/eggjs/tegg/compare/v3.60.3...v3.61.0) (2025-08-15)
+
+
+### Features
+
+* allow inject MysqlDataSourceManager ([#342](https://github.com/eggjs/tegg/issues/342)) ([d13b2d7](https://github.com/eggjs/tegg/commit/d13b2d7cd11dd36960647cb40bfc4bf92ce704fd))
+
+
+
+
+
+## [3.60.3](https://github.com/eggjs/tegg/compare/v3.60.2...v3.60.3) (2025-08-06)
+
+
+### Bug Fixes
+
+* mcp middleware ([#340](https://github.com/eggjs/tegg/issues/340)) ([a47db22](https://github.com/eggjs/tegg/commit/a47db2295a899113aad46d7f4ca0857d91d44774))
+
+
+
+
+
+## [3.60.2](https://github.com/eggjs/tegg/compare/v3.60.1...v3.60.2) (2025-08-06)
+
+
+### Bug Fixes
+
+* csrf type is bool bug ([#338](https://github.com/eggjs/tegg/issues/338)) ([67f69c9](https://github.com/eggjs/tegg/commit/67f69c90f8550f56d4bbf336986a0feabd1d192c))
+
+
+
+
+
+## [3.60.1](https://github.com/eggjs/tegg/compare/v3.60.0...v3.60.1) (2025-07-28)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+# [3.60.0](https://github.com/eggjs/tegg/compare/v3.59.1...v3.60.0) (2025-07-28)
+
+
+### Features
+
+* add multiple mcp server ([#337](https://github.com/eggjs/tegg/issues/337)) ([5b5e233](https://github.com/eggjs/tegg/commit/5b5e233510111b63bbcba14da1703becccebbd2f))
+
+
+
+
+
+## [3.59.1](https://github.com/eggjs/tegg/compare/v3.59.0...v3.59.1) (2025-07-16)
+
+
+### Bug Fixes
+
+* concurrent init ([#336](https://github.com/eggjs/tegg/issues/336)) ([bfafeff](https://github.com/eggjs/tegg/commit/bfafeff99f1b7221de85df3890b55145a9fe2b35))
+
+
+
+
+
+# [3.59.0](https://github.com/eggjs/tegg/compare/v3.58.0...v3.59.0) (2025-07-07)
+
+
+### Features
+
+* add mcp global middleware ([#335](https://github.com/eggjs/tegg/issues/335)) ([7722102](https://github.com/eggjs/tegg/commit/772210298a937b7fbae9fd4fd1e1bc318b754cef))
+
+
+
+
+
+# [3.58.0](https://github.com/eggjs/tegg/compare/v3.57.14...v3.58.0) (2025-07-01)
+
+
+### Features
+
+* add timeout ([#334](https://github.com/eggjs/tegg/issues/334)) ([6d5d94b](https://github.com/eggjs/tegg/commit/6d5d94b6f319388a94b4adf4d427b95d2b851c17))
+
+
+
+
+
+## [3.57.14](https://github.com/eggjs/tegg/compare/v3.57.13...v3.57.14) (2025-06-18)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+## [3.57.13](https://github.com/eggjs/tegg/compare/v3.57.12...v3.57.13) (2025-06-18)
+
+
+### Bug Fixes
+
+* add mcp clearInterval ([#332](https://github.com/eggjs/tegg/issues/332)) ([b29d68b](https://github.com/eggjs/tegg/commit/b29d68bd4ec4cdbef5b8246426fa0391208e8ded))
+
+
+
+
+
+## [3.57.12](https://github.com/eggjs/tegg/compare/v3.57.11...v3.57.12) (2025-06-16)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+## [3.57.11](https://github.com/eggjs/tegg/compare/v3.57.10...v3.57.11) (2025-06-16)
+
+
+### Bug Fixes
+
+* mcp mem leak ([#329](https://github.com/eggjs/tegg/issues/329)) ([bddf8ed](https://github.com/eggjs/tegg/commit/bddf8ed45ea477f59c4d3b7d63bb81ca89484e56))
+
+
+
+
+
+## [3.57.10](https://github.com/eggjs/tegg/compare/v3.57.9...v3.57.10) (2025-06-12)
+
+
+### Bug Fixes
+
+* muliti column primary generator code error ([#326](https://github.com/eggjs/tegg/issues/326)) ([7b8e1de](https://github.com/eggjs/tegg/commit/7b8e1de5b990574f7b907f3d7a3f68ecd54f8a86))
+
+
+
+
+
+## [3.57.9](https://github.com/eggjs/tegg/compare/v3.57.8...v3.57.9) (2025-05-29)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+## [3.57.8](https://github.com/eggjs/tegg/compare/v3.57.7...v3.57.8) (2025-05-29)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+## [3.57.7](https://github.com/eggjs/tegg/compare/v3.57.6...v3.57.7) (2025-05-28)
+
+
+### Bug Fixes
+
+* the loading order issue in multi-module mode ([#324](https://github.com/eggjs/tegg/issues/324)) ([c9610bd](https://github.com/eggjs/tegg/commit/c9610bd53dee7bebd069bc6766e869cb2b2f9fc9))
+
+
+
+
+
+## [3.57.6](https://github.com/eggjs/tegg/compare/v3.57.5...v3.57.6) (2025-05-27)
+
+
+### Bug Fixes
+
+* sse new ctx ([#323](https://github.com/eggjs/tegg/issues/323)) ([5716e0a](https://github.com/eggjs/tegg/commit/5716e0a33f8f58249ebdc1a3b6fb7959394ef4ee))
+
+
+
+
+
+## [3.57.5](https://github.com/eggjs/tegg/compare/v3.57.4...v3.57.5) (2025-05-15)
+
+
+### Bug Fixes
+
+* zod phantom dependency ([#322](https://github.com/eggjs/tegg/issues/322)) ([e92372e](https://github.com/eggjs/tegg/commit/e92372eb884d0f5d8227d340a3d7db01b51267cf))
+
+
+
+
+
+## [3.57.4](https://github.com/eggjs/tegg/compare/v3.57.3...v3.57.4) (2025-05-14)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+## [3.57.3](https://github.com/eggjs/tegg/compare/v3.57.2...v3.57.3) (2025-05-13)
+
+
+### Bug Fixes
+
+* update sessionIdGenerator ([#320](https://github.com/eggjs/tegg/issues/320)) ([ffc1e19](https://github.com/eggjs/tegg/commit/ffc1e19f69c30aa21a19c8f7ecc920fece21a947))
+
+
+
+
+
+## [3.57.2](https://github.com/eggjs/tegg/compare/v3.57.1...v3.57.2) (2025-05-13)
+
+
+### Bug Fixes
+
+* stream mcp wait ([#319](https://github.com/eggjs/tegg/issues/319)) ([47ef28b](https://github.com/eggjs/tegg/commit/47ef28b1fae06c57857a7b340d0703403a907859))
+
+
+
+
+
+## [3.57.1](https://github.com/eggjs/tegg/compare/v3.57.0...v3.57.1) (2025-05-13)
+
+
+### Bug Fixes
+
+* mcp context proto ([#318](https://github.com/eggjs/tegg/issues/318)) ([4d8e107](https://github.com/eggjs/tegg/commit/4d8e107fad4414da9593dd07ab2ae888dfd6a335))
+
+
+
+
+
+# [3.57.0](https://github.com/eggjs/tegg/compare/v3.56.3...v3.57.0) (2025-05-09)
+
+
+### Features
+
+* preserve SQL hint in minify function ([#314](https://github.com/eggjs/tegg/issues/314)) ([145bcf3](https://github.com/eggjs/tegg/commit/145bcf37bcd1ba86084cc304d15f0993abf0ebc8))
+
+
+
+
+
+## [3.56.3](https://github.com/eggjs/tegg/compare/v3.56.2...v3.56.3) (2025-05-07)
+
+
+### Bug Fixes
+
+* dep ([#313](https://github.com/eggjs/tegg/issues/313)) ([791feea](https://github.com/eggjs/tegg/commit/791feead91ad48adaa2dee4c0746bea382e61d34))
+* mcp teggCtxLifecycleMiddleware ([#312](https://github.com/eggjs/tegg/issues/312)) ([5304384](https://github.com/eggjs/tegg/commit/53043840c3aaab0e485db50b7a2d9362266eef8c))
+
+
+
+
+
+## [3.56.2](https://github.com/eggjs/tegg/compare/v3.56.1...v3.56.2) (2025-05-01)
+
+
+### Bug Fixes
+
+* mcp version check ([#311](https://github.com/eggjs/tegg/issues/311)) ([7f16c9c](https://github.com/eggjs/tegg/commit/7f16c9c361cfec8b5ffd4075b23cff317cc5207a))
+
+
+
+
+
+## [3.56.1](https://github.com/eggjs/tegg/compare/v3.56.0...v3.56.1) (2025-04-29)
+
+
+### Bug Fixes
+
+* mock init to ready ([#310](https://github.com/eggjs/tegg/issues/310)) ([2bd6fb6](https://github.com/eggjs/tegg/commit/2bd6fb6d5e60945637358140c8d669f78ea923f7))
+
+
+
+
+
+# [3.56.0](https://github.com/eggjs/tegg/compare/v3.55.0...v3.56.0) (2025-04-29)
+
+
+### Features
+
+* add mcp stateless ([#309](https://github.com/eggjs/tegg/issues/309)) ([b79d313](https://github.com/eggjs/tegg/commit/b79d313aa8f24adc91f88ea0732f2d98c0a8ead9))
+
+
+
+
+
+# [3.55.0](https://github.com/eggjs/tegg/compare/v3.53.0...v3.55.0) (2025-04-29)
+
+
+### Features
+
+* add mcp ([#307](https://github.com/eggjs/tegg/issues/307)) ([a9a57b4](https://github.com/eggjs/tegg/commit/a9a57b4d7102dd552e09d33c3f82fc15a245790a))
+
+
+
+
+
+# [3.54.0](https://github.com/eggjs/tegg/compare/v3.53.0...v3.54.0) (2025-04-29)
+
+
+### Features
+
+* add mcp ([#307](https://github.com/eggjs/tegg/issues/307)) ([a9a57b4](https://github.com/eggjs/tegg/commit/a9a57b4d7102dd552e09d33c3f82fc15a245790a))
+
+
+
+
+
+# [3.53.0](https://github.com/eggjs/tegg/compare/v3.52.1...v3.53.0) (2025-04-21)
+
+
+### Bug Fixes
+
+* stream end ([#302](https://github.com/eggjs/tegg/issues/302)) ([7f1f4b3](https://github.com/eggjs/tegg/commit/7f1f4b396294af5609c9454f6882d213dc237512))
+
+
+### Features
+
+* add timeout metadata for http controller ([#301](https://github.com/eggjs/tegg/issues/301)) ([68980c2](https://github.com/eggjs/tegg/commit/68980c23de81dbc9bd86c1d8df7b3952f52aa5ce))
+
+
+
+
+
+## [3.52.1](https://github.com/eggjs/tegg/compare/v3.52.0...v3.52.1) (2025-03-14)
+
+
+### Bug Fixes
+
+* add qualifier check ([#295](https://github.com/eggjs/tegg/issues/295)) ([6744088](https://github.com/eggjs/tegg/commit/674408810d77fe0f4b95b25790bcb3975e543e26))
+
+
+
+
+
+# [3.52.0](https://github.com/eggjs/tegg/compare/v3.51.2...v3.52.0) (2024-12-30)
+
+
+### Features
+
+* dal retry when init failed ([#260](https://github.com/eggjs/tegg/issues/260)) ([74e7c06](https://github.com/eggjs/tegg/commit/74e7c067c3ff7ae0ed705abaaa8a91f804e487e3))
+
+
+
+
+
+## [3.51.2](https://github.com/eggjs/tegg/compare/v3.51.1...v3.51.2) (2024-12-09)
+
+
+### Features
+
+* add mgw stream types ([#259](https://github.com/eggjs/tegg/issues/259)) ([1379d38](https://github.com/eggjs/tegg/commit/1379d382635c6bc575ce4acf3d3a7b5168487a3d))
+
+
+
+
+
+## [3.51.1](https://github.com/eggjs/tegg/compare/v3.51.0...v3.51.1) (2024-11-06)
+
+
+### Bug Fixes
+
+* remove inner class hook ([#257](https://github.com/eggjs/tegg/issues/257)) ([faffd34](https://github.com/eggjs/tegg/commit/faffd3492f9edd411213034651d6863fb3f1a24d))
+
+
+
+
+
+# [3.51.0](https://github.com/eggjs/tegg/compare/v3.50.1...v3.51.0) (2024-10-30)
+
+
+### Features
+
+* add default inject init type qualifier ([#255](https://github.com/eggjs/tegg/issues/255)) ([538ae80](https://github.com/eggjs/tegg/commit/538ae8033ff102ac0b1d141c6495058a800e46f1))
+* support optional inject ([#254](https://github.com/eggjs/tegg/issues/254)) ([260470b](https://github.com/eggjs/tegg/commit/260470b766d5fdb323c1bd72cc6260a90468a161))
+
+
+
+
+
+## [3.50.1](https://github.com/eggjs/tegg/compare/v3.50.0...v3.50.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* disable dump in preload ([#253](https://github.com/eggjs/tegg/issues/253)) ([081912b](https://github.com/eggjs/tegg/commit/081912beb9cb945c863c73d91ef5be112c2940d9))
+
+
+
+
+
+# [3.50.0](https://github.com/eggjs/tegg/compare/v3.49.0...v3.50.0) (2024-10-22)
+
+
+### Features
+
+* add dump switcher ([#252](https://github.com/eggjs/tegg/issues/252)) ([80c312f](https://github.com/eggjs/tegg/commit/80c312f7862b4021180f3e587f63c6b0dd87202c))
+
+
+
+
+
+# [3.49.0](https://github.com/eggjs/tegg/compare/v3.48.1...v3.49.0) (2024-10-21)
+
+
+### Features
+
+* expand register add loadUnit ([#251](https://github.com/eggjs/tegg/issues/251)) ([8a1649d](https://github.com/eggjs/tegg/commit/8a1649d5ea539d22c7cfd8881595247a07e3fbd7))
+
+
+
+
+
+## [3.48.1](https://github.com/eggjs/tegg/compare/v3.48.0...v3.48.1) (2024-10-14)
+
+
+### Bug Fixes
+
+* fix merge qualifier ([#250](https://github.com/eggjs/tegg/issues/250)) ([d5a8a93](https://github.com/eggjs/tegg/commit/d5a8a93abad570f69881f9fa42f39d7b5cd436be))
+
+
+
+
+
+# [3.48.0](https://github.com/eggjs/tegg/compare/v3.47.2...v3.48.0) (2024-10-10)
+
+
+### Features
+
+* add rpc stream type ([#249](https://github.com/eggjs/tegg/issues/249)) ([7f3d40b](https://github.com/eggjs/tegg/commit/7f3d40b95d7939534f245b08d9d06a9b10bac350))
+
+
+
+
+
+## [3.47.2](https://github.com/eggjs/tegg/compare/v3.47.1...v3.47.2) (2024-10-10)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+## [3.47.1](https://github.com/eggjs/tegg/compare/v3.47.0...v3.47.1) (2024-10-10)
+
+
+### Bug Fixes
+
+* fix aop in constructor inject type ([#247](https://github.com/eggjs/tegg/issues/247)) ([d169bb2](https://github.com/eggjs/tegg/commit/d169bb2fbbc86335315619866b4134a25296f552))
+
+
+
+
+
+# [3.47.0](https://github.com/eggjs/tegg/compare/v3.46.4...v3.47.0) (2024-10-10)
+
+
+### Features
+
+* export ProtoDescriptorHelper ([#245](https://github.com/eggjs/tegg/issues/245)) ([f01fb63](https://github.com/eggjs/tegg/commit/f01fb639b153a907fd9c951d4b1e40ba101b43d0))
+* impl GlobalGraph build hook ([#246](https://github.com/eggjs/tegg/issues/246)) ([48fce45](https://github.com/eggjs/tegg/commit/48fce4512e99259ec26a9b032bfcc9f4046ad235))
+
+
+
+
+
+## [3.46.4](https://github.com/eggjs/tegg/compare/v3.46.3...v3.46.4) (2024-10-09)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+## [3.46.3](https://github.com/eggjs/tegg/compare/v3.46.2...v3.46.3) (2024-10-08)
+
+
+### Bug Fixes
+
+* Prototype should not be inherited ([#243](https://github.com/eggjs/tegg/issues/243)) ([6e7017a](https://github.com/eggjs/tegg/commit/6e7017a48d395fba6525e0b31c848a257eb171ef))
+
+
+
+
+
+## [3.46.2](https://github.com/eggjs/tegg/compare/v3.46.1...v3.46.2) (2024-10-07)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+## [3.46.1](https://github.com/eggjs/tegg/compare/v3.46.0...v3.46.1) (2024-09-30)
+
+
+### Bug Fixes
+
+* fix miss MultiInstance proper qualifiers ([#241](https://github.com/eggjs/tegg/issues/241)) ([15666d3](https://github.com/eggjs/tegg/commit/15666d36c18b99eccc4f1a11d8e7702503694ee1))
+
+
+
+
+
+# [3.46.0](https://github.com/eggjs/tegg/compare/v3.45.0...v3.46.0) (2024-09-29)
+
+
+### Features
+
+* impl MultiInstance inject MultiInstance ([#240](https://github.com/eggjs/tegg/issues/240)) ([08e3b0c](https://github.com/eggjs/tegg/commit/08e3b0cc02f3d2dbba767298a6aec6c00147f9ed))
+
+
+
+
+
+# [3.45.0](https://github.com/eggjs/tegg/compare/v3.44.1...v3.45.0) (2024-09-29)
+
+
+### Features
+
+* impl MultiInstanceInfo decorator ([#239](https://github.com/eggjs/tegg/issues/239)) ([70d4d95](https://github.com/eggjs/tegg/commit/70d4d95bca4a0c3e11d0d7cc4f292b1315e49e81))
+
+
+
+
+
+## [3.44.1](https://github.com/eggjs/tegg/compare/v3.44.0...v3.44.1) (2024-09-29)
+
+
+### Bug Fixes
+
+* fix DataSourceQualifier ([#238](https://github.com/eggjs/tegg/issues/238)) ([7b1ebe7](https://github.com/eggjs/tegg/commit/7b1ebe718736d93e548f531bf99c5d2d38b41046))
+
+
+
+
+
+# [3.44.0](https://github.com/eggjs/tegg/compare/v3.43.2...v3.44.0) (2024-09-29)
+
+
+### Features
+
+* support inject in constructor ([#237](https://github.com/eggjs/tegg/issues/237)) ([e68b1ed](https://github.com/eggjs/tegg/commit/e68b1ed6a90432f1cb35a6f562914b7b04cb5114))
+
+
+
+
+
+## [3.43.2](https://github.com/eggjs/tegg/compare/v3.43.1...v3.43.2) (2024-09-14)
+
+
+### Bug Fixes
+
+* add preload loadunit ([#236](https://github.com/eggjs/tegg/issues/236)) ([0e28972](https://github.com/eggjs/tegg/commit/0e2897200a9bc3bc6aa1028c8549bdbf45bbaaa3))
+
+
+
+
+
+## [3.43.1](https://github.com/eggjs/tegg/compare/v3.43.0...v3.43.1) (2024-09-14)
+
+**Note:** Version bump only for package tegg
+
+
+
+
+
+# [3.43.0](https://github.com/eggjs/tegg/compare/v3.42.0...v3.43.0) (2024-09-13)
+
+
+### Features
+
+* add http cookies ([#235](https://github.com/eggjs/tegg/issues/235)) ([f46efa5](https://github.com/eggjs/tegg/commit/f46efa54b03bad41504bf76f6ed2baa8c48858ce))
+
+
+
+
+
+# [3.42.0](https://github.com/eggjs/tegg/compare/v3.41.0...v3.42.0) (2024-09-10)
+
+
+### Features
+
+* add LifecyclePreLoad ([#234](https://github.com/eggjs/tegg/issues/234)) ([2b72163](https://github.com/eggjs/tegg/commit/2b7216387f02cd045952447eaa21baa3a7ee04a3))
+
+
+
+
+
+# [3.41.0](https://github.com/eggjs/tegg/compare/v3.40.1...v3.41.0) (2024-08-26)
+
+
+### Features
+
+* export controller info util for get aop middleware ([#233](https://github.com/eggjs/tegg/issues/233)) ([1d3cca8](https://github.com/eggjs/tegg/commit/1d3cca8fad859ae54fb10c1700dda261e93055b3))
+
+
+
+
+
+## [3.40.1](https://github.com/eggjs/tegg/compare/v3.40.0...v3.40.1) (2024-08-23)
+
+
+### Bug Fixes
+
+* use symbol.for instead of symbol ([#232](https://github.com/eggjs/tegg/issues/232)) ([4254ce5](https://github.com/eggjs/tegg/commit/4254ce558d22234f9dfff0ea9bc067075e21c654))
+
+
+
+
+
+# [3.40.0](https://github.com/eggjs/tegg/compare/v3.39.5...v3.40.0) (2024-08-22)
+
+
+### Features
+
+* @Middleware support Advice ([#231](https://github.com/eggjs/tegg/issues/231)) ([613a89d](https://github.com/eggjs/tegg/commit/613a89da7ea6dd70d50e34aa9f4152358a622625))
+
+
+
+
+
+## [3.39.5](https://github.com/eggjs/tegg/compare/v3.39.4...v3.39.5) (2024-08-09)
+
+
+### Bug Fixes
+
+* generate index name with column name ([#230](https://github.com/eggjs/tegg/issues/230)) ([82ec72d](https://github.com/eggjs/tegg/commit/82ec72d4fb8628c847b32d0ddf23a95119ca6ccf))
+
+
+
+
+
+## [3.39.4](https://github.com/eggjs/tegg/compare/v3.39.3...v3.39.4) (2024-07-09)
+
+
+### Bug Fixes
+
+* fix total type in paginate ([#228](https://github.com/eggjs/tegg/issues/228)) ([e57b91e](https://github.com/eggjs/tegg/commit/e57b91ee64e89487a3cc1663868d9b819e6e60c0))
+
+
+
+
+
+## [3.39.3](https://github.com/eggjs/tegg/compare/v3.39.2...v3.39.3) (2024-04-28)
+
+
+### Bug Fixes
+
+* mount clazzExtension/clazzExtension/tableSql to BaseDao ([#220](https://github.com/eggjs/tegg/issues/220)) ([ac322cf](https://github.com/eggjs/tegg/commit/ac322cfc4100841a1483b04b99e04d553af323eb))
+
+
+
+
+
+## [3.39.2](https://github.com/eggjs/tegg/compare/v3.39.1...v3.39.2) (2024-04-28)
+
+
+### Bug Fixes
+
+* use loader to load TableClazzList ([#219](https://github.com/eggjs/tegg/issues/219)) ([15ef977](https://github.com/eggjs/tegg/commit/15ef977806dcb15831d6e906b92134257dd03654))
+
+
+
+
+
+## [3.39.1](https://github.com/eggjs/tegg/compare/v3.39.0...v3.39.1) (2024-04-28)
+
+
+### Bug Fixes
+
+* not overwrite extension file ([#218](https://github.com/eggjs/tegg/issues/218)) ([f915f08](https://github.com/eggjs/tegg/commit/f915f08dc61b01f10400ad844496f5b227f377eb))
+
+
+
+
+
+# [3.39.0](https://github.com/eggjs/tegg/compare/v3.38.0...v3.39.0) (2024-04-19)
+
+
+### Bug Fixes
+
+* not overwrite dao file ([#215](https://github.com/eggjs/tegg/issues/215)) ([0856bf1](https://github.com/eggjs/tegg/commit/0856bf189b160c7209bc24cf7eb911ec2f5875d1))
+
+
+### Features
+
+* use app.loader.getTypeFiles to generate module config file names ([#213](https://github.com/eggjs/tegg/issues/213)) ([e0656a4](https://github.com/eggjs/tegg/commit/e0656a4d59beef103a5627461d9b9c87996928e3))
+
+
+
+
+
+# [3.38.0](https://github.com/eggjs/tegg/compare/v3.37.3...v3.38.0) (2024-04-18)
+
+
+### Features
+
+* impl dal transaction ([#214](https://github.com/eggjs/tegg/issues/214)) ([b8b67dd](https://github.com/eggjs/tegg/commit/b8b67dd7e0fb282d78de7e68e68834ff79d30732))
+
+
+
+
+
+## [3.37.3](https://github.com/eggjs/tegg/compare/v3.37.2...v3.37.3) (2024-04-17)
+
+
+### Bug Fixes
+
+* tegg-types publish ([#212](https://github.com/eggjs/tegg/issues/212)) ([98a4188](https://github.com/eggjs/tegg/commit/98a4188be2a307722c3df0c82a7af0d0fef685fd))
+
+
+
+
+
+## [3.37.2](https://github.com/eggjs/tegg/compare/v3.37.1...v3.37.2) (2024-04-17)
+
+
+### Bug Fixes
+
+* always get extension from Module._extensions ([#211](https://github.com/eggjs/tegg/issues/211)) ([62e9c06](https://github.com/eggjs/tegg/commit/62e9c06f3cbde28d17d0e43797d4080279d7b9fa))
+
+
+
+
+
+## [3.37.1](https://github.com/eggjs/tegg/compare/v3.37.0...v3.37.1) (2024-04-16)
+
+
+### Bug Fixes
+
+* fix dal runtime dep ([#210](https://github.com/eggjs/tegg/issues/210)) ([5ad7f45](https://github.com/eggjs/tegg/commit/5ad7f4537114217924ae8dc7445e8fc77eee0b5a))
+
+
+
+
+
+# [3.37.0](https://github.com/eggjs/tegg/compare/v3.36.3...v3.37.0) (2024-04-16)
+
+
+### Bug Fixes
+
+* @eggjs/dal-runtime deps ([#209](https://github.com/eggjs/tegg/issues/209)) ([ffc8fdf](https://github.com/eggjs/tegg/commit/ffc8fdf342e7ea73400d6e31f82981155c2b0693))
+
+
+### Features
+
+* add HTTPHeaders decorator ([#208](https://github.com/eggjs/tegg/issues/208)) ([4678c45](https://github.com/eggjs/tegg/commit/4678c450d8b3c632bbdbe2b49b9c02e99f16733c))
+
+
+
+
+
+## [3.36.3](https://github.com/eggjs/tegg/compare/v3.36.2...v3.36.3) (2024-04-10)
+
+
+### Bug Fixes
+
+* fix custom sql extension ([#207](https://github.com/eggjs/tegg/issues/207)) ([a405233](https://github.com/eggjs/tegg/commit/a405233d11323cd8a51c6197e855f0c3ff98337d))
+
+
+
+
+
+## [3.36.2](https://github.com/eggjs/tegg/compare/v3.36.1...v3.36.2) (2024-04-08)
+
+
+### Bug Fixes
+
+* fix dao extension in prod ([#206](https://github.com/eggjs/tegg/issues/206)) ([0498e9d](https://github.com/eggjs/tegg/commit/0498e9d11bd9e4d186160e8b6af07e627dde6a20))
+
+
+
+
+
+## [3.36.1](https://github.com/eggjs/tegg/compare/v3.36.0...v3.36.1) (2024-04-07)
+
+
+### Bug Fixes
+
+* use @eggjs/ajv-keywords and @eggjs/ajv-formats ([#204](https://github.com/eggjs/tegg/issues/204)) ([31b02a0](https://github.com/eggjs/tegg/commit/31b02a08dac8bf27212fdb213a7d93b5b3a685ba))
+
+
+
+
+
+# [3.36.0](https://github.com/eggjs/tegg/compare/v3.35.1...v3.36.0) (2024-04-02)
+
+
+### Features
+
+* impl ajv + typebox Validator ([#201](https://github.com/eggjs/tegg/issues/201)) ([9fd585d](https://github.com/eggjs/tegg/commit/9fd585de9b613466c96b73494a08a494db34ea57))
+* impl dal forkDb ([#202](https://github.com/eggjs/tegg/issues/202)) ([a411f04](https://github.com/eggjs/tegg/commit/a411f04e074425419b5b348a362f120bf8189541))
+* impl Date/timestamp on update ([#203](https://github.com/eggjs/tegg/issues/203)) ([e5c7b8d](https://github.com/eggjs/tegg/commit/e5c7b8d529f2854b77de2e99369c781a4ea9e070))
+
+
+
+
+
+## [3.35.1](https://github.com/eggjs/tegg/compare/v3.35.0...v3.35.1) (2024-03-26)
+
+
+### Bug Fixes
+
+* fix dal templates build ([#199](https://github.com/eggjs/tegg/issues/199)) ([17afe8c](https://github.com/eggjs/tegg/commit/17afe8c98929c7613739e32e897e881619bbdb2a))
+
+
+
+
+
+# [3.35.0](https://github.com/eggjs/tegg/compare/v3.34.0...v3.35.0) (2024-03-26)
+
+
+### Features
+
+* dal-runtime templates support pkg alias ([#198](https://github.com/eggjs/tegg/issues/198)) ([cecef78](https://github.com/eggjs/tegg/commit/cecef781bd134b629fc835063a351460aceb340c))
+
+
+
+
+
+# [3.34.0](https://github.com/eggjs/tegg/compare/v3.33.1...v3.34.0) (2024-03-22)
+
+
+### Features
+
+* impl dal for standalone tegg ([#197](https://github.com/eggjs/tegg/issues/197)) ([56b259d](https://github.com/eggjs/tegg/commit/56b259d7215a9d9542b36e421996623819369846))
+
+
+
+
+
+## [3.33.1](https://github.com/eggjs/tegg/compare/v3.33.0...v3.33.1) (2024-03-22)
+
+
+### Bug Fixes
+
+* add dal templates ([#196](https://github.com/eggjs/tegg/issues/196)) ([49ba4f9](https://github.com/eggjs/tegg/commit/49ba4f9db3d9313654674f813c0358dc0774fd10))
+
+
+
+
+
+# [3.33.0](https://github.com/eggjs/tegg/compare/v3.32.0...v3.33.0) (2024-03-22)
+
+
+### Bug Fixes
+
+* set column canNull default to false ([#195](https://github.com/eggjs/tegg/issues/195)) ([24628ec](https://github.com/eggjs/tegg/commit/24628ec5a3cd167dc44a50017450d0dedec2c9ce))
+
+
+### Features
+
+* impl dal ([#192](https://github.com/eggjs/tegg/issues/192)) ([1c7d145](https://github.com/eggjs/tegg/commit/1c7d1454bc8c600cd58c3ec7b9cda4e8a98c7287))
+
+
+
+
+
+# [3.32.0](https://github.com/eggjs/tegg/compare/v3.31.0...v3.32.0) (2024-02-19)
+
+
+### Bug Fixes
+
+* ignore duplicated module ([#191](https://github.com/eggjs/tegg/issues/191)) ([263467f](https://github.com/eggjs/tegg/commit/263467fc43a25eb5a1670de4778de127662a201b))
+
+
+### Features
+
+* set plugin module optional false if be enabled as a plugin ([#190](https://github.com/eggjs/tegg/issues/190)) ([57a1adc](https://github.com/eggjs/tegg/commit/57a1adcd4f0305cad690be229c59e103e7acf5cd))
+
+
+
+
+
+# [3.31.0](https://github.com/eggjs/tegg/compare/v3.30.1...v3.31.0) (2024-01-31)
+
+
+### Features
+
+* add getEggObjects API to fetch all instances ([#189](https://github.com/eggjs/tegg/issues/189)) ([f8592c2](https://github.com/eggjs/tegg/commit/f8592c2cd141d01b4f1730b1e3d66e35c3e1ce05))
+
+
+
+
+
+## [3.30.1](https://github.com/eggjs/tegg/compare/v3.30.0...v3.30.1) (2024-01-25)
+
+
+### Bug Fixes
+
+* fix modify ctx.args in aop beforeCall not work ([#187](https://github.com/eggjs/tegg/issues/187)) ([7656424](https://github.com/eggjs/tegg/commit/765642414387c8a9940525cd3c519fcb5fd694a0))
+
+
+
+
+
+# [3.30.0](https://github.com/eggjs/tegg/compare/v3.29.0...v3.30.0) (2024-01-17)
+
+
+### Bug Fixes
+
+* config for env is not merged when default config is empty ([#178](https://github.com/eggjs/tegg/issues/178)) ([9c1de22](https://github.com/eggjs/tegg/commit/9c1de223e9c9befb0a803ac5a1bd843f74aa9493))
+
+
+### Features
+
+* scan framework dependencies as optional module ([#184](https://github.com/eggjs/tegg/issues/184)) ([a4908c6](https://github.com/eggjs/tegg/commit/a4908c6c640000c7068def57d32052cca15adf47))
+
+
+
+
+
+# [3.29.0](https://github.com/eggjs/tegg/compare/v3.28.2...v3.29.0) (2023-12-26)
+
+
+### Features
+
+* allow a handler to subscribe to multiple events ([#179](https://github.com/eggjs/tegg/issues/179)) ([1d460a5](https://github.com/eggjs/tegg/commit/1d460a5a6bdcf9a3d61b13d3527633c8b990a38c))
+
+
+
+
+
 ## [3.28.2](https://github.com/eggjs/tegg/compare/v3.28.1...v3.28.2) (2023-12-12)
 
 

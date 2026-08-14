@@ -2,7 +2,7 @@ import mm from 'egg-mock';
 import path from 'path';
 import assert from 'assert';
 
-describe('test/middleware.test.ts', () => {
+describe('plugin/controller/test/http/middleware.test.ts', () => {
   let app;
 
   beforeEach(() => {
@@ -54,5 +54,34 @@ describe('test/middleware.test.ts', () => {
     await app.httpRequest()
       .get('/middleware/methodCallModule')
       .expect(200);
+  });
+
+  it('aop controller middleware should work', async () => {
+    app.mockCsrf();
+    const res = await app.httpRequest()
+      .get('/aop/middleware/global')
+      .expect(200);
+    assert.deepStrictEqual(res.body, {
+      method: 'global',
+      count: 0,
+      aopList: [ 'FooControllerAdvice', 'CountAdvice' ],
+    });
+  });
+
+  it('aop method middleware should work', async () => {
+    app.mockCsrf();
+    const res = await app.httpRequest()
+      .get('/aop/middleware/method')
+      .expect(200);
+    assert.deepStrictEqual(res.body, {
+      method: 'middleware',
+      aopList: [
+        'FooControllerAdvice',
+        'CountAdvice',
+        'BarMethodAdvice',
+        'FooMethodAdvice',
+      ],
+      count: 0,
+    });
   });
 });

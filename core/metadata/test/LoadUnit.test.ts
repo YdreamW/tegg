@@ -1,16 +1,57 @@
 import path from 'path';
 import assert from 'assert';
-import { EggLoadUnitType, LoadUnitFactory } from '..';
+import {
+  EggLoadUnitType,
+  GlobalGraph,
+  LoadUnitFactory,
+  LoadUnitLifecycleUtil,
+  LoadUnitMultiInstanceProtoHook,
+} from '..';
 import { InitTypeQualifierAttribute, ObjectInitType } from '@eggjs/core-decorator';
 import { TestLoader } from './fixtures/TestLoader';
 import { FOO_ATTRIBUTE } from './fixtures/modules/multi-instance-module/MultiInstance';
+// import { App } from './fixtures/modules/app-multi-inject-multi/app/modules/app/App';
+// import { App2 } from './fixtures/modules/app-multi-inject-multi/app/modules/app2/App';
+// import { BizManager } from './fixtures/modules/app-multi-inject-multi/app/modules/bar/BizManager';
+// import { Secret } from './fixtures/modules/app-multi-inject-multi/app/modules/foo/Secret';
+import { buildGlobalGraph } from './fixtures/LoaderUtil';
 
 
 describe('test/LoadUnit/LoadUnit.test.ts', () => {
+  beforeEach(() => {
+    GlobalGraph.instance = undefined;
+  });
+
+  describe('inject with constructor', () => {
+    it('should not inherit parent class', async () => {
+      const extendsConstructorModule = path.join(__dirname, './fixtures/modules/extends-constructor-module');
+      const loader = new TestLoader(extendsConstructorModule);
+
+      buildGlobalGraph([ extendsConstructorModule ], [ loader ]);
+
+      const loadUnit = await LoadUnitFactory.createLoadUnit(extendsConstructorModule, EggLoadUnitType.MODULE, loader);
+
+      const fooConstructor = loadUnit.getEggPrototype('fooConstructor', [{ attribute: InitTypeQualifierAttribute, value: ObjectInitType.CONTEXT }]);
+      const fooConstructorLogger = loadUnit.getEggPrototype('fooConstructorLogger', [{ attribute: InitTypeQualifierAttribute, value: ObjectInitType.CONTEXT }]);
+
+      assert.strictEqual(fooConstructor.length, 1);
+      assert.strictEqual(fooConstructor[0].injectObjects!.length, 1);
+      assert.strictEqual(fooConstructor[0].injectObjects![0].refName, 'bar');
+
+      assert.strictEqual(fooConstructorLogger.length, 1);
+      assert.strictEqual(fooConstructorLogger[0].injectObjects!.length, 2);
+      assert.strictEqual(fooConstructorLogger[0].injectObjects![0].refName, 'bar');
+      assert.strictEqual(fooConstructorLogger[0].injectObjects![1].refName, 'logger');
+      await LoadUnitFactory.destroyLoadUnit(loadUnit);
+    });
+
+  });
   describe('ModuleLoadUnit', () => {
     it('should create success', async () => {
       const repoModulePath = path.join(__dirname, './fixtures/modules/load-unit');
       const loader = new TestLoader(repoModulePath);
+      buildGlobalGraph([ repoModulePath ], [ loader ]);
+
       const loadUnit = await LoadUnitFactory.createLoadUnit(repoModulePath, EggLoadUnitType.MODULE, loader);
       assert(loadUnit.id === 'LOAD_UNIT:app-repo');
       assert(loadUnit.unitPath === repoModulePath);
@@ -27,9 +68,22 @@ describe('test/LoadUnit/LoadUnit.test.ts', () => {
     it('recursive deps should should throw error', async () => {
       const repoModulePath = path.join(__dirname, './fixtures/modules/recursive-load-unit');
       const loader = new TestLoader(repoModulePath);
-      await assert.rejects(() => {
-        return LoadUnitFactory.createLoadUnit(repoModulePath, EggLoadUnitType.MODULE, loader);
+
+      await assert.rejects(async () => {
+        return buildGlobalGraph([ repoModulePath ], [ loader ]);
       }, /proto has recursive deps/);
+    });
+  });
+
+  describe('optional inject', () => {
+    it('should success', async () => {
+      const optionalInjectModulePath = path.join(__dirname, './fixtures/modules/optional-inject-module');
+      const loader = new TestLoader(optionalInjectModulePath);
+      buildGlobalGraph([ optionalInjectModulePath ], [ loader ]);
+
+      const loadUnit = await LoadUnitFactory.createLoadUnit(optionalInjectModulePath, EggLoadUnitType.MODULE, loader);
+      const optionalInjectServiceProto = loadUnit.getEggPrototype('optionalInjectService', [{ attribute: InitTypeQualifierAttribute, value: ObjectInitType.SINGLETON }]);
+      assert.deepStrictEqual(optionalInjectServiceProto[0].injectObjects, []);
     });
   });
 
@@ -37,27 +91,25 @@ describe('test/LoadUnit/LoadUnit.test.ts', () => {
     it('should init failed', async () => {
       const invalidateModulePath = path.join(__dirname, './fixtures/modules/invalidate-module');
       const loader = new TestLoader(invalidateModulePath);
-      try {
+      await assert.rejects(async () => {
+        buildGlobalGraph([ invalidateModulePath ], [ loader ]);
         await LoadUnitFactory.createLoadUnit(invalidateModulePath, EggLoadUnitType.MODULE, loader);
-        throw new Error('should throw error');
-      } catch (e) {
-        assert(e.message.includes('Object persistenceService not found in LOAD_UNIT:multiModuleInvalidateService'));
+      }, (e: Error) => {
+        assert(e.message.includes('Object persistenceService not found'));
         assert(e.message.includes('faq/TEGG_EGG_PROTO_NOT_FOUND'));
-      }
+        return true;
+      });
     });
 
     it('should init failed with multi proto', async () => {
       const invalidateModulePath = path.join(__dirname, './fixtures/modules/invalid-multimodule');
       const loader = new TestLoader(invalidateModulePath);
-
-      try {
-        await LoadUnitFactory.createLoadUnit(invalidateModulePath, EggLoadUnitType.MODULE, loader);
-        throw new Error('should throw error');
-      } catch (e) {
-        assert(e.message.includes('multi proto found for name:invalidateService'));
-        assert(e.message.includes('result is'));
-        assert(e.message.includes('faq/TEGG_MULTI_PROTO_FOUND'));
-      }
+      await assert.rejects(async () => {
+        buildGlobalGraph([ invalidateModulePath ], [ loader ]);
+      }, (e: Error) => {
+        assert(e.message.includes('duplicate proto: invalidateService'));
+        return true;
+      });
     });
   });
 
@@ -65,6 +117,7 @@ describe('test/LoadUnit/LoadUnit.test.ts', () => {
     it('should get the right proto', async () => {
       const sameObjectModulePath = path.join(__dirname, './fixtures/modules/same-name-object');
       const loader = new TestLoader(sameObjectModulePath);
+      buildGlobalGraph([ sameObjectModulePath ], [ loader ]);
       const loadUnit = await LoadUnitFactory.createLoadUnit(sameObjectModulePath, EggLoadUnitType.MODULE, loader);
       const countServiceProto = loadUnit.getEggPrototype('countService', [])[0];
       assert(countServiceProto);
@@ -73,6 +126,7 @@ describe('test/LoadUnit/LoadUnit.test.ts', () => {
     it('should use context proto first', async () => {
       const sameObjectModulePath = path.join(__dirname, './fixtures/modules/same-name-object');
       const loader = new TestLoader(sameObjectModulePath);
+      buildGlobalGraph([ sameObjectModulePath ], [ loader ]);
       const loadUnit = await LoadUnitFactory.createLoadUnit(sameObjectModulePath, EggLoadUnitType.MODULE, loader);
       const singletonProto = loadUnit.getEggPrototype('singletonCountService', [])[0];
       assert(singletonProto);
@@ -83,9 +137,20 @@ describe('test/LoadUnit/LoadUnit.test.ts', () => {
   });
 
   describe('MultiInstance proto', () => {
+    let loadUnitMultiInstanceProtoHook: LoadUnitMultiInstanceProtoHook;
+    beforeEach(() => {
+      loadUnitMultiInstanceProtoHook = new LoadUnitMultiInstanceProtoHook();
+      LoadUnitLifecycleUtil.registerLifecycle(loadUnitMultiInstanceProtoHook);
+    });
+
+    afterEach(() => {
+      LoadUnitLifecycleUtil.deleteLifecycle(loadUnitMultiInstanceProtoHook);
+    });
+
     it('should load static work', async () => {
       const multiInstanceModule = path.join(__dirname, './fixtures/modules/multi-instance-module');
       const loader = new TestLoader(multiInstanceModule);
+      buildGlobalGraph([ multiInstanceModule ], [ loader ]);
       const loadUnit = await LoadUnitFactory.createLoadUnit(multiInstanceModule, EggLoadUnitType.MODULE, loader);
       assert(loadUnit.id === 'LOAD_UNIT:multiInstanceModule');
       assert(loadUnit.unitPath === multiInstanceModule);
@@ -102,6 +167,7 @@ describe('test/LoadUnit/LoadUnit.test.ts', () => {
     it('should load callback work', async () => {
       const multiCallbackInstanceModule = path.join(__dirname, './fixtures/modules/multi-callback-instance-module');
       const loader = new TestLoader(multiCallbackInstanceModule);
+      buildGlobalGraph([ multiCallbackInstanceModule ], [ loader ]);
       const loadUnit = await LoadUnitFactory.createLoadUnit(multiCallbackInstanceModule, EggLoadUnitType.MODULE, loader);
       assert(loadUnit.id === 'LOAD_UNIT:multiCallbackInstanceModule');
       assert(loadUnit.unitPath === multiCallbackInstanceModule);
@@ -112,6 +178,41 @@ describe('test/LoadUnit/LoadUnit.test.ts', () => {
       assert(foo2Prototype);
       assert(foo2Prototype.length === 1);
       await LoadUnitFactory.destroyLoadUnit(loadUnit);
+    });
+
+    it('should multi instance inject multi instance work', async () => {
+
+      const appInstanceModule = path.join(__dirname, './fixtures/modules/app-multi-inject-multi/app/modules/app');
+      const app2InstanceModule = path.join(__dirname, './fixtures/modules/app-multi-inject-multi/app/modules/app2');
+      const loader = new TestLoader(appInstanceModule);
+      const loader2 = new TestLoader(app2InstanceModule);
+      const fooInstanceModule = path.join(__dirname, './fixtures/modules/app-multi-inject-multi/app/modules/foo');
+      const barInstanceModule = path.join(__dirname, './fixtures/modules/app-multi-inject-multi/app/modules/bar');
+      const fooLoader = new TestLoader(fooInstanceModule);
+      const barLoader = new TestLoader(barInstanceModule);
+      buildGlobalGraph([
+        appInstanceModule,
+        app2InstanceModule,
+        fooInstanceModule,
+        barInstanceModule,
+      ], [
+        loader,
+        loader2,
+        fooLoader,
+        barLoader,
+      ]);
+      const loadUnit = await LoadUnitFactory.createLoadUnit(appInstanceModule, EggLoadUnitType.MODULE, loader);
+      const loadUnit2 = await LoadUnitFactory.createLoadUnit(app2InstanceModule, EggLoadUnitType.MODULE, loader2);
+
+      const app1Prototype = loadUnit.getEggPrototype('app', []);
+      const app2Prototype = loadUnit.getEggPrototype('app2', []);
+
+      assert(app1Prototype);
+      assert(app2Prototype);
+
+      await LoadUnitFactory.destroyLoadUnit(loadUnit);
+      await LoadUnitFactory.destroyLoadUnit(loadUnit2);
+      LoadUnitMultiInstanceProtoHook.clear();
     });
   });
 });

@@ -1,7 +1,7 @@
-import assert from 'assert';
+import assert from 'node:assert';
 import pathToRegexp from 'path-to-regexp';
-import { MethodMeta } from './MethodMeta';
-import { HTTPMethodEnum, HTTPParamType, MiddlewareFunc } from './types';
+import { HTTPParamType } from '@eggjs/tegg-types';
+import type { HTTPMethodEnum, MethodMeta, MiddlewareFunc } from '@eggjs/tegg-types';
 
 export abstract class ParamMeta {
   type: HTTPParamType;
@@ -18,6 +18,14 @@ export class RequestParamMeta extends ParamMeta {
 
 export class BodyParamMeta extends ParamMeta {
   type = HTTPParamType.BODY;
+
+  validate() {
+    return;
+  }
+}
+
+export class HeadersParamMeta extends ParamMeta {
+  type = HTTPParamType.HEADERS;
 
   validate() {
     return;
@@ -70,6 +78,15 @@ export class PathParamMeta extends ParamMeta {
   }
 }
 
+export class CookiesParamMeta extends ParamMeta {
+  type = HTTPParamType.COOKIES;
+
+  validate() {
+    return;
+  }
+}
+
+
 export class HTTPMethodMeta implements MethodMeta {
   public readonly name: string;
   public readonly path: string;
@@ -81,6 +98,7 @@ export class HTTPMethodMeta implements MethodMeta {
   public readonly needAcl: boolean;
   public readonly aclCode: string | undefined;
   public readonly hosts: string[] | undefined;
+  public readonly timeout: number | undefined;
 
   constructor(
     name: string,
@@ -93,6 +111,7 @@ export class HTTPMethodMeta implements MethodMeta {
     needAcl: boolean,
     aclCode: string | undefined,
     hosts: string[] | undefined,
+    timeout: number | undefined,
   ) {
     this.name = name;
     this.path = path;
@@ -104,6 +123,7 @@ export class HTTPMethodMeta implements MethodMeta {
     this.needAcl = needAcl;
     this.aclCode = aclCode;
     this.hosts = hosts;
+    this.timeout = timeout;
   }
 }
 
@@ -117,6 +137,9 @@ export class ParamMetaUtil {
       case HTTPParamType.BODY: {
         return new BodyParamMeta();
       }
+      case HTTPParamType.HEADERS: {
+        return new HeadersParamMeta();
+      }
       case HTTPParamType.QUERIES: {
         assert(name, 'queries param must has name');
         return new QueriesParamMeta(name!);
@@ -127,6 +150,9 @@ export class ParamMetaUtil {
       }
       case HTTPParamType.REQUEST: {
         return new RequestParamMeta();
+      }
+      case HTTPParamType.COOKIES: {
+        return new CookiesParamMeta();
       }
       default:
         assert.fail('never arrive');

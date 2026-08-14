@@ -6,7 +6,7 @@
       "tegg"
     ]
   },
-  "version": "3.28.2",
+  "version": "3.87.0",
   "description": "orm decorator for egg",
   "keywords": [
     "egg",
@@ -28,11 +28,11 @@
   ],
   "types": "typings/index.d.ts",
   "scripts": {
-    "test": "npm run prepare-test && cross-env NODE_ENV=test NODE_OPTIONS='--no-deprecation' mocha",
+    "test": "ut prepare-test && cross-env NODE_ENV=test NODE_OPTIONS='--no-deprecation' mocha",
     "clean": "tsc -b --clean",
-    "tsc": "npm run clean && tsc -p ./tsconfig.json",
-    "tsc:pub": "npm run clean && tsc -p ./tsconfig.pub.json",
-    "prepublishOnly": "npm run tsc:pub",
+    "tsc": "ut run clean && tsc -p ./tsconfig.json",
+    "tsc:pub": "ut run clean && tsc -p ./tsconfig.pub.json",
+    "prepublishOnly": "ut tsc:pub",
     "prepare-test": "node ./test/fixtures/prepare.js"
   },
   "homepage": "https://github.com/eggjs/tegg",
@@ -48,24 +48,24 @@
     "node": ">=14.0.0"
   },
   "dependencies": {
-    "@eggjs/egg-module-common": "^3.28.2",
-    "@eggjs/tegg": "^3.28.2",
-    "@eggjs/tegg-common-util": "^3.28.2",
-    "@eggjs/tegg-lifecycle": "^3.28.2",
-    "@eggjs/tegg-loader": "^3.28.2",
-    "@eggjs/tegg-metadata": "^3.28.2",
-    "@eggjs/tegg-orm-decorator": "^3.28.2",
-    "@eggjs/tegg-runtime": "^3.28.2",
+    "@eggjs/egg-module-common": "^3.87.0",
+    "@eggjs/tegg": "^3.87.0",
+    "@eggjs/tegg-common-util": "^3.87.0",
+    "@eggjs/tegg-lifecycle": "^3.87.0",
+    "@eggjs/tegg-loader": "^3.87.0",
+    "@eggjs/tegg-metadata": "^3.87.0",
+    "@eggjs/tegg-orm-decorator": "^3.87.0",
+    "@eggjs/tegg-runtime": "^3.87.0",
     "@types/koa-router": "^7.0.40",
     "koa-compose": "^3.2.1",
-    "leoric": "^2.12.2",
+    "leoric": "2.13.8",
     "sdk-base": "^4.2.0"
   },
   "devDependencies": {
-    "@eggjs/module-test-util": "^3.28.2",
+    "@eggjs/module-test-util": "^3.87.0",
     "@eggjs/router": "^2.0.0",
-    "@eggjs/tegg-config": "^3.28.2",
-    "@eggjs/tegg-plugin": "^3.28.2",
+    "@eggjs/tegg-config": "^3.87.0",
+    "@eggjs/tegg-plugin": "^3.87.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "^20.2.4",
     "cross-env": "^7.0.3",
@@ -80,5 +80,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "240a3e9f40fda65ebb7589727d197db5ce17916c"
 }

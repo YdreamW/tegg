@@ -1,10 +1,10 @@
-import { EggProtoImplClass } from '@eggjs/core-decorator';
+import path from 'node:path';
+import { ClassUtil } from '@eggjs/tegg-metadata';
+import type { EggProtoImplClass } from '@eggjs/tegg-types';
 import { HTTPMethodMeta, ParamMeta, ParamMetaUtil } from '../../model';
 import { MethodValidator } from '../../util/validator/MethodValidator';
 import HTTPInfoUtil from '../../util/HTTPInfoUtil';
 import MethodInfoUtil from '../../util/MethodInfoUtil';
-import { ClassUtil } from '@eggjs/tegg-metadata';
-import path from 'path';
 import { HTTPPriorityUtil } from '../../util/HTTPPriorityUtil';
 
 export class HTTPControllerMethodMetaBuilder {
@@ -106,12 +106,13 @@ export class HTTPControllerMethodMetaBuilder {
     const needAcl = MethodInfoUtil.hasMethodAcl(this.clazz, this.methodName);
     const aclCode = MethodInfoUtil.getMethodAcl(this.clazz, this.methodName);
     const hosts = MethodInfoUtil.getMethodHosts(this.clazz, this.methodName);
+    const timeout = MethodInfoUtil.getMethodTimeout(this.clazz, this.methodName);
     const realPath = parentPath
       ? path.posix.join(parentPath, httpPath)
       : httpPath;
     const paramTypeMap = this.buildParamType(realPath);
     const priority = this.getPriority();
     return new HTTPMethodMeta(
-      this.methodName, httpPath!, httpMethod!, middlewares, contextIndex, paramTypeMap, priority, needAcl, aclCode, hosts);
+      this.methodName, httpPath!, httpMethod!, middlewares, contextIndex, paramTypeMap, priority, needAcl, aclCode, hosts, timeout);
   }
 }

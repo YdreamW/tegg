@@ -1,0 +1,43 @@
+import type { MCPToolParams, MethodMeta, MiddlewareFunc } from '@eggjs/tegg-types';
+import { ToolArgsSchemaDetail } from '../../src/util/MCPInfoUtil';
+
+
+export class MCPToolMeta implements MethodMeta {
+  readonly name: string;
+  readonly needAcl: boolean;
+  readonly aclCode?: string;
+  readonly mcpName?: string;
+  readonly description?: string;
+  readonly meta?: MCPToolParams['meta'];
+  readonly outputSchema?: MCPToolParams['outputSchema'];
+  readonly detail?: ToolArgsSchemaDetail;
+  readonly middlewares: readonly MiddlewareFunc[];
+  readonly extra?: number;
+  readonly contextParamIndex: number | undefined;
+
+  constructor(opt: {
+    name: string;
+    middlewares: MiddlewareFunc[];
+    contextParamIndex?: number;
+    needAcl?: boolean;
+    aclCode?: string,
+    description?: string;
+    meta?: MCPToolParams['meta'];
+    outputSchema?: MCPToolParams['outputSchema'];
+    mcpName?: string;
+    detail?: ToolArgsSchemaDetail;
+    extra?: number;
+  }) {
+    this.name = opt.name;
+    this.needAcl = !!opt.needAcl;
+    this.description = opt.description;
+    this.meta = opt.meta;
+    this.outputSchema = opt.outputSchema;
+    this.mcpName = opt.mcpName;
+    this.middlewares = opt.middlewares;
+    this.aclCode = opt.aclCode;
+    this.detail = opt.detail;
+    this.extra = opt.extra;
+    this.contextParamIndex = opt.contextParamIndex;
+  }
+}

@@ -1,5 +1,9 @@
 import './src/impl/http/HTTPControllerMetaBuilder';
+import './src/impl/websocket/WebSocketControllerMetaBuilder';
+import './src/impl/websocket-fetch/WebSocketFetchControllerMetaBuilder';
+import './src/impl/mcp/MCPControllerMetaBuilder';
 
+export * from '@eggjs/tegg-types/controller-decorator';
 export * from './src/model';
 export * from './src/decorator/Context';
 export * from './src/decorator/Middleware';
@@ -8,7 +12,25 @@ export * from './src/decorator/http/HTTPController';
 export * from './src/decorator/http/HTTPMethod';
 export * from './src/decorator/http/HTTPParam';
 export * from './src/decorator/http/Host';
+export * from './src/decorator/websocket/WebSocketController';
+export * from './src/decorator/websocket/WebSocketMethod';
+export * from './src/decorator/websocket/WebSocketParam';
+export * from './src/decorator/websocket-fetch/WebSocketFetchController';
+export * from './src/decorator/websocket-fetch/WebSocketFetchMethod';
+export * from './src/decorator/websocket-fetch/WebSocketFetchParam';
+export * from './src/decorator/mcp/MCPController';
+export * from './src/decorator/mcp/MCPPrompt';
+export * from './src/decorator/mcp/MCPResource';
+export * from './src/decorator/mcp/MCPTool';
+export * from './src/decorator/mcp/Extra';
 export * from './src/builder/ControllerMetaBuilderFactory';
-export * from './src/builder/ControllerMetaBuilder';
 export * from './src/util/ControllerMetadataUtil';
+export * from './src/util/MCPInfoUtil';
 export * from './src/util/HTTPPriorityUtil';
+export { default as WebSocketInfoUtil } from './src/util/WebSocketInfoUtil';
+
+export { default as ControllerInfoUtil } from './src/util/ControllerInfoUtil';
+export { default as MethodInfoUtil } from './src/util/MethodInfoUtil';
+
+export * from './src/decorator/agent';
+export { AgentInfoUtil } from './src/util/AgentInfoUtil';

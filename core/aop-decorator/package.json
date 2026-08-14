@@ -1,6 +1,6 @@
 {
   "name": "@eggjs/aop-decorator",
-  "version": "3.28.2",
+  "version": "3.87.0",
   "description": "tegg aop decorator",
   "keywords": [
     "tegg",
@@ -16,16 +16,17 @@
     "directory": "core/aop-decorator"
   },
   "dependencies": {
-    "@eggjs/core-decorator": "^3.28.2",
-    "@eggjs/tegg-common-util": "^3.28.2",
-    "@eggjs/tegg-metadata": "^3.28.2"
+    "@eggjs/core-decorator": "^3.87.0",
+    "@eggjs/tegg-common-util": "^3.87.0",
+    "@eggjs/tegg-metadata": "^3.87.0",
+    "@eggjs/tegg-types": "^3.87.0"
   },
   "scripts": {
     "test": "cross-env NODE_ENV=test NODE_OPTIONS='--no-deprecation' mocha",
     "clean": "tsc -b --clean",
-    "tsc": "npm run clean && tsc -p ./tsconfig.json",
-    "tsc:pub": "npm run clean && tsc -p ./tsconfig.pub.json",
-    "prepublishOnly": "npm run tsc:pub"
+    "tsc": "ut run clean && tsc -p ./tsconfig.json",
+    "tsc:pub": "ut run clean && tsc -p ./tsconfig.pub.json",
+    "prepublishOnly": "ut tsc:pub"
   },
   "publishConfig": {
     "access": "public"
@@ -49,5 +50,6 @@
     "mocha": "^10.2.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
-  }
+  },
+  "gitHead": "240a3e9f40fda65ebb7589727d197db5ce17916c"
 }

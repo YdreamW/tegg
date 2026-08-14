@@ -1,6 +1,6 @@
 {
   "name": "@eggjs/module-test-util",
-  "version": "3.28.2",
+  "version": "3.87.0",
   "private": true,
   "description": "module test util",
   "keywords": [
@@ -17,8 +17,8 @@
   "typings": "dist/index.d.ts",
   "scripts": {
     "clean": "tsc -b --clean",
-    "tsc:pub": "npm run clean && tsc -p ./tsconfig.pub.json",
-    "prepublishOnly": "npm run tsc:pub"
+    "tsc:pub": "ut run clean && tsc -p ./tsconfig.pub.json",
+    "prepublishOnly": "ut tsc:pub"
   },
   "author": "killagu <killa123@126.com>",
   "license": "MIT",
@@ -35,13 +35,14 @@
     "node": ">=14.0.0"
   },
   "dependencies": {
-    "@eggjs/core-decorator": "^3.28.2",
-    "@eggjs/tegg-lifecycle": "^3.28.2",
-    "@eggjs/tegg-loader": "^3.28.2",
-    "@eggjs/tegg-metadata": "^3.28.2",
-    "@eggjs/tegg-runtime": "^3.28.2",
+    "@eggjs/core-decorator": "^3.87.0",
+    "@eggjs/tegg-lifecycle": "^3.87.0",
+    "@eggjs/tegg-loader": "^3.87.0",
+    "@eggjs/tegg-metadata": "^3.87.0",
+    "@eggjs/tegg-runtime": "^3.87.0",
     "globby": "^11.1.0",
-    "mm": "^3.2.1"
+    "mm": "^3.2.1",
+    "undici": "^5.26.5"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.1",

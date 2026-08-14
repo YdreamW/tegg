@@ -1,0 +1,52 @@
+{
+  "name": "multi_primary_key_table",
+  "dataSourceName": "default",
+  "columns": [
+    {
+      "columnName": "id_1",
+      "propertyName": "id1",
+      "type": {
+        "type": "INT"
+      },
+      "canNull": false,
+      "comment": "the primary key",
+      "autoIncrement": true
+    },
+    {
+      "columnName": "id_2",
+      "propertyName": "id2",
+      "type": {
+        "type": "INT"
+      },
+      "canNull": false,
+      "comment": "the primary key"
+    },
+    {
+      "columnName": "name",
+      "propertyName": "name",
+      "type": {
+        "type": "VARCHAR",
+        "length": 100
+      },
+      "canNull": false,
+      "uniqueKey": true
+    }
+  ],
+  "indices": [
+    {
+      "name": "pk_id1_id2",
+      "keys": [
+        {
+          "propertyName": "id1",
+          "columnName": "id_1"
+        },
+        {
+          "propertyName": "id2",
+          "columnName": "id_2"
+        }
+      ],
+      "type": "PRIMARY"
+    }
+  ],
+  "comment": "multi primary key table"
+}

@@ -1,11 +1,15 @@
-import { ControllerTypeLike, MiddlewareFunc } from '../model';
-import { EggProtoImplClass, MetadataUtil } from '@eggjs/core-decorator';
-
-export const CONTROLLER_TYPE = Symbol.for('EggPrototype#controllerType');
-export const CONTROLLER_NAME = Symbol.for('EggPrototype#controllerName');
-export const CONTROLLER_HOST = Symbol.for('EggPrototype#controllerHost');
-export const CONTROLLER_MIDDLEWARES = Symbol.for('EggPrototype#controller#middlewares');
-export const CONTROLLER_ACL = Symbol.for('EggPrototype#controller#acl');
+import {
+  CONTROLLER_ACL,
+  CONTROLLER_AOP_MIDDLEWARES,
+  CONTROLLER_HOST,
+  CONTROLLER_MIDDLEWARES,
+  CONTROLLER_NAME,
+  CONTROLLER_TIMEOUT_METADATA,
+  CONTROLLER_TYPE,
+  IAdvice,
+} from '@eggjs/tegg-types';
+import type { ControllerTypeLike, EggProtoImplClass, MiddlewareFunc } from '@eggjs/tegg-types';
+import { MetadataUtil } from '@eggjs/core-decorator';
 
 export default class ControllerInfoUtil {
   static addControllerMiddleware(middleware: MiddlewareFunc, clazz: EggProtoImplClass) {
@@ -13,8 +17,17 @@ export default class ControllerInfoUtil {
     middlewares.push(middleware);
   }
 
+  static addControllerAopMiddleware(middleware: EggProtoImplClass<IAdvice>, clazz: EggProtoImplClass) {
+    const middlewares = MetadataUtil.initOwnArrayMetaData<EggProtoImplClass<IAdvice>>(CONTROLLER_AOP_MIDDLEWARES, clazz, []);
+    middlewares.push(middleware);
+  }
+
   static getControllerMiddlewares(clazz: EggProtoImplClass): MiddlewareFunc[] {
     return MetadataUtil.getMetaData(CONTROLLER_MIDDLEWARES, clazz) || [];
+  }
+
+  static getControllerAopMiddlewares(clazz: EggProtoImplClass): EggProtoImplClass<IAdvice>[] {
+    return MetadataUtil.getMetaData(CONTROLLER_AOP_MIDDLEWARES, clazz) || [];
   }
 
   static setControllerType(clazz: EggProtoImplClass, controllerType: ControllerTypeLike) {
@@ -51,5 +64,13 @@ export default class ControllerInfoUtil {
 
   static getControllerHosts(clazz: EggProtoImplClass): string[] | undefined {
     return MetadataUtil.getMetaData(CONTROLLER_HOST, clazz);
+  }
+
+  static setControllerTimeout(timeout: number, clazz: EggProtoImplClass) {
+    MetadataUtil.defineMetaData(CONTROLLER_TIMEOUT_METADATA, timeout, clazz);
+  }
+
+  static getControllerTimeout(clazz: EggProtoImplClass): number | undefined {
+    return MetadataUtil.getMetaData(CONTROLLER_TIMEOUT_METADATA, clazz);
   }
 }

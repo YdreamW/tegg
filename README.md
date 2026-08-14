@@ -474,6 +474,25 @@ Proto 中可以依赖其他的 Proto，或者 egg 中的对象。
   // 在某些情况不希望注入的原型和属性使用一个名称
   // 默认为属性名称
   proto?: string;
+  // 注入对象是否为可选，默认为 false
+  // 若为 false，当不存在该对象时，启动阶段将会抛出异常
+  // 若为 true，且未找到对象时，该属性值为 undefined
+  optional?: boolean;
+})
+```
+
+对于 optional 为 true 的情况，也提供了 InjectOptional 的 alias 装饰器
+```typescript
+// 等价于 @Inject({ ...params, optional: true })
+@InjectOptional(params: {
+  // 注入对象的名称，在某些情况下一个原型可能有多个实例
+  // 比如说 egg 的 logger
+  // 默认为属性名称
+  name?: string;
+  // 注入原型的名称
+  // 在某些情况不希望注入的原型和属性使用一个名称
+  // 默认为属性名称
+  proto?: string;
 })
 ```
 
@@ -489,9 +508,42 @@ import { Inject } from '@eggjs/tegg';
 export class HelloService {
   @Inject()
   logger: EggLogger;
+  
+  // 等价于 @Inject({ optional: true })
+  @InjectOptional()
+  maybeUndefinedLogger?: EggLogger;
 
   async hello(user: User): Promise<string> {
     this.logger.info(`[HelloService] hello ${user.name}`);
+    // optional inject 使用时，需要判断是否有值
+    if (this.maybeUndefinedLogger) {
+      this.maybeUndefinedLogger.info(`[HelloService] hello ${user.name}`);
+    }
+    const echoResponse = await this.echoAdapter.echo({ name: user.name });
+    return `hello, ${echoResponse.name}`;
+  }
+}
+```
+
+也可在构造函数中使用 `Inject` 注解。注意 property 和 构造函数两种模式只能选一种，不能混用。
+
+```typescript
+import { EggLogger } from 'egg';
+import { Inject } from '@eggjs/tegg';
+
+@ContextProto()
+export class HelloService {
+  constructor(
+    @Inject() readonly logger: EggLogger,
+    @InjectOptional() readonly maybeUndefinedLogger?: EggLogger,
+  ) {}
+
+  async hello(user: User): Promise<string> {
+    this.logger.info(`[HelloService] hello ${user.name}`);
+    // optional inject 使用时，需要判断是否有值
+    if (this.maybeUndefinedLogger) {
+      this.maybeUndefinedLogger.info(`[HelloService] hello ${user.name}`);
+    }
     const echoResponse = await this.echoAdapter.echo({ name: user.name });
     return `hello, ${echoResponse.name}`;
   }
@@ -934,10 +986,31 @@ import { EggObjectFactory } from '@eggjs/tegg';
 export class HelloService {
   @Inject()
   private readonly eggObjectFactory: EggObjectFactory;
-  
+
   async hello(): Promise<string> {
     const helloImpl = await this.eggObjectFactory.getEggObject(AbstractHello, HelloType.BAR);
     return helloImpl.hello();
+  }
+}
+```
+
+动态获取多个实现，通过 for/await 循环获得实例。
+
+```ts
+import { EggObjectFactory } from '@eggjs/tegg';
+
+@ContextProto()
+export class HelloService {
+  @Inject()
+  private readonly eggObjectFactory: EggObjectFactory;
+
+  async hello(): Promise<string[]> {
+    const helloImpls = await this.eggObjectFactory.getEggObjects(AbstractHello);
+    const messages = [];
+    for await (const helloImpl of helloImpls) {
+      messages.push(helloImpl.hello());
+    }
+    return messages;
   }
 }
 ```

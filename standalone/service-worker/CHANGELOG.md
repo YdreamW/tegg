@@ -1,0 +1,307 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+# [3.87.0](https://github.com/eggjs/tegg/compare/v3.86.0...v3.87.0) (2026-08-13)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+# [3.86.0](https://github.com/eggjs/tegg/compare/v3.85.2...v3.86.0) (2026-08-05)
+
+
+### Features
+
+* **mcp:** support tool output schema ([#466](https://github.com/eggjs/tegg/issues/466)) ([2d14184](https://github.com/eggjs/tegg/commit/2d14184ce08c6807056d42b9f9165a08ca4d0259))
+
+
+
+
+
+## [3.85.2](https://github.com/eggjs/tegg/compare/v3.85.1...v3.85.2) (2026-07-31)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+## [3.85.1](https://github.com/eggjs/tegg/compare/v3.85.0...v3.85.1) (2026-07-29)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+# [3.85.0](https://github.com/eggjs/tegg/compare/v3.84.4...v3.85.0) (2026-07-22)
+
+
+### Features
+
+* **mcp:** support UI metadata for tool registration ([#463](https://github.com/eggjs/tegg/issues/463)) ([caebf68](https://github.com/eggjs/tegg/commit/caebf688b2923b11ff8a9f88b191612dcd463962))
+
+
+
+
+
+## [3.84.4](https://github.com/eggjs/tegg/compare/v3.84.2...v3.84.4) (2026-07-13)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+## [3.84.3](https://github.com/eggjs/tegg/compare/v3.84.2...v3.84.3) (2026-07-13)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+## [3.84.2](https://github.com/eggjs/tegg/compare/v3.84.1...v3.84.2) (2026-06-26)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+## [3.84.1](https://github.com/eggjs/tegg/compare/v3.84.0...v3.84.1) (2026-06-23)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+# [3.84.0](https://github.com/eggjs/tegg/compare/v3.83.0...v3.84.0) (2026-06-18)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+# [3.83.0](https://github.com/eggjs/tegg/compare/v3.82.2...v3.83.0) (2026-06-17)
+
+
+### Features
+
+* support context decorator in MCP controllers ([#458](https://github.com/eggjs/tegg/issues/458)) ([283a331](https://github.com/eggjs/tegg/commit/283a331c6ee29f37e85a4900c878105a539e62aa))
+
+
+
+
+
+## [3.82.2](https://github.com/eggjs/tegg/compare/v3.82.1...v3.82.2) (2026-06-10)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+## [3.82.1](https://github.com/eggjs/tegg/compare/v3.82.0...v3.82.1) (2026-06-10)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+# [3.82.0](https://github.com/eggjs/tegg/compare/v3.81.0...v3.82.0) (2026-06-10)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+# [3.81.0](https://github.com/eggjs/tegg/compare/v3.80.1...v3.81.0) (2026-06-10)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+## [3.80.1](https://github.com/eggjs/tegg/compare/v3.80.0...v3.80.1) (2026-06-08)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+# [3.80.0](https://github.com/eggjs/tegg/compare/v3.79.3...v3.80.0) (2026-06-03)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+## [3.79.3](https://github.com/eggjs/tegg/compare/v3.79.2...v3.79.3) (2026-05-27)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+## [3.79.2](https://github.com/eggjs/tegg/compare/v3.79.1...v3.79.2) (2026-05-14)
+
+
+### Bug Fixes
+
+* service worker initialize ([#447](https://github.com/eggjs/tegg/issues/447)) ([f3fe5f4](https://github.com/eggjs/tegg/commit/f3fe5f465c78002fd37de9c4c5d5b3bdfde4f0c8))
+
+
+
+
+
+## [3.79.1](https://github.com/eggjs/tegg/compare/v3.79.0...v3.79.1) (2026-05-13)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+# [3.79.0](https://github.com/eggjs/tegg/compare/v3.78.17...v3.79.0) (2026-05-13)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+## [3.78.17](https://github.com/eggjs/tegg/compare/v3.78.16...v3.78.17) (2026-05-07)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+## [3.78.16](https://github.com/eggjs/tegg/compare/v3.78.15...v3.78.16) (2026-05-06)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+## [3.78.15](https://github.com/eggjs/tegg/compare/v3.78.14...v3.78.15) (2026-04-23)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+## [3.78.14](https://github.com/eggjs/tegg/compare/v3.78.13...v3.78.14) (2026-04-21)
+
+
+### Bug Fixes
+
+* mcp path ([3835288](https://github.com/eggjs/tegg/commit/3835288e9b78e3d2f422e91e3e56bf4ead0c4372))
+
+
+
+
+
+## [3.78.13](https://github.com/eggjs/tegg/compare/v3.78.12...v3.78.13) (2026-04-21)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+## [3.78.12](https://github.com/eggjs/tegg/compare/v3.78.11...v3.78.12) (2026-04-18)
+
+
+### Bug Fixes
+
+* del debug log ([a7d8e06](https://github.com/eggjs/tegg/commit/a7d8e0608d709a733ea463c75ca955184ae4c552))
+
+
+
+
+
+## [3.78.11](https://github.com/eggjs/tegg/compare/v3.78.10...v3.78.11) (2026-04-18)
+
+
+### Bug Fixes
+
+* limit mcp version ([8627372](https://github.com/eggjs/tegg/commit/86273726bbf4f33e0856dc726aa3f7ff963e9e99))
+
+
+
+
+
+## [3.78.10](https://github.com/eggjs/tegg/compare/v3.78.9...v3.78.10) (2026-04-18)
+
+
+### Bug Fixes
+
+* import ([c7ed1b7](https://github.com/eggjs/tegg/commit/c7ed1b78f9c0ee308c85029e79d5187fd7fd1bd4))
+
+
+
+
+
+## [3.78.9](https://github.com/eggjs/tegg/compare/v3.78.8...v3.78.9) (2026-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+## [3.78.8](https://github.com/eggjs/tegg/compare/v3.78.7...v3.78.8) (2026-04-18)
+
+
+### Bug Fixes
+
+* remove egg module ([#438](https://github.com/eggjs/tegg/issues/438)) ([c82c26e](https://github.com/eggjs/tegg/commit/c82c26ebfa8272e32477f9b5be51da85e70904a6))
+
+
+
+
+
+## [3.78.7](https://github.com/eggjs/tegg/compare/v3.78.6...v3.78.7) (2026-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+## [3.78.6](https://github.com/eggjs/tegg/compare/v3.78.4...v3.78.6) (2026-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+## [3.78.5](https://github.com/eggjs/tegg/compare/v3.78.4...v3.78.5) (2026-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker
+
+
+
+
+
+## [3.78.4](https://github.com/eggjs/tegg/compare/v3.78.3...v3.78.4) (2026-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-service-worker

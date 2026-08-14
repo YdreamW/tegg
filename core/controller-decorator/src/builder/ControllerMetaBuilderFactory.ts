@@ -1,9 +1,12 @@
-import { ControllerTypeLike } from '../model';
-import { ControllerMetaBuilder } from './ControllerMetaBuilder';
-import { EggProtoImplClass } from '@eggjs/core-decorator';
+import type {
+  ControllerMetaBuilder,
+  ControllerMetaBuilderCreator, ControllerMetadata,
+  ControllerTypeLike,
+  EggProtoImplClass,
+} from '@eggjs/tegg-types';
 import ControllerInfoUtil from '../util/ControllerInfoUtil';
-
-export type ControllerMetaBuilderCreator = (clazz: EggProtoImplClass) => ControllerMetaBuilder;
+import MethodInfoUtil from '../util/MethodInfoUtil';
+import { Pointcut } from '@eggjs/aop-decorator';
 
 export class ControllerMetaBuilderFactory {
   private static builderCreatorMap: Map<ControllerTypeLike, ControllerMetaBuilderCreator> = new Map();
@@ -24,5 +27,24 @@ export class ControllerMetaBuilderFactory {
       throw new Error(`not found controller meta builder for type ${controllerType}`);
     }
     return creator(clazz);
+  }
+
+  static build(clazz: EggProtoImplClass, controllerType?: ControllerTypeLike): ControllerMetadata | undefined {
+    const builder = ControllerMetaBuilderFactory.createControllerMetaBuilder(clazz, controllerType);
+    if (!builder) return;
+    const metadata = builder.build();
+    if (!metadata) return;
+    const controllerAopMws = ControllerInfoUtil.getControllerAopMiddlewares(clazz);
+    for (const { name } of metadata.methods) {
+      const methodAopMws = MethodInfoUtil.getMethodAopMiddlewares(clazz, name);
+      if (MethodInfoUtil.shouldRegisterAopMiddlewarePointCut(clazz, name)) {
+        for (const mw of [ ...methodAopMws, ...controllerAopMws ].reverse()) {
+          Pointcut(mw)(clazz.prototype, name);
+        }
+        MethodInfoUtil.registerAopMiddlewarePointcut(clazz, name);
+      }
+    }
+
+    return metadata;
   }
 }

@@ -11,9 +11,9 @@ import { App } from './fixtures/apps/orm-app/modules/orm-module/model/App';
 import { CtxService } from './fixtures/apps/orm-app/modules/orm-module/CtxService';
 import { EggContext } from '@eggjs/tegg';
 
-describe('test/orm.test.ts', () => {
+describe('plugin/orm/test/orm.test.ts', () => {
   // TODO win32 ci not support mysql
-  if (os.platform() === 'win32') {
+  if ([ 'darwin', 'win32' ].includes(os.platform())) {
     return;
   }
 

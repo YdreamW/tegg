@@ -1,0 +1,1249 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+# [3.87.0](https://github.com/eggjs/tegg/compare/v3.86.0...v3.87.0) (2026-08-13)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.86.0](https://github.com/eggjs/tegg/compare/v3.85.2...v3.86.0) (2026-08-05)
+
+
+### Features
+
+* **mcp:** support tool output schema ([#466](https://github.com/eggjs/tegg/issues/466)) ([2d14184](https://github.com/eggjs/tegg/commit/2d14184ce08c6807056d42b9f9165a08ca4d0259))
+
+
+
+
+
+## [3.85.2](https://github.com/eggjs/tegg/compare/v3.85.1...v3.85.2) (2026-07-31)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.85.1](https://github.com/eggjs/tegg/compare/v3.85.0...v3.85.1) (2026-07-29)
+
+
+### Performance Improvements
+
+* **agent-runtime:** avoid full thread reads for resume checks ([#464](https://github.com/eggjs/tegg/issues/464)) ([4971057](https://github.com/eggjs/tegg/commit/49710579601243eadf4ca948fd61950fe22a9fbd))
+
+
+
+
+
+# [3.85.0](https://github.com/eggjs/tegg/compare/v3.84.4...v3.85.0) (2026-07-22)
+
+
+### Features
+
+* **mcp:** support UI metadata for tool registration ([#463](https://github.com/eggjs/tegg/issues/463)) ([caebf68](https://github.com/eggjs/tegg/commit/caebf688b2923b11ff8a9f88b191612dcd463962))
+
+
+
+
+
+## [3.84.4](https://github.com/eggjs/tegg/compare/v3.84.2...v3.84.4) (2026-07-13)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.84.3](https://github.com/eggjs/tegg/compare/v3.84.2...v3.84.3) (2026-07-13)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.84.2](https://github.com/eggjs/tegg/compare/v3.84.1...v3.84.2) (2026-06-26)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.84.1](https://github.com/eggjs/tegg/compare/v3.84.0...v3.84.1) (2026-06-23)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.84.0](https://github.com/eggjs/tegg/compare/v3.83.0...v3.84.0) (2026-06-18)
+
+
+### Features
+
+* **agent-runtime:** expose per-message/tool/run timing via eggExt namespace ([#457](https://github.com/eggjs/tegg/issues/457)) ([9f94e2e](https://github.com/eggjs/tegg/commit/9f94e2e21764def338a1cad644170689c60122a3))
+
+
+
+
+
+# [3.83.0](https://github.com/eggjs/tegg/compare/v3.82.2...v3.83.0) (2026-06-17)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.82.2](https://github.com/eggjs/tegg/compare/v3.82.1...v3.82.2) (2026-06-10)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.82.1](https://github.com/eggjs/tegg/compare/v3.82.0...v3.82.1) (2026-06-10)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.82.0](https://github.com/eggjs/tegg/compare/v3.81.0...v3.82.0) (2026-06-10)
+
+
+### Features
+
+* **agent-runtime:** support run thread metadata ([#454](https://github.com/eggjs/tegg/issues/454)) ([d4c2cdc](https://github.com/eggjs/tegg/commit/d4c2cdc579f21206efe5d457902cde45b028560f))
+
+
+
+
+
+# [3.81.0](https://github.com/eggjs/tegg/compare/v3.80.1...v3.81.0) (2026-06-10)
+
+
+### Features
+
+* **agent-runtime:** add getLatestRunId to resolve a thread's latest run ([#451](https://github.com/eggjs/tegg/issues/451)) ([14a4f2e](https://github.com/eggjs/tegg/commit/14a4f2e48cda2514261d2cf9550cf7c713f267d0))
+
+
+
+
+
+## [3.80.1](https://github.com/eggjs/tegg/compare/v3.80.0...v3.80.1) (2026-06-08)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.80.0](https://github.com/eggjs/tegg/compare/v3.79.3...v3.80.0) (2026-06-03)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.79.3](https://github.com/eggjs/tegg/compare/v3.79.2...v3.79.3) (2026-05-27)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.79.2](https://github.com/eggjs/tegg/compare/v3.79.1...v3.79.2) (2026-05-14)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.79.1](https://github.com/eggjs/tegg/compare/v3.79.0...v3.79.1) (2026-05-13)
+
+
+### Bug Fixes
+
+* **agent-runtime:** support thread metadata ([#446](https://github.com/eggjs/tegg/issues/446)) ([b8606c5](https://github.com/eggjs/tegg/commit/b8606c517adbdd034911e625f19a0361df7e23e1)), closes [eggjs/egg#5949](https://github.com/eggjs/egg/issues/5949)
+
+
+
+
+
+# [3.79.0](https://github.com/eggjs/tegg/compare/v3.78.17...v3.79.0) (2026-05-13)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.78.17](https://github.com/eggjs/tegg/compare/v3.78.16...v3.78.17) (2026-05-07)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.78.16](https://github.com/eggjs/tegg/compare/v3.78.15...v3.78.16) (2026-05-06)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.78.15](https://github.com/eggjs/tegg/compare/v3.78.14...v3.78.15) (2026-04-23)
+
+
+### Bug Fixes
+
+* **agent-runtime:** hold cancelRun until executor session is committed ([#441](https://github.com/eggjs/tegg/issues/441)) ([4e02a28](https://github.com/eggjs/tegg/commit/4e02a28bdfe9b924c1190482fd3d85f8cad1fcfa))
+
+
+
+
+
+## [3.78.14](https://github.com/eggjs/tegg/compare/v3.78.13...v3.78.14) (2026-04-21)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.78.13](https://github.com/eggjs/tegg/compare/v3.78.12...v3.78.13) (2026-04-21)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.78.12](https://github.com/eggjs/tegg/compare/v3.78.11...v3.78.12) (2026-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.78.11](https://github.com/eggjs/tegg/compare/v3.78.10...v3.78.11) (2026-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.78.10](https://github.com/eggjs/tegg/compare/v3.78.9...v3.78.10) (2026-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.78.9](https://github.com/eggjs/tegg/compare/v3.78.8...v3.78.9) (2026-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.78.8](https://github.com/eggjs/tegg/compare/v3.78.7...v3.78.8) (2026-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.78.7](https://github.com/eggjs/tegg/compare/v3.78.6...v3.78.7) (2026-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.78.6](https://github.com/eggjs/tegg/compare/v3.78.4...v3.78.6) (2026-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.78.5](https://github.com/eggjs/tegg/compare/v3.78.4...v3.78.5) (2026-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.78.4](https://github.com/eggjs/tegg/compare/v3.78.3...v3.78.4) (2026-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.78.3](https://github.com/eggjs/tegg/compare/v3.78.2...v3.78.3) (2026-04-15)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.78.2](https://github.com/eggjs/tegg/compare/v3.78.1...v3.78.2) (2026-04-09)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.78.1](https://github.com/eggjs/tegg/compare/v3.78.0...v3.78.1) (2026-04-09)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.78.0](https://github.com/eggjs/tegg/compare/v3.77.2...v3.78.0) (2026-04-09)
+
+
+### Features
+
+* **agent-runtime:** rewrite streamRun with StreamEvent format and reconnection ([#432](https://github.com/eggjs/tegg/issues/432)) ([d03dac2](https://github.com/eggjs/tegg/commit/d03dac2ddd78641acb47e19275488ad9fbfcda2a))
+
+
+
+
+
+## [3.77.2](https://github.com/eggjs/tegg/compare/v3.77.1...v3.77.2) (2026-04-07)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.77.1](https://github.com/eggjs/tegg/compare/v3.77.0...v3.77.1) (2026-04-01)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.77.0](https://github.com/eggjs/tegg/compare/v3.76.1...v3.77.0) (2026-04-01)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.76.1](https://github.com/eggjs/tegg/compare/v3.76.0...v3.76.1) (2026-04-01)
+
+
+### Bug Fixes
+
+* **agent-runtime:** merge content blocks and support accumulate control ([#428](https://github.com/eggjs/tegg/issues/428)) ([f4f904e](https://github.com/eggjs/tegg/commit/f4f904e357497fc5ad9a2c7d2ece4e9b305f5738))
+
+
+
+
+
+# [3.76.0](https://github.com/eggjs/tegg/compare/v3.75.1...v3.76.0) (2026-04-01)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.75.1](https://github.com/eggjs/tegg/compare/v3.75.0...v3.75.1) (2026-04-01)
+
+
+### Bug Fixes
+
+* **agent-runtime:** preserve non-text content blocks in MessageConverter ([#426](https://github.com/eggjs/tegg/issues/426)) ([8c4382f](https://github.com/eggjs/tegg/commit/8c4382f33f68534218049cfbfadfd4f6800a348c))
+
+
+
+
+
+# [3.75.0](https://github.com/eggjs/tegg/compare/v3.74.0...v3.75.0) (2026-03-30)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.74.0](https://github.com/eggjs/tegg/compare/v3.73.0...v3.74.0) (2026-03-30)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.73.0](https://github.com/eggjs/tegg/compare/v3.72.0...v3.73.0) (2026-03-25)
+
+
+### Features
+
+* add agent-runtime package with @AgentController decorator ([#411](https://github.com/eggjs/tegg/issues/411)) ([d4d0006](https://github.com/eggjs/tegg/commit/d4d00061e90230f82c0958bcf5268f8a511395db))
+* **agent-runtime:** add isResume flag to CreateRunInput ([#414](https://github.com/eggjs/tegg/issues/414)) ([29ac989](https://github.com/eggjs/tegg/commit/29ac98995c0a37bb34d33f7ad81af7c664a67bce))
+
+
+
+
+
+# [3.72.0](https://github.com/eggjs/tegg/compare/v3.71.2...v3.72.0) (2026-02-04)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.71.2](https://github.com/eggjs/tegg/compare/v3.71.1...v3.71.2) (2026-01-30)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.71.1](https://github.com/eggjs/tegg/compare/v3.71.0...v3.71.1) (2026-01-28)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.71.0](https://github.com/eggjs/tegg/compare/v3.70.1...v3.71.0) (2026-01-26)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.70.1](https://github.com/eggjs/tegg/compare/v3.70.0...v3.70.1) (2026-01-14)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.70.0](https://github.com/eggjs/tegg/compare/v3.69.0...v3.70.0) (2026-01-07)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.69.0](https://github.com/eggjs/tegg/compare/v3.68.0...v3.69.0) (2026-01-06)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.68.0](https://github.com/eggjs/tegg/compare/v3.67.2...v3.68.0) (2025-12-29)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.67.2](https://github.com/eggjs/tegg/compare/v3.67.1...v3.67.2) (2025-12-24)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.67.1](https://github.com/eggjs/tegg/compare/v3.67.0...v3.67.1) (2025-12-23)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.67.0](https://github.com/eggjs/tegg/compare/v3.66.0...v3.67.0) (2025-12-18)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.66.0](https://github.com/eggjs/tegg/compare/v3.65.3...v3.66.0) (2025-12-16)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.65.3](https://github.com/eggjs/tegg/compare/v3.65.2...v3.65.3) (2025-12-16)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.65.2](https://github.com/eggjs/tegg/compare/v3.65.1...v3.65.2) (2025-12-16)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.65.1](https://github.com/eggjs/tegg/compare/v3.65.0...v3.65.1) (2025-12-16)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.65.0](https://github.com/eggjs/tegg/compare/v3.64.5...v3.65.0) (2025-12-10)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.64.5](https://github.com/eggjs/tegg/compare/v3.64.4...v3.64.5) (2025-12-08)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.64.4](https://github.com/eggjs/tegg/compare/v3.64.3...v3.64.4) (2025-12-06)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.64.3](https://github.com/eggjs/tegg/compare/v3.64.2...v3.64.3) (2025-12-06)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.64.2](https://github.com/eggjs/tegg/compare/v3.64.1...v3.64.2) (2025-11-27)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.64.1](https://github.com/eggjs/tegg/compare/v3.64.0...v3.64.1) (2025-11-27)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.64.0](https://github.com/eggjs/tegg/compare/v3.63.2...v3.64.0) (2025-11-27)
+
+
+### Bug Fixes
+
+* mcp zod type and langchain test version ([#369](https://github.com/eggjs/tegg/issues/369)) ([8178168](https://github.com/eggjs/tegg/commit/81781685c392346d21c56b649bfe8bb7a99bc9fb))
+
+
+
+
+
+## [3.63.2](https://github.com/eggjs/tegg/compare/v3.63.0...v3.63.2) (2025-11-18)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.63.1](https://github.com/eggjs/tegg/compare/v3.63.0...v3.63.1) (2025-11-18)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.63.0](https://github.com/eggjs/tegg/compare/v3.62.3...v3.63.0) (2025-11-18)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.62.3](https://github.com/eggjs/tegg/compare/v3.62.1...v3.62.3) (2025-11-05)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.62.2](https://github.com/eggjs/tegg/compare/v3.62.1...v3.62.2) (2025-11-05)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.62.1](https://github.com/eggjs/tegg/compare/v3.62.0...v3.62.1) (2025-11-03)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.62.0](https://github.com/eggjs/tegg/compare/v3.61.0...v3.62.0) (2025-09-24)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.61.0](https://github.com/eggjs/tegg/compare/v3.60.3...v3.61.0) (2025-08-15)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.60.3](https://github.com/eggjs/tegg/compare/v3.60.2...v3.60.3) (2025-08-06)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.60.2](https://github.com/eggjs/tegg/compare/v3.60.1...v3.60.2) (2025-08-06)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.60.1](https://github.com/eggjs/tegg/compare/v3.60.0...v3.60.1) (2025-07-28)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.60.0](https://github.com/eggjs/tegg/compare/v3.59.1...v3.60.0) (2025-07-28)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.59.1](https://github.com/eggjs/tegg/compare/v3.59.0...v3.59.1) (2025-07-16)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.59.0](https://github.com/eggjs/tegg/compare/v3.58.0...v3.59.0) (2025-07-07)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.58.0](https://github.com/eggjs/tegg/compare/v3.57.14...v3.58.0) (2025-07-01)
+
+
+### Features
+
+* add timeout ([#334](https://github.com/eggjs/tegg/issues/334)) ([6d5d94b](https://github.com/eggjs/tegg/commit/6d5d94b6f319388a94b4adf4d427b95d2b851c17))
+
+
+
+
+
+## [3.57.14](https://github.com/eggjs/tegg/compare/v3.57.13...v3.57.14) (2025-06-18)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.57.13](https://github.com/eggjs/tegg/compare/v3.57.12...v3.57.13) (2025-06-18)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.57.12](https://github.com/eggjs/tegg/compare/v3.57.11...v3.57.12) (2025-06-16)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.57.11](https://github.com/eggjs/tegg/compare/v3.57.10...v3.57.11) (2025-06-16)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.57.10](https://github.com/eggjs/tegg/compare/v3.57.9...v3.57.10) (2025-06-12)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.57.9](https://github.com/eggjs/tegg/compare/v3.57.8...v3.57.9) (2025-05-29)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.57.8](https://github.com/eggjs/tegg/compare/v3.57.7...v3.57.8) (2025-05-29)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.57.7](https://github.com/eggjs/tegg/compare/v3.57.6...v3.57.7) (2025-05-28)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.57.6](https://github.com/eggjs/tegg/compare/v3.57.5...v3.57.6) (2025-05-27)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.57.5](https://github.com/eggjs/tegg/compare/v3.57.4...v3.57.5) (2025-05-15)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.57.4](https://github.com/eggjs/tegg/compare/v3.57.3...v3.57.4) (2025-05-14)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.57.3](https://github.com/eggjs/tegg/compare/v3.57.2...v3.57.3) (2025-05-13)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.57.2](https://github.com/eggjs/tegg/compare/v3.57.1...v3.57.2) (2025-05-13)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.57.1](https://github.com/eggjs/tegg/compare/v3.57.0...v3.57.1) (2025-05-13)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.57.0](https://github.com/eggjs/tegg/compare/v3.56.3...v3.57.0) (2025-05-09)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.56.3](https://github.com/eggjs/tegg/compare/v3.56.2...v3.56.3) (2025-05-07)
+
+
+### Bug Fixes
+
+* mcp teggCtxLifecycleMiddleware ([#312](https://github.com/eggjs/tegg/issues/312)) ([5304384](https://github.com/eggjs/tegg/commit/53043840c3aaab0e485db50b7a2d9362266eef8c))
+
+
+
+
+
+## [3.56.2](https://github.com/eggjs/tegg/compare/v3.56.1...v3.56.2) (2025-05-01)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.56.1](https://github.com/eggjs/tegg/compare/v3.56.0...v3.56.1) (2025-04-29)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.56.0](https://github.com/eggjs/tegg/compare/v3.55.0...v3.56.0) (2025-04-29)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.55.0](https://github.com/eggjs/tegg/compare/v3.53.0...v3.55.0) (2025-04-29)
+
+
+### Features
+
+* add mcp ([#307](https://github.com/eggjs/tegg/issues/307)) ([a9a57b4](https://github.com/eggjs/tegg/commit/a9a57b4d7102dd552e09d33c3f82fc15a245790a))
+
+
+
+
+
+# [3.54.0](https://github.com/eggjs/tegg/compare/v3.53.0...v3.54.0) (2025-04-29)
+
+
+### Features
+
+* add mcp ([#307](https://github.com/eggjs/tegg/issues/307)) ([a9a57b4](https://github.com/eggjs/tegg/commit/a9a57b4d7102dd552e09d33c3f82fc15a245790a))
+
+
+
+
+
+# [3.53.0](https://github.com/eggjs/tegg/compare/v3.52.1...v3.53.0) (2025-04-21)
+
+
+### Features
+
+* add timeout metadata for http controller ([#301](https://github.com/eggjs/tegg/issues/301)) ([68980c2](https://github.com/eggjs/tegg/commit/68980c23de81dbc9bd86c1d8df7b3952f52aa5ce))
+
+
+
+
+
+## [3.52.1](https://github.com/eggjs/tegg/compare/v3.52.0...v3.52.1) (2025-03-14)
+
+
+### Bug Fixes
+
+* add qualifier check ([#295](https://github.com/eggjs/tegg/issues/295)) ([6744088](https://github.com/eggjs/tegg/commit/674408810d77fe0f4b95b25790bcb3975e543e26))
+
+
+
+
+
+# [3.52.0](https://github.com/eggjs/tegg/compare/v3.51.2...v3.52.0) (2024-12-30)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.51.2](https://github.com/eggjs/tegg/compare/v3.51.1...v3.51.2) (2024-12-09)
+
+
+### Features
+
+* add mgw stream types ([#259](https://github.com/eggjs/tegg/issues/259)) ([1379d38](https://github.com/eggjs/tegg/commit/1379d382635c6bc575ce4acf3d3a7b5168487a3d))
+
+
+
+
+
+## [3.51.1](https://github.com/eggjs/tegg/compare/v3.51.0...v3.51.1) (2024-11-06)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.51.0](https://github.com/eggjs/tegg/compare/v3.50.1...v3.51.0) (2024-10-30)
+
+
+### Features
+
+* support optional inject ([#254](https://github.com/eggjs/tegg/issues/254)) ([260470b](https://github.com/eggjs/tegg/commit/260470b766d5fdb323c1bd72cc6260a90468a161))
+
+
+
+
+
+## [3.50.1](https://github.com/eggjs/tegg/compare/v3.50.0...v3.50.1) (2024-10-23)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.50.0](https://github.com/eggjs/tegg/compare/v3.49.0...v3.50.0) (2024-10-22)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.49.0](https://github.com/eggjs/tegg/compare/v3.48.1...v3.49.0) (2024-10-21)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.48.1](https://github.com/eggjs/tegg/compare/v3.48.0...v3.48.1) (2024-10-14)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.48.0](https://github.com/eggjs/tegg/compare/v3.47.2...v3.48.0) (2024-10-10)
+
+
+### Features
+
+* add rpc stream type ([#249](https://github.com/eggjs/tegg/issues/249)) ([7f3d40b](https://github.com/eggjs/tegg/commit/7f3d40b95d7939534f245b08d9d06a9b10bac350))
+
+
+
+
+
+## [3.47.2](https://github.com/eggjs/tegg/compare/v3.47.1...v3.47.2) (2024-10-10)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.47.1](https://github.com/eggjs/tegg/compare/v3.47.0...v3.47.1) (2024-10-10)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.47.0](https://github.com/eggjs/tegg/compare/v3.46.4...v3.47.0) (2024-10-10)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.46.4](https://github.com/eggjs/tegg/compare/v3.46.3...v3.46.4) (2024-10-09)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.46.3](https://github.com/eggjs/tegg/compare/v3.46.2...v3.46.3) (2024-10-08)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.46.2](https://github.com/eggjs/tegg/compare/v3.46.1...v3.46.2) (2024-10-07)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.46.1](https://github.com/eggjs/tegg/compare/v3.46.0...v3.46.1) (2024-09-30)
+
+
+### Bug Fixes
+
+* fix miss MultiInstance proper qualifiers ([#241](https://github.com/eggjs/tegg/issues/241)) ([15666d3](https://github.com/eggjs/tegg/commit/15666d36c18b99eccc4f1a11d8e7702503694ee1))
+
+
+
+
+
+# [3.46.0](https://github.com/eggjs/tegg/compare/v3.45.0...v3.46.0) (2024-09-29)
+
+
+### Features
+
+* impl MultiInstance inject MultiInstance ([#240](https://github.com/eggjs/tegg/issues/240)) ([08e3b0c](https://github.com/eggjs/tegg/commit/08e3b0cc02f3d2dbba767298a6aec6c00147f9ed))
+
+
+
+
+
+# [3.45.0](https://github.com/eggjs/tegg/compare/v3.44.1...v3.45.0) (2024-09-29)
+
+
+### Features
+
+* impl MultiInstanceInfo decorator ([#239](https://github.com/eggjs/tegg/issues/239)) ([70d4d95](https://github.com/eggjs/tegg/commit/70d4d95bca4a0c3e11d0d7cc4f292b1315e49e81))
+
+
+
+
+
+## [3.44.1](https://github.com/eggjs/tegg/compare/v3.44.0...v3.44.1) (2024-09-29)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.44.0](https://github.com/eggjs/tegg/compare/v3.43.2...v3.44.0) (2024-09-29)
+
+
+### Features
+
+* support inject in constructor ([#237](https://github.com/eggjs/tegg/issues/237)) ([e68b1ed](https://github.com/eggjs/tegg/commit/e68b1ed6a90432f1cb35a6f562914b7b04cb5114))
+
+
+
+
+
+## [3.43.2](https://github.com/eggjs/tegg/compare/v3.43.1...v3.43.2) (2024-09-14)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.43.1](https://github.com/eggjs/tegg/compare/v3.43.0...v3.43.1) (2024-09-14)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.43.0](https://github.com/eggjs/tegg/compare/v3.42.0...v3.43.0) (2024-09-13)
+
+
+### Features
+
+* add http cookies ([#235](https://github.com/eggjs/tegg/issues/235)) ([f46efa5](https://github.com/eggjs/tegg/commit/f46efa54b03bad41504bf76f6ed2baa8c48858ce))
+
+
+
+
+
+# [3.42.0](https://github.com/eggjs/tegg/compare/v3.41.0...v3.42.0) (2024-09-10)
+
+
+### Features
+
+* add LifecyclePreLoad ([#234](https://github.com/eggjs/tegg/issues/234)) ([2b72163](https://github.com/eggjs/tegg/commit/2b7216387f02cd045952447eaa21baa3a7ee04a3))
+
+
+
+
+
+# [3.41.0](https://github.com/eggjs/tegg/compare/v3.40.1...v3.41.0) (2024-08-26)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.40.1](https://github.com/eggjs/tegg/compare/v3.40.0...v3.40.1) (2024-08-23)
+
+
+### Bug Fixes
+
+* use symbol.for instead of symbol ([#232](https://github.com/eggjs/tegg/issues/232)) ([4254ce5](https://github.com/eggjs/tegg/commit/4254ce558d22234f9dfff0ea9bc067075e21c654))
+
+
+
+
+
+# [3.40.0](https://github.com/eggjs/tegg/compare/v3.39.5...v3.40.0) (2024-08-22)
+
+
+### Features
+
+* @Middleware support Advice ([#231](https://github.com/eggjs/tegg/issues/231)) ([613a89d](https://github.com/eggjs/tegg/commit/613a89da7ea6dd70d50e34aa9f4152358a622625))
+
+
+
+
+
+## [3.39.5](https://github.com/eggjs/tegg/compare/v3.39.4...v3.39.5) (2024-08-09)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.39.4](https://github.com/eggjs/tegg/compare/v3.39.3...v3.39.4) (2024-07-09)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.39.3](https://github.com/eggjs/tegg/compare/v3.39.2...v3.39.3) (2024-04-28)
+
+
+### Bug Fixes
+
+* mount clazzExtension/clazzExtension/tableSql to BaseDao ([#220](https://github.com/eggjs/tegg/issues/220)) ([ac322cf](https://github.com/eggjs/tegg/commit/ac322cfc4100841a1483b04b99e04d553af323eb))
+
+
+
+
+
+## [3.39.2](https://github.com/eggjs/tegg/compare/v3.39.1...v3.39.2) (2024-04-28)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.39.1](https://github.com/eggjs/tegg/compare/v3.39.0...v3.39.1) (2024-04-28)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.39.0](https://github.com/eggjs/tegg/compare/v3.38.0...v3.39.0) (2024-04-19)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+# [3.38.0](https://github.com/eggjs/tegg/compare/v3.37.3...v3.38.0) (2024-04-18)
+
+**Note:** Version bump only for package @eggjs/tegg-types
+
+
+
+
+
+## [3.37.3](https://github.com/eggjs/tegg/compare/v3.37.2...v3.37.3) (2024-04-17)
+
+
+### Bug Fixes
+
+* tegg-types publish ([#212](https://github.com/eggjs/tegg/issues/212)) ([98a4188](https://github.com/eggjs/tegg/commit/98a4188be2a307722c3df0c82a7af0d0fef685fd))
+
+
+
+
+
+## [3.37.2](https://github.com/eggjs/tegg/compare/v3.37.1...v3.37.2) (2024-04-17)
+
+**Note:** Version bump only for package @eggjs/tegg-types
