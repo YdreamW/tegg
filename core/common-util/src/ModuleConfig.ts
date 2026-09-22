@@ -1,25 +1,18 @@
-import assert from 'assert';
-import yaml from 'js-yaml';
-import fs, { promises as fsPromise } from 'fs';
-import path from 'path';
-import globby from 'globby';
-import { FSUtil } from './FSUtil';
+import assert from 'node:assert';
+import fs, { promises as fsPromise } from 'node:fs';
+import path from 'node:path';
 import extend from 'extend2';
-
-export interface ModuleReference {
-  name: string;
-  path: string;
-}
-
-export interface InlineModuleReferenceConfig {
-  path: string;
-}
-
-export interface NpmModuleReferenceConfig {
-  package: string;
-}
-
-export type ModuleReferenceConfig = InlineModuleReferenceConfig | NpmModuleReferenceConfig;
+import globby from 'globby';
+import yaml from 'js-yaml';
+import type {
+  InlineModuleReferenceConfig,
+  ModuleConfig,
+  ModuleReference,
+  ModuleReferenceConfig,
+  NpmModuleReferenceConfig,
+  ReadModuleReferenceOptions,
+} from '@eggjs/tegg-types';
+import { FSUtil } from './FSUtil';
 
 export class ModuleReferenceConfigHelp {
   static isInlineModuleReference(moduleReference: ModuleReferenceConfig): moduleReference is InlineModuleReferenceConfig {
@@ -31,34 +24,15 @@ export class ModuleReferenceConfigHelp {
   }
 }
 
-export interface ModuleConfig {
-}
-
-export interface ReadModuleReferenceOptions {
-  // module dir deep for globby when use auto scan module
-  // default is 10
-  deep?: number;
-  cwd?: string;
-  extraFilePattern?: string[];
-}
-
 const DEFAULT_READ_MODULE_REF_OPTS = {
   deep: 10,
 };
 
 export class ModuleConfigUtil {
-  public static moduleYamlPath(modulePath: string, env?: string): string {
-    if (env) {
-      return path.join(modulePath, `module.${env}.yml`);
-    }
-    return path.join(modulePath, 'module.yml');
-  }
+  static configNames: string[] | undefined;
 
-  public static moduleJsonPath(modulePath: string, env?: string): string {
-    if (env) {
-      return path.join(modulePath, `module.${env}.json`);
-    }
-    return path.join(modulePath, 'module.json');
+  public static setConfigNames(configNames: string[] | undefined) {
+    ModuleConfigUtil.configNames = configNames;
   }
 
   public static readModuleReference(baseDir: string, options?: ReadModuleReferenceOptions): readonly ModuleReference[] {
@@ -223,25 +197,42 @@ export class ModuleConfigUtil {
     return ModuleConfigUtil.getModuleName(pkg);
   }
 
-  public static async loadModuleConfig(moduleDir: string, baseDir?: string, env?: string): Promise<ModuleConfig | undefined> {
-    moduleDir = ModuleConfigUtil.resolveModuleDir(moduleDir, baseDir);
-    let defaultConfig = await ModuleConfigUtil.loadModuleYaml(moduleDir);
-    if (!defaultConfig) {
-      defaultConfig = await ModuleConfigUtil.loadModuleJson(moduleDir);
-    }
-    let envConfig: ModuleConfig | undefined;
+  public static async loadModuleConfig(moduleDir: string, baseDir?: string, env?: string): Promise<ModuleConfig> {
+    const modulePath = ModuleConfigUtil.resolveModuleDir(moduleDir, baseDir);
+    let configNames: string[];
     if (env) {
-      envConfig = await ModuleConfigUtil.loadModuleYaml(moduleDir, env);
-      if (!envConfig) {
-        envConfig = await ModuleConfigUtil.loadModuleJson(moduleDir, env);
+      configNames = [ 'module', `module.${env}` ];
+    } else {
+      // assert(ModuleConfigUtil.configNames, 'should setConfigNames before load module config');
+      configNames = ModuleConfigUtil.configNames || [ 'module' ];
+    }
+
+    const target: ModuleConfig = {};
+    for (const configName of configNames) {
+      let config = await ModuleConfigUtil.#loadOne(modulePath, configName);
+      // both module.yml and module.default.yml are ok for default config
+      if (configName === 'module.default' && !config) {
+        config = await ModuleConfigUtil.#loadOne(modulePath, 'module');
+      }
+      if (config) {
+        extend(true, target, config);
       }
     }
-    extend(true, defaultConfig, envConfig);
-    return defaultConfig;
+
+    return target;
   }
 
-  private static async loadModuleJson(moduleDir: string, env?: string): Promise<ModuleConfig | undefined> {
-    const moduleJsonPath = ModuleConfigUtil.moduleJsonPath(moduleDir, env);
+  static async #loadOne(moduleDir: string, configName: string): Promise<ModuleConfig | undefined> {
+    const yamlConfigPath = path.join(moduleDir, `${configName}.yml`);
+    let config = await ModuleConfigUtil.#loadYaml(yamlConfigPath);
+    if (!config) {
+      const jsonConfigPath = path.join(moduleDir, `${configName}.json`);
+      config = await ModuleConfigUtil.#loadJson(jsonConfigPath);
+    }
+    return config;
+  }
+
+  static async #loadJson(moduleJsonPath: string): Promise<ModuleConfig | undefined> {
     const moduleJsonPathExists = await FSUtil.fileExists(moduleJsonPath);
     if (!moduleJsonPathExists) {
       return;
@@ -251,8 +242,7 @@ export class ModuleConfigUtil {
     return moduleJson.config;
   }
 
-  private static async loadModuleYaml(moduleDir: string, env?: string): Promise<ModuleConfig | undefined> {
-    const moduleYamlPath = ModuleConfigUtil.moduleYamlPath(moduleDir, env);
+  static async #loadYaml(moduleYamlPath: string): Promise<ModuleConfig | undefined> {
     const moduleYamlPathExists = await FSUtil.fileExists(moduleYamlPath);
     if (!moduleYamlPathExists) {
       return;
@@ -261,25 +251,42 @@ export class ModuleConfigUtil {
     return yaml.safeLoad(moduleYamlContent) as ModuleConfigUtil;
   }
 
-  public static loadModuleConfigSync(moduleDir: string, baseDir?: string, env?: string): ModuleConfig | undefined {
-    moduleDir = ModuleConfigUtil.resolveModuleDir(moduleDir, baseDir);
-    let defaultConfig = ModuleConfigUtil.loadModuleYamlSync(moduleDir);
-    if (!defaultConfig) {
-      defaultConfig = ModuleConfigUtil.loadModuleJsonSync(moduleDir);
-    }
-    let envConfig: ModuleConfig | undefined;
+  public static loadModuleConfigSync(moduleDir: string, baseDir?: string, env?: string): ModuleConfig {
+    const modulePath = ModuleConfigUtil.resolveModuleDir(moduleDir, baseDir);
+    let configNames: string[];
     if (env) {
-      envConfig = ModuleConfigUtil.loadModuleYamlSync(moduleDir, env);
-      if (!envConfig) {
-        envConfig = ModuleConfigUtil.loadModuleJsonSync(moduleDir, env);
+      configNames = [ 'module', `module.${env}` ];
+    } else {
+      // assert(ModuleConfigUtil.configNames, 'should setConfigNames before load module config');
+      configNames = ModuleConfigUtil.configNames || [ 'module' ];
+    }
+
+    const target: ModuleConfig = {};
+    for (const configName of configNames) {
+      let config = ModuleConfigUtil.#loadOneSync(modulePath, configName);
+      // both module.yml and module.default.yml are ok for default config
+      if (configName === 'module.default' && !config) {
+        config = ModuleConfigUtil.#loadOneSync(modulePath, 'module');
+      }
+      if (config) {
+        extend(true, target, config);
       }
     }
-    extend(true, defaultConfig, envConfig);
-    return defaultConfig;
+
+    return target;
   }
 
-  private static loadModuleJsonSync(moduleDir: string, env?: string): ModuleConfig | undefined {
-    const moduleJsonPath = ModuleConfigUtil.moduleJsonPath(moduleDir, env);
+  static #loadOneSync(moduleDir: string, configName: string): ModuleConfig | undefined {
+    const yamlConfigPath = path.join(moduleDir, `${configName}.yml`);
+    let config = ModuleConfigUtil.#loadYamlSync(yamlConfigPath);
+    if (!config) {
+      const jsonConfigPath = path.join(moduleDir, `${configName}.json`);
+      config = ModuleConfigUtil.#loadJsonSync(jsonConfigPath);
+    }
+    return config;
+  }
+
+  static #loadJsonSync(moduleJsonPath: string): ModuleConfig | undefined {
     const moduleJsonPathExists = fs.existsSync(moduleJsonPath);
     if (!moduleJsonPathExists) {
       return;
@@ -289,13 +296,85 @@ export class ModuleConfigUtil {
     return moduleJson.config;
   }
 
-  private static loadModuleYamlSync(moduleDir: string, env?: string): ModuleConfig | undefined {
-    const moduleYamlPath = ModuleConfigUtil.moduleYamlPath(moduleDir, env);
+  static #loadYamlSync(moduleYamlPath: string): ModuleConfig | undefined {
     const moduleYamlPathExists = fs.existsSync(moduleYamlPath);
     if (!moduleYamlPathExists) {
       return;
     }
     const moduleYamlContent = fs.readFileSync(moduleYamlPath, 'utf8');
     return yaml.safeLoad(moduleYamlContent) as ModuleConfig;
+  }
+
+  /**
+   * 去重模块引用，避免重复添加相同的模块
+   * @param moduleReferences 模块引用数组
+   * @return 去重后的模块引用数组
+   */
+  public static deduplicateModules(
+    moduleReferences: readonly ModuleReference[],
+  ): readonly ModuleReference[] {
+
+    const moduleMap = new Map<string, ModuleReference>();
+    const nameMap = new Map<string, ModuleReference>();
+
+    for (const moduleRef of moduleReferences) {
+      const key = moduleRef.path;
+      const existingRef = moduleMap.get(key);
+
+      // 如果路径相同，优先保留非 optional 模块
+      if (existingRef) {
+        // 优先保留非 optional 模块
+        // 将 undefined 视为 false（非可选）
+        const existingOptional = existingRef.optional ?? false;
+        const currentOptional = moduleRef.optional ?? false;
+
+        if (!existingOptional && currentOptional) {
+          // 保留现有的非 optional 模块，跳过当前的 optional 模块
+          continue;
+        } else if (existingOptional && !currentOptional) {
+          // 用非 optional 模块替换现有的 optional 模块
+          // 在替换之前，先检查新模块的名称是否与已有的其他模块名称冲突
+          if (existingRef.name !== moduleRef.name) {
+            const existingByName = nameMap.get(moduleRef.name);
+            if (existingByName) {
+              // 如果名称重复但路径不同，直接报错
+              throw new Error(`Duplicate module name "${moduleRef.name}" found: existing at ${existingByName.path}, duplicate at ${moduleRef.path}`);
+            }
+          }
+
+          // 确保新模块的 optional 属性为 false
+          const newModuleRef = {
+            ...moduleRef,
+            optional: false,
+          };
+          moduleMap.set(key, newModuleRef);
+          // 同时更新 nameMap
+          if (nameMap.get(existingRef.name) === existingRef) {
+            nameMap.delete(existingRef.name);
+          }
+          // 如果名称不同，需要更新 nameMap
+          if (existingRef.name !== newModuleRef.name) {
+            nameMap.delete(existingRef.name);
+          }
+          nameMap.set(newModuleRef.name, newModuleRef);
+          continue;
+        }
+        // 如果都是 optional 或都是非 optional，保留第一个
+        continue;
+      }
+
+      // 检查模块名称是否重复
+      const existingByName = nameMap.get(moduleRef.name);
+      if (existingByName) {
+        // 如果名称重复但路径不同，直接报错
+        throw new Error(`Duplicate module name "${moduleRef.name}" found: existing at ${existingByName.path}, duplicate at ${moduleRef.path}`);
+      }
+
+      // 添加新模块
+      moduleMap.set(key, moduleRef);
+      nameMap.set(moduleRef.name, moduleRef);
+    }
+
+    return Array.from(moduleMap.values());
   }
 }

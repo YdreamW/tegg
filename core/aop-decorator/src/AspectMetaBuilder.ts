@@ -1,5 +1,5 @@
+import type { EggProtoImplClass } from '@eggjs/tegg-types';
 import { CrosscutAdviceFactory } from './CrosscutAdviceFactory';
-import { EggProtoImplClass } from '@eggjs/core-decorator';
 import { Aspect, AspectBuilder } from './model/Aspect';
 import { PointcutAdviceInfoUtil } from './util/PointcutAdviceInfoUtil';
 
@@ -26,7 +26,7 @@ export class AspectMetaBuilder {
     return aspectList;
   }
 
-  private static getAllMethods(clazz): PropertyKey[] {
+  static getAllMethods(clazz): PropertyKey[] {
     const methodSet = new Set<string>();
     function getMethods(obj) {
       if (obj) {

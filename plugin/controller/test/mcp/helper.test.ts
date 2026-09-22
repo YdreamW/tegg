@@ -1,0 +1,252 @@
+import {
+  MCPResourceMeta,
+  MCPToolMeta,
+  MCPPromptMeta,
+} from '@eggjs/controller-decorator';
+import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
+import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import * as z from 'zod/v4';
+import assert from 'assert';
+
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+
+describe('plugin/controller/test/mcp/mcp.test.ts', () => {
+
+  if (parseInt(process.versions.node, 10) < 18) {
+    return;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { MCPServerHelper } = require('../../lib/impl/mcp/MCPServerHelper');
+  it('MCPServerHelper should work', async () => {
+    const PromptType = {
+      name: z.string(),
+    };
+
+    const ToolType = {
+      name: z.string().describe('npm package name'),
+    };
+
+    const ToolOutputType = {
+      packageName: z.string(),
+      found: z.boolean(),
+    };
+
+    const helper = new MCPServerHelper({
+      name: 'test',
+      version: '1.0.0',
+      hooks: [],
+      getContext: () => ({ trace: 'context' }),
+    });
+
+    const resourceMeta = new MCPResourceMeta({
+      name: 'testResource',
+      needAcl: false,
+      middlewares: [],
+      uri: 'mcp://npm/egg?version=4.10.0',
+      contextParamIndex: 1,
+    });
+
+    const toolMeta = new MCPToolMeta({
+      name: 'testTool',
+      needAcl: false,
+      middlewares: [],
+      outputSchema: ToolOutputType,
+      meta: {
+        ui: {
+          resourceUri: 'ui://test/tool',
+          visibility: [ 'model', 'app' ],
+        },
+      },
+      contextParamIndex: 1,
+      detail: {
+        argsSchema: ToolType,
+        index: 0,
+      },
+    });
+
+    const invalidOutputToolMeta = new MCPToolMeta({
+      name: 'invalidOutputTool',
+      needAcl: false,
+      middlewares: [],
+      outputSchema: ToolOutputType,
+    });
+
+    const promptMeta = new MCPPromptMeta({
+      name: 'testPrompt',
+      needAcl: false,
+      middlewares: [],
+      description: 'description',
+      title: 'title',
+      contextParamIndex: 1,
+      detail: {
+        argsSchema: PromptType,
+        index: 0,
+      },
+    });
+
+    const getOrCreateEggObject = () => ({ obj: {
+      [promptMeta.name]: (args, ctx) => {
+        assert.deepEqual(ctx, { trace: 'context' });
+        return {
+          messages: [
+            {
+              role: 'user',
+              content: {
+                type: 'text',
+                text: `Generate a concise but descriptive commit message for these changes:\n\n${args.name}`,
+              },
+            },
+          ],
+        };
+      },
+      [toolMeta.name]: (args, ctx) => {
+        assert.deepEqual(ctx, { trace: 'context' });
+        return {
+          content: [
+            {
+              type: 'text',
+              text: `npm package: ${args.name} not found`,
+            },
+          ],
+          structuredContent: {
+            packageName: args.name,
+            found: false,
+          },
+        };
+      },
+      [invalidOutputToolMeta.name]: () => {
+        return {
+          content: [{ type: 'text', text: 'invalid output' }],
+          structuredContent: {
+            packageName: 'aaa',
+            found: 'not-a-boolean',
+          },
+        };
+      },
+      [resourceMeta.name]: (uri, ctx) => {
+        assert.deepEqual(ctx, { trace: 'context' });
+        return {
+          contents: [
+            {
+              uri: uri.toString(),
+              text: 'MOCK TEXT',
+            },
+          ],
+        };
+      },
+    } });
+
+    await helper.mcpToolRegister(getOrCreateEggObject as any, { getMetaData: () => ({}) } as any, toolMeta);
+    await helper.mcpToolRegister(getOrCreateEggObject as any, { getMetaData: () => ({}) } as any, invalidOutputToolMeta);
+    await helper.mcpResourceRegister(getOrCreateEggObject as any, { getMetaData: () => ({}) } as any, resourceMeta);
+    await helper.mcpPromptRegister(getOrCreateEggObject as any, { getMetaData: () => ({}) } as any, promptMeta);
+
+    const [ clientTransport, serverTransport ] = InMemoryTransport.createLinkedPair();
+
+    const client = new Client(
+      {
+        name: 'test client',
+        version: '1.0',
+      },
+      {
+        capabilities: {
+          // tools: {},
+        },
+      },
+    );
+
+    await Promise.all([
+      client.connect(clientTransport),
+      helper.server.connect(serverTransport),
+    ]);
+    const tools = await client.listTools();
+
+    assert.deepEqual(tools.tools[0].outputSchema?.properties, {
+      packageName: { type: 'string' },
+      found: { type: 'boolean' },
+    });
+    assert.deepEqual(tools.tools[0].outputSchema?.required, [ 'packageName', 'found' ]);
+
+    assert.deepEqual(tools.tools.map(tool => ({ name: tool.name, description: tool.description, _meta: tool._meta })), [
+      {
+        description: undefined,
+        name: 'testTool',
+        _meta: {
+          ui: {
+            resourceUri: 'ui://test/tool',
+            visibility: [ 'model', 'app' ],
+          },
+        },
+      },
+      {
+        description: undefined,
+        name: 'invalidOutputTool',
+        _meta: undefined,
+      },
+    ]);
+
+    const toolRes = await client.callTool({
+      name: 'testTool',
+      arguments: {
+        name: 'aaa',
+      },
+    });
+    assert.deepEqual(toolRes, {
+      content: [{ type: 'text', text: 'npm package: aaa not found' }],
+      structuredContent: {
+        packageName: 'aaa',
+        found: false,
+      },
+    });
+    const invalidOutputToolRes = await client.callTool({
+      name: 'invalidOutputTool',
+      arguments: {},
+    }) as CallToolResult;
+    assert.equal(invalidOutputToolRes.isError, true);
+    const invalidOutputContent = invalidOutputToolRes.content[0];
+    assert.equal(invalidOutputContent.type, 'text');
+    if (invalidOutputContent.type === 'text') {
+      assert.match(invalidOutputContent.text, /Output validation error/);
+    }
+    const resources = await client.listResources();
+    assert.deepEqual(resources, {
+      resources: [
+        { uri: 'mcp://npm/egg?version=4.10.0', name: 'testResource' },
+      ],
+    });
+    const resourceRes = await client.readResource({
+      uri: 'mcp://npm/egg?version=4.10.0',
+    });
+    assert.deepEqual(resourceRes, {
+      contents: [{ uri: 'mcp://npm/egg?version=4.10.0', text: 'MOCK TEXT' }],
+    });
+    const prompts = await client.listPrompts();
+    assert.deepEqual(prompts, {
+      prompts: [
+        { name: 'testPrompt', arguments: [{ name: 'name', required: true, description: undefined }], description: 'description', title: 'title' },
+      ],
+    });
+
+    const promptRes = await client.getPrompt({
+      name: 'testPrompt',
+      arguments: {
+        name: 'bbb',
+      },
+    });
+    assert.deepEqual(promptRes, {
+      messages: [
+        {
+          role: 'user',
+          content: {
+            type: 'text',
+            text: 'Generate a concise but descriptive commit message for these changes:\n\nbbb',
+          },
+        },
+      ],
+    });
+
+    await clientTransport.close();
+
+  });
+});

@@ -1,9 +1,11 @@
+import type { EggContext, IncomingHttpHeaders, Next } from '@eggjs/tegg-types';
+import { HTTPMethodEnum } from '@eggjs/tegg-types'
 import { HTTPController } from '../../src/decorator/http/HTTPController';
 import { Context } from '../../src/decorator/Context';
 import { Middleware } from '../../src/decorator/Middleware';
-import { EggContext, HTTPMethodEnum, Next } from '../../src/model';
-import { HTTPBody, HTTPParam, HTTPQueries, HTTPQuery } from '../../src/decorator/http/HTTPParam';
+import { HTTPBody, HTTPHeaders, HTTPParam, HTTPQueries, HTTPQuery } from '../../src/decorator/http/HTTPParam';
 import { HTTPMethod } from '../../src/decorator/http/HTTPMethod';
+
 
 async function middleware1(ctx: EggContext, next: Next) {
   console.log(ctx, next);
@@ -45,8 +47,9 @@ export class ControllerWithParam {
     path: '/bar/:id',
     method: HTTPMethodEnum.GET,
   })
-  async bar(@Context() ctx: EggContext, @HTTPParam() id: string, @HTTPParam() fooId: string) {
-    console.log(ctx, id, fooId);
+  async bar(@Context() ctx: EggContext, @HTTPParam() id: string, @HTTPParam() fooId: string,
+    @HTTPHeaders() headers: IncomingHttpHeaders) {
+    console.log(ctx, id, fooId, headers);
   }
 }
 
@@ -125,4 +128,13 @@ export class Error2Controller {
   async bar(@Context() ctx: EggContext, id = 233, @HTTPParam() id2 = 233) {
     console.log(ctx, id, id2);
   }
+}
+
+@HTTPController({ timeout: 1000 })
+export class TimeoutController {
+  @HTTPMethod({ method: HTTPMethodEnum.GET, path: '/timeout-1' })
+  async timeout1() {}
+
+  @HTTPMethod({ method: HTTPMethodEnum.GET, path: '/timeout-2', timeout: 2000 })
+  async timeout2() {}
 }

@@ -1,0 +1,956 @@
+import type { Application, Context, Router } from 'egg';
+
+import assert from 'node:assert';
+import { webcrypto } from 'node:crypto';
+import http, { IncomingMessage, ServerResponse } from 'node:http';
+import { Socket } from 'node:net';
+
+import {
+  ControllerMetadata,
+  MCPControllerMeta,
+  CONTROLLER_META_DATA,
+  MCPPromptMeta,
+  MCPToolMeta,
+  ControllerType,
+  EggContext,
+  EggObjectName,
+  MCPResourceMeta,
+  MCPProtocols,
+} from '@eggjs/tegg';
+import { EggPrototype } from '@eggjs/tegg-metadata';
+import { EggContainerFactory, EggObject } from '@eggjs/tegg-runtime';
+import { ControllerRegister } from '../../ControllerRegister';
+import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { isInitializeRequest, isJSONRPCRequest, JSONRPCMessage, MessageExtraInfo } from '@modelcontextprotocol/sdk/types.js';
+import awaitEvent from 'await-event';
+import compose from 'koa-compose';
+
+import getRawBody from 'raw-body';
+import contentType from 'content-type';
+
+import { MCPConfig } from './MCPConfig';
+import { MCPServerHelper } from './MCPServerHelper';
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+
+// The MCP SDK uses the Web Crypto global for stream IDs. Node.js 18 exposes
+// Web Crypto from node:crypto but does not install it globally in script files.
+if (typeof globalThis.crypto === 'undefined') {
+  Object.defineProperty(globalThis, 'crypto', {
+    configurable: true,
+    value: webcrypto,
+  });
+}
+
+export interface MCPControllerHook {
+  // SSE
+  preSSEInitHandle?: (ctx: Context, transport: SSEServerTransport, register: MCPControllerRegister) => Promise<void>
+  preHandleInitHandle?: (ctx: Context) => Promise<void>
+
+  // STREAM
+  preHandle?: (ctx: Context) => Promise<void>
+  onStreamSessionInitialized?: (ctx: Context, transport: StreamableHTTPServerTransport, server: McpServer, register: MCPControllerRegister) => Promise<void>
+
+  // COMMON
+  preProxy?: (ctx: Context, proxyReq: http.IncomingMessage, proxyResp: http.ServerResponse) => Promise<void>
+  schemaLoader?: (controllerMeta: MCPControllerMeta, meta: MCPPromptMeta | MCPToolMeta) => Promise<Parameters<McpServer['tool']>['2'] | Parameters<McpServer['prompt']>['2']>
+  checkAndRunProxy?: (ctx: Context, type: MCPProtocols, sessionId: string) => Promise<boolean>;
+
+  // middleware
+  middlewareStart?: (ctx: Context) => Promise<void>
+  middlewareEnd?: (ctx: Context) => Promise<void>
+  middlewareError?: (ctx: Context, e: Error) => Promise<void>
+}
+
+interface ServerRegisterRecord<T> {
+  getOrCreateEggObject: (proto: EggPrototype, name?: EggObjectName) => Promise<EggObject>;
+  proto: EggPrototype,
+  meta: T,
+}
+
+class InnerSSEServerTransport extends SSEServerTransport {
+  async send(message: JSONRPCMessage) {
+    let res: null | Error = null;
+    try {
+      await super.send(message);
+    } catch (e) {
+      res = e as Error;
+    } finally {
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      const map = MCPControllerRegister.instance?.sseTransportsRequestMap.get(this);
+      if (map && 'id' in message) {
+        const { resolve, reject } = map[message.id!] ?? {};
+        if (resolve) {
+          res ? reject(res) : resolve(res);
+          delete map[String(message.id)];
+        }
+      }
+    }
+  }
+}
+
+export class MCPControllerRegister implements ControllerRegister {
+  static instance?: MCPControllerRegister;
+  readonly app: Application;
+  readonly eggContainerFactory: typeof EggContainerFactory;
+  private readonly router: Router;
+  private controllerProtos: EggPrototype[] = [];
+  private registeredControllerProtos: EggPrototype[] = [];
+  transports: Record<string, InnerSSEServerTransport> = {};
+  sseConnections = new Map<
+  string,
+  { res: ServerResponse; intervalId: NodeJS.Timeout }
+  >();
+  mcpServerHelperMap: Record<string, () => MCPServerHelper> = {};
+  private controllerMeta: MCPControllerMeta;
+  mcpConfig: MCPConfig;
+  streamTransports: Record<string, StreamableHTTPServerTransport> = {};
+  private streamServers: Partial<Record<string, { close(): Promise<void> }>> = {};
+  private streamServerNames: Partial<Record<string, string>> = {};
+  private streamCleanupTimers: Partial<Record<string, NodeJS.Timeout>> = {};
+  private streamClosePromises: Partial<Record<string, Promise<void>>> = {};
+  // eslint-disable-next-line no-spaced-func
+  sseTransportsRequestMap = new Map<
+  InnerSSEServerTransport,
+  Record<
+  string,
+  {
+    resolve: (value: PromiseLike<null> | null) => void;
+    reject: (reason?: any) => void;
+  }
+  >
+  >();
+  static hooks: MCPControllerHook[] = [];
+  globalMiddlewares: compose.ComposedMiddleware<EggContext>;
+
+  registerMap: Record<string, { tools: ServerRegisterRecord<MCPToolMeta>[], prompts: ServerRegisterRecord<MCPPromptMeta>[], resources: ServerRegisterRecord<MCPResourceMeta>[] }> = {};
+
+  pingIntervals: Record<string, NodeJS.Timeout> = {};
+
+  static create(proto: EggPrototype, controllerMeta: ControllerMetadata, app: Application) {
+    assert(controllerMeta.type === ControllerType.MCP, 'controller meta type is not MCP');
+    if (!MCPControllerRegister.instance) {
+      MCPControllerRegister.instance = new MCPControllerRegister(proto, controllerMeta as MCPControllerMeta, app);
+    }
+    MCPControllerRegister.instance.controllerProtos.push(proto);
+    return MCPControllerRegister.instance;
+  }
+
+  constructor(_proto: EggPrototype, controllerMeta: MCPControllerMeta, app: Application) {
+    this.app = app;
+    this.eggContainerFactory = app.eggContainerFactory;
+    this.router = app.router;
+
+    this.controllerMeta = controllerMeta;
+
+    this.mcpConfig = new MCPConfig(app.config.mcp);
+  }
+
+  static addHook(hook: MCPControllerHook) {
+    if (!MCPControllerRegister.hooks.includes(hook)) {
+      MCPControllerRegister.hooks.push(hook);
+    }
+  }
+
+  static deleteHook(hook: MCPControllerHook) {
+    const index = MCPControllerRegister.hooks.indexOf(hook);
+    if (index >= 0) {
+      MCPControllerRegister.hooks.splice(index, 1);
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static async connectStatelessStreamTransport(_name?: string) {
+    // No-op: MCP SDK >= 1.26 requires stateless transports to be single-use,
+    // so transports are now created per-request in the route handler.
+  }
+
+  static clean() {
+    if (this.instance) {
+      for (const timer of Object.values(this.instance.streamCleanupTimers)) {
+        clearTimeout(timer);
+      }
+      this.instance.controllerProtos = [];
+      this.instance.streamTransports = {};
+      this.instance.streamServers = {};
+      this.instance.streamServerNames = {};
+      this.instance.streamCleanupTimers = {};
+      this.instance.streamClosePromises = {};
+    }
+    this.instance = undefined;
+    this.hooks = [];
+  }
+
+  mcpStatelessStreamServerInit(name?: string) {
+    const postRouterFunc = this.router.post;
+    const self = this;
+    let mw = self.app.middleware.teggCtxLifecycleMiddleware();
+    if (self.globalMiddlewares) {
+      mw = compose([ mw, self.globalMiddlewares ]);
+    }
+    const initHandler = async (ctx: Context) => {
+      // Create fresh transport and server per request
+      // MCP SDK >= 1.26 requires stateless transports to be single-use
+      const transport: StreamableHTTPServerTransport =
+        new StreamableHTTPServerTransport({
+          sessionIdGenerator: undefined,
+        });
+      const mcpServerHelper = self.mcpServerHelperMap[name ?? 'default']();
+      const registerEntry = self.registerMap[name ?? 'default'];
+      if (registerEntry) {
+        for (const tool of registerEntry.tools) {
+          await mcpServerHelper.mcpToolRegister(
+            tool.getOrCreateEggObject,
+            tool.proto,
+            tool.meta,
+          );
+        }
+        for (const resource of registerEntry.resources) {
+          await mcpServerHelper.mcpResourceRegister(
+            resource.getOrCreateEggObject,
+            resource.proto,
+            resource.meta,
+          );
+        }
+        for (const prompt of registerEntry.prompts) {
+          await mcpServerHelper.mcpPromptRegister(
+            prompt.getOrCreateEggObject,
+            prompt.proto,
+            prompt.meta,
+          );
+        }
+      }
+      await mcpServerHelper.server.connect(transport);
+      const onmessage = transport.onmessage;
+      transport.onmessage = async (message: JSONRPCMessage, extra?: MessageExtraInfo) => {
+        if (self.app.currentContext) {
+          self.app.currentContext.mcpArg = message;
+        }
+        onmessage && await onmessage(message, extra);
+      };
+      if (MCPControllerRegister.hooks.length > 0) {
+        for (const hook of MCPControllerRegister.hooks) {
+          await hook.preHandle?.(self.app.currentContext);
+        }
+      }
+      ctx.respond = false;
+      ctx.set({
+        'content-type': 'text/event-stream',
+      });
+      await ctx.app.ctxStorage.run(ctx, async () => {
+        await mw(ctx, async () => {
+          try {
+            await transport.handleRequest(ctx.req, ctx.res);
+            await self.waitResponseClosed(ctx.res);
+          } finally {
+            await mcpServerHelper.server.close();
+            await transport.close();
+          }
+        });
+      });
+      return;
+    };
+    Reflect.apply(postRouterFunc, this.router, [
+      'chairMcpStatelessStreamInit',
+      self.mcpConfig.getStatelessStreamPath(name),
+      ...[],
+      initHandler,
+    ]);
+    // stateless 只支持 post
+    const getRouterFunc = this.router.get;
+    const delRouterFunc = this.router.del;
+    const notHandler = async (ctx: Context) => {
+      ctx.status = 405;
+      ctx.body = {
+        jsonrpc: '2.0',
+        error: {
+          code: -32000,
+          message: 'Method not allowed.',
+        },
+        id: null,
+      };
+    };
+    Reflect.apply(getRouterFunc, this.router, [
+      'chairMcpStatelessStreamInit',
+      self.mcpConfig.getStatelessStreamPath(name),
+      ...[],
+      notHandler,
+    ]);
+    Reflect.apply(delRouterFunc, this.router, [
+      'chairMcpStatelessStreamInit',
+      self.mcpConfig.getStatelessStreamPath(name),
+      ...[],
+      notHandler,
+    ]);
+  }
+
+  mcpStreamServerInit(name?: string) {
+    const allRouterFunc = this.router.all;
+    const self = this;
+    let mw = self.app.middleware.teggCtxLifecycleMiddleware();
+    if (self.globalMiddlewares) {
+      mw = compose([ mw, self.globalMiddlewares ]);
+    }
+    const initHandler = async (ctx: Context) => {
+      ctx.respond = false;
+      if (MCPControllerRegister.hooks.length > 0) {
+        for (const hook of MCPControllerRegister.hooks) {
+          await hook.preHandle?.(self.app.currentContext);
+        }
+      }
+      const sessionId = ctx.req.headers['mcp-session-id'] as string | undefined;
+      if (!sessionId) {
+        const ct = contentType.parse(ctx.req.headers['content-type'] || 'application/json');
+
+        let body;
+
+        try {
+          const rawBody = await getRawBody(ctx.req, {
+            limit: '4mb',
+            encoding: ct.parameters.charset ?? 'utf-8',
+          });
+
+          body = JSON.parse(rawBody);
+        } catch (e) {
+          ctx.status = 400;
+          ctx.body = {
+            jsonrpc: '2.0',
+            error: {
+              code: -32000,
+              message: `Bad Request: body should is json, ${e.toString()}`,
+            },
+            id: null,
+          };
+          return;
+        }
+
+        if (isInitializeRequest(body)) {
+          ctx.respond = false;
+          const eventStore = this.mcpConfig.getEventStore(name);
+          const self = this;
+          const mcpServerHelper = self.mcpServerHelperMap[name ?? 'default']();
+          for (const tool of self.registerMap[name ?? 'default'].tools) {
+            await mcpServerHelper.mcpToolRegister(
+              tool.getOrCreateEggObject,
+              tool.proto,
+              tool.meta,
+            );
+          }
+          for (const resource of self.registerMap[name ?? 'default'].resources) {
+            await mcpServerHelper.mcpResourceRegister(
+              resource.getOrCreateEggObject,
+              resource.proto,
+              resource.meta,
+            );
+          }
+          for (const prompt of self.registerMap[name ?? 'default'].prompts) {
+            await mcpServerHelper.mcpPromptRegister(
+              prompt.getOrCreateEggObject,
+              prompt.proto,
+              prompt.meta,
+            );
+          }
+          let streamSessionId: string | undefined;
+          const transport = new StreamableHTTPServerTransport({
+            sessionIdGenerator: () =>
+              this.mcpConfig.getSessionIdGenerator(name)(ctx),
+            eventStore,
+            onsessionclosed: async sessionId => {
+              self.clearStreamMcpServer(sessionId);
+            },
+            onsessioninitialized: async sessionId => {
+              streamSessionId = sessionId;
+              self.clearStreamCleanupTimer(sessionId);
+              self.streamTransports[sessionId] = transport;
+              self.streamServers[sessionId] = mcpServerHelper.server;
+              if (name) {
+                self.streamServerNames[sessionId] = name;
+              }
+              self.scheduleStreamMcpServerCleanup(sessionId, name);
+              if (MCPControllerRegister.hooks.length > 0) {
+                for (const hook of MCPControllerRegister.hooks) {
+                  await hook.onStreamSessionInitialized?.(
+                    self.app.currentContext,
+                    transport,
+                    mcpServerHelper.server,
+                    self,
+                  );
+                }
+              }
+              if (self.mcpConfig.getStreamPingEnabled(name)) {
+                self.mcpServerPing(mcpServerHelper.server.server, sessionId, name);
+              }
+            },
+          });
+
+          ctx.set({
+            'content-type': 'text/event-stream',
+          });
+
+          await mcpServerHelper.server.connect(transport);
+
+          const closeFunc = transport.onclose;
+          transport.onclose = async () => {
+            try {
+              await closeFunc?.();
+            } finally {
+              const sessionId = transport.sessionId ?? streamSessionId;
+              if (sessionId) {
+                await self.closeStreamMcpServer(sessionId, mcpServerHelper.server, transport);
+              }
+              if (!ctx.res.destroyed) {
+                ctx.res.destroy();
+              }
+            }
+          };
+
+          const onmessage = transport.onmessage;
+
+          transport.onmessage = async (message: JSONRPCMessage, extra?: MessageExtraInfo) => {
+            if (self.app.currentContext) {
+              self.app.currentContext.mcpArg = message;
+            }
+            onmessage && await onmessage(message, extra);
+          };
+
+          try {
+            await ctx.app.ctxStorage.run(ctx, async () => {
+              await mw(ctx, async () => {
+                await transport.handleRequest(ctx.req, ctx.res, body);
+                await self.waitResponseClosed(ctx.res);
+              });
+            });
+          } finally {
+            self.scheduleStreamMcpServerCleanup(streamSessionId, name);
+          }
+        } else {
+          ctx.status = 400;
+          ctx.body = {
+            jsonrpc: '2.0',
+            error: {
+              code: -32000,
+              message: 'Bad Request: No valid session ID provided',
+            },
+            id: null,
+          };
+          return;
+        }
+      } else if (sessionId) {
+        const transport = self.streamTransports[sessionId];
+        if (transport) {
+          self.scheduleStreamMcpServerCleanup(sessionId, name);
+          if (MCPControllerRegister.hooks.length > 0) {
+            for (const hook of MCPControllerRegister.hooks) {
+              await hook.preHandle?.(self.app.currentContext);
+            }
+          }
+          ctx.respond = false;
+          ctx.set({
+            'content-type': 'text/event-stream',
+          });
+
+          try {
+            await ctx.app.ctxStorage.run(ctx, async () => {
+              await mw(ctx, async () => {
+                await transport.handleRequest(ctx.req, ctx.res);
+                await self.waitResponseClosed(ctx.res);
+              });
+            });
+          } finally {
+            self.scheduleStreamMcpServerCleanup(sessionId, name);
+          }
+          return;
+        }
+        if (MCPControllerRegister.hooks.length > 0) {
+          for (const hook of MCPControllerRegister.hooks) {
+            const checked = await hook.checkAndRunProxy?.(
+              self.app.currentContext,
+              MCPProtocols.STREAM,
+              sessionId,
+            );
+            if (checked) {
+              return;
+            }
+          }
+        }
+      }
+      return;
+    };
+    Reflect.apply(allRouterFunc, this.router, [
+      'chairMcpStreamInit',
+      self.mcpConfig.getStreamPath(name),
+      ...[],
+      initHandler,
+    ]);
+  }
+
+  mcpServerInit(name?: string) {
+    const routerFunc = this.router.get;
+    // const aclMiddleware = aclMiddlewareFactory(this.controllerMeta, this.methodMeta);
+    // if (aclMiddleware) {
+    //   methodMiddlewares.push(aclMiddleware);
+    // }
+    const self = this;
+    const initHandler = async (ctx: Context) => {
+      const transport = new InnerSSEServerTransport(
+        self.mcpConfig.getSseMessagePath(name),
+        ctx.res,
+      );
+      const id = transport.sessionId;
+      self.app.logger.warn('sse init, sessionId: %s, removeIp: %s', id, `${ctx.request.socket.remoteAddress}:${ctx.request.socket.remotePort}`);
+      if (MCPControllerRegister.hooks.length > 0) {
+        for (const hook of MCPControllerRegister.hooks) {
+          await hook.preSSEInitHandle?.(
+            self.app.currentContext,
+            transport,
+            self,
+          );
+        }
+      }
+      // https://github.com/modelcontextprotocol/typescript-sdk/issues/270#issuecomment-2789526821
+      const intervalId = setInterval(() => {
+        if (self.sseConnections.has(id) && !ctx.res.writableEnded) {
+          ctx.res.write(': keepalive\n\n');
+        } else {
+          clearInterval(intervalId);
+          self.sseConnections.delete(id);
+        }
+      }, self.mcpConfig.getSseHeartTime(name));
+      self.sseConnections.set(id, { res: ctx.res, intervalId });
+      self.transports[id] = transport;
+      ctx.set({
+        'content-type': 'text/event-stream',
+      });
+      ctx.respond = false;
+      const mcpServerHelper = self.mcpServerHelperMap[name ?? 'default']();
+      for (const tool of self.registerMap[name ?? 'default'].tools) {
+        await mcpServerHelper.mcpToolRegister(
+          tool.getOrCreateEggObject,
+          tool.proto,
+          tool.meta,
+        );
+      }
+      for (const resource of self.registerMap[name ?? 'default'].resources) {
+        await mcpServerHelper.mcpResourceRegister(
+          resource.getOrCreateEggObject,
+          resource.proto,
+          resource.meta,
+        );
+      }
+      for (const prompt of self.registerMap[name ?? 'default'].prompts) {
+        await mcpServerHelper.mcpPromptRegister(
+          prompt.getOrCreateEggObject,
+          prompt.proto,
+          prompt.meta,
+        );
+      }
+      await mcpServerHelper.server.connect(transport);
+      if (self.mcpConfig.getSsePingEnabled(name)) {
+        self.mcpServerPing(mcpServerHelper.server.server, transport.sessionId, name);
+      }
+      return self.sseCtxStorageRun.bind(self)(ctx, transport, name);
+    };
+    Reflect.apply(routerFunc, this.router, [
+      'chairMcpInit',
+      self.mcpConfig.getSseInitPath(name),
+      ...[],
+      initHandler,
+    ]);
+  }
+
+  async clearSseMcpServer(transport: SSEServerTransport) {
+    delete this.transports[transport.sessionId];
+    if (transport.sessionId && this.pingIntervals[transport.sessionId]) {
+      clearInterval(this.pingIntervals[transport.sessionId]);
+      delete this.pingIntervals[transport.sessionId];
+    }
+    const pendingMap = this.sseTransportsRequestMap.get(transport);
+    if (pendingMap) {
+      for (const requestId of Object.keys(pendingMap)) {
+        pendingMap[requestId].reject(new Error(`SSE session ${transport.sessionId} closed`));
+      }
+      this.sseTransportsRequestMap.delete(transport);
+    }
+    const connection = this.sseConnections.get(transport.sessionId);
+    if (connection) {
+      clearInterval(connection.intervalId);
+      this.sseConnections.delete(transport.sessionId);
+    }
+  }
+
+  async waitResponseClosed(res: ServerResponse) {
+    if (res.writableEnded || res.destroyed) {
+      return;
+    }
+    await Promise.race([
+      awaitEvent(res, 'finish'),
+      awaitEvent(res, 'close'),
+    ]);
+  }
+
+  private clearStreamCleanupTimer(sessionId: string) {
+    const timer = this.streamCleanupTimers[sessionId];
+    if (timer) {
+      clearTimeout(timer);
+      delete this.streamCleanupTimers[sessionId];
+    }
+  }
+
+  scheduleStreamMcpServerCleanup(sessionId: string | undefined, name?: string) {
+    if (!sessionId || !this.streamTransports[sessionId]) {
+      return;
+    }
+    const timeout = this.mcpConfig.getStreamSessionIdleTimeout(name ?? this.streamServerNames[sessionId]);
+    if (timeout <= 0) {
+      return;
+    }
+    this.clearStreamCleanupTimer(sessionId);
+    const timer = setTimeout(() => {
+      this.closeStreamMcpServer(sessionId)
+        .catch(error => {
+          this.app.logger.error('[mcp] close idle stream session %s failed: %s', sessionId, error.message);
+        });
+    }, timeout);
+    timer.unref?.();
+    this.streamCleanupTimers[sessionId] = timer;
+  }
+
+  async closeStreamMcpServer(
+    sessionId: string,
+    server?: { close(): Promise<void> },
+    transport?: StreamableHTTPServerTransport,
+  ) {
+    const existingClosePromise = this.streamClosePromises[sessionId];
+    if (existingClosePromise) {
+      await existingClosePromise;
+      return;
+    }
+
+    const closePromise = Promise.resolve().then(async () => {
+      const targetServer = server ?? this.streamServers[sessionId];
+      const targetTransport = transport ?? this.streamTransports[sessionId];
+      this.clearStreamMcpServer(sessionId);
+
+      try {
+        await targetServer?.close();
+      } catch (error) {
+        this.app.logger.error('[mcp] close stream server %s failed: %s', sessionId, error.message);
+      }
+
+      try {
+        await targetTransport?.close();
+      } catch (error) {
+        this.app.logger.error('[mcp] close stream transport %s failed: %s', sessionId, error.message);
+      }
+    });
+
+    this.streamClosePromises[sessionId] = closePromise;
+    try {
+      await closePromise;
+    } finally {
+      delete this.streamClosePromises[sessionId];
+    }
+  }
+
+  clearStreamMcpServer(sessionId: string) {
+    this.clearStreamCleanupTimer(sessionId);
+    delete this.streamTransports[sessionId];
+    delete this.streamServers[sessionId];
+    delete this.streamServerNames[sessionId];
+    if (this.pingIntervals[sessionId]) {
+      clearInterval(this.pingIntervals[sessionId]);
+      delete this.pingIntervals[sessionId];
+    }
+  }
+
+  sseCtxStorageRun(ctx: Context, transport: SSEServerTransport, name?: string) {
+    const self = this;
+    let mw = this.app.middleware.teggCtxLifecycleMiddleware();
+    if (self.globalMiddlewares) {
+      mw = compose([ mw, self.globalMiddlewares ]);
+    }
+    const closeFunc = transport.onclose;
+    transport.onclose = (...args) => {
+      closeFunc?.(...args);
+      this.clearSseMcpServer(transport);
+    };
+    transport.onerror = error => {
+      self.app.logger.error('session %s error %o', transport.sessionId, error);
+    };
+    const messageFunc = transport.onmessage;
+    self.sseTransportsRequestMap.set(transport, {});
+    transport.onmessage = async (message: JSONRPCMessage, extra?: MessageExtraInfo) => {
+      const args = [ message, extra ];
+      // 这里需要 new 一个新的 ctx，否则 ContextProto 会未被初始化
+      const socket = new Socket();
+      const req = new IncomingMessage(socket);
+      const res = new ServerResponse(req);
+      req.method = 'POST';
+      req.url = self.mcpConfig.getSseInitPath(name);
+      req.headers = {
+        ...ctx.req.headers,
+        ...extra?.requestInfo?.headers,
+        accept: 'application/json, text/event-stream',
+        'content-type': 'application/json',
+      };
+      const newCtx = self.app.createContext(req, res) as unknown as Context;
+      try {
+        await ctx.app.ctxStorage.run(newCtx, async () => {
+          await mw(newCtx, async () => {
+            if (MCPControllerRegister.hooks.length > 0) {
+              for (const hook of MCPControllerRegister.hooks) {
+                await hook.preHandle?.(newCtx);
+              }
+            }
+            if (!messageFunc) {
+              return;
+            }
+
+            const map = self.sseTransportsRequestMap.get(transport);
+            const requestId = isJSONRPCRequest(args[0]) ? String(args[0].id) : undefined;
+            let wait: Promise<null> | undefined;
+            if (map && requestId !== undefined) {
+              wait = new Promise<null>((resolve, reject) => {
+                map[requestId] = { resolve, reject };
+              });
+            }
+
+            try {
+              await messageFunc(message, extra);
+              if (wait) {
+                await wait;
+              }
+            } finally {
+              if (map && requestId !== undefined) {
+                delete map[requestId];
+              }
+            }
+          });
+        });
+      } catch (e) {
+        self.app.logger.warn('[mcp/sse] onmessage error, session %s: %s', transport.sessionId, e.message);
+      } finally {
+        if (!res.destroyed) {
+          res.destroy();
+        }
+        if (!req.destroyed) {
+          req.destroy();
+        }
+        socket.destroy();
+      }
+    };
+  }
+
+  mcpServerRegister(name?: string) {
+    const routerFunc = this.router.post;
+    const self = this;
+    // const aclMiddleware = aclMiddlewareFactory(this.controllerMeta, this.methodMeta);
+    // if (aclMiddleware) {
+    //   methodMiddlewares.push(aclMiddleware);
+    // }
+
+    let mw = self.app.middleware.teggCtxLifecycleMiddleware();
+    if (self.globalMiddlewares) {
+      mw = compose([ mw, self.globalMiddlewares ]);
+    }
+    const messageHander = async (ctx: Context) => {
+      const sessionId = ctx.query.sessionId;
+
+      if (self.transports[sessionId]) {
+        if (MCPControllerRegister.hooks.length > 0) {
+          for (const hook of MCPControllerRegister.hooks) {
+            await hook.preHandleInitHandle?.(self.app.currentContext);
+          }
+        }
+        self.app.logger.info('message coming', sessionId);
+        try {
+          const ct = contentType.parse(ctx.req.headers['content-type'] ?? '');
+
+          const rawBody = await getRawBody(ctx.req, {
+            limit: '4mb',
+            encoding: ct.parameters.charset ?? 'utf-8',
+          });
+
+          const body = JSON.parse(rawBody);
+          ctx.mcpArg = body;
+          await self.transports[sessionId].handlePostMessage(ctx.req, ctx.res, body);
+        } catch (error) {
+          self.app.logger.error('Error handling MCP message', error);
+          if (!ctx.res.headersSent) {
+            ctx.status = 500;
+            ctx.body = {
+              jsonrpc: '2.0',
+              error: {
+                code: -32603,
+                message: `Internal error: ${error.message}`,
+              },
+              id: null,
+            };
+          }
+        }
+        return;
+      }
+      if (MCPControllerRegister.hooks.length > 0) {
+        for (const hook of MCPControllerRegister.hooks) {
+          const checked = await hook.checkAndRunProxy?.(
+            self.app.currentContext,
+            MCPProtocols.SSE,
+            sessionId,
+          );
+          if (checked) {
+            return;
+          }
+          if (checked === false) {
+            ctx.status = 400;
+            ctx.body = {
+              jsonrpc: '2.0',
+              error: {
+                code: -32602,
+                message: 'Bad Request: Session not found',
+              },
+              id: null,
+            };
+            return;
+          }
+        }
+      }
+    };
+    Reflect.apply(routerFunc, this.router, [
+      'chairMcpMessage',
+      self.mcpConfig.getSseMessagePath(name),
+      ...[ mw ],
+      messageHander,
+    ]);
+  }
+
+  getGlobalMiddleware() {
+    const middlewareNames = this.app.config.mcp.middleware || [];
+    const middlewares: compose.Middleware<EggContext>[] = [];
+    for (const name of middlewareNames) {
+      const middlewareFactory = (this.app as unknown as any).middlewares[name];
+      if (!middlewareFactory) {
+        throw new TypeError(`Middleware ${name} not found`);
+      }
+      const options = (this.app.config as any)[name] || {};
+      const mw = middlewareFactory(options, this.app);
+      (mw as any)._name = name;
+      middlewares.push(mw);
+    }
+    this.globalMiddlewares = compose(middlewares);
+  }
+
+  mcpServerPing(server: Server, sessionId: string, name?: string) {
+    const duration = this.mcpConfig.getPingElapsed(name);
+    const interval = this.mcpConfig.getPingInterval(name);
+
+    const startTime = Date.now();
+
+    let errCount = 0;
+
+    const timerId = setInterval(async () => {
+      const elapsed = Date.now() - startTime;
+      try {
+        await server.ping();
+      } catch (e) {
+        errCount++;
+        this.app.logger.warn('mcp server ping failed: %s, errCount: %s', e, errCount);
+      } finally {
+        if ((duration && elapsed >= duration) || errCount > 10) {
+          const sseTransport = this.transports[sessionId];
+          const streamTransport = this.streamTransports[sessionId];
+          if (sseTransport) {
+            this.clearSseMcpServer(sseTransport);
+            await server.close();
+          } else if (streamTransport) {
+            await this.closeStreamMcpServer(sessionId, server, streamTransport);
+          } else {
+            this.app.logger.warn('mcp server ping clear fail, sessionId: ', sessionId);
+          }
+        }
+      }
+    }, interval);
+
+    this.pingIntervals[sessionId] = timerId;
+  }
+
+  async register() {
+    for (const proto of this.controllerProtos) {
+      if (this.registeredControllerProtos.includes(proto)) {
+        continue;
+      }
+      const metadata = proto.getMetaData(
+        CONTROLLER_META_DATA,
+      ) as MCPControllerMeta;
+      if (!this.mcpServerHelperMap[metadata.name ?? 'default']) {
+        this.getGlobalMiddleware();
+        this.mcpServerHelperMap[metadata.name ?? 'default'] = () => {
+          return new MCPServerHelper({
+            name:
+              this.controllerMeta.name ??
+              `chair-mcp-${metadata.name ?? this.app.name}-server`,
+            version: this.controllerMeta.version ?? '1.0.0',
+            hooks: MCPControllerRegister.hooks,
+            getContext: () => this.app.currentContext,
+          });
+        };
+        this.mcpStatelessStreamServerInit(metadata.name);
+        this.mcpStreamServerInit(metadata.name);
+        this.mcpServerInit(metadata.name);
+        this.mcpServerRegister(metadata.name);
+        if (metadata.name) {
+          this.mcpConfig.setMultipleServerPath(this.app, metadata.name);
+        }
+      }
+      for (const prompt of metadata.prompts) {
+        if (!this.registerMap[metadata.name ?? 'default']) {
+          this.registerMap[metadata.name ?? 'default'] = {
+            prompts: [],
+            resources: [],
+            tools: [],
+          };
+        }
+        this.registerMap[metadata.name ?? 'default'].prompts.push({
+          getOrCreateEggObject: this.eggContainerFactory.getOrCreateEggObject.bind(
+            this.eggContainerFactory,
+          ),
+          proto,
+          meta: prompt,
+        });
+      }
+      for (const resource of metadata.resources) {
+        if (!this.registerMap[metadata.name ?? 'default']) {
+          this.registerMap[metadata.name ?? 'default'] = {
+            prompts: [],
+            resources: [],
+            tools: [],
+          };
+        }
+        this.registerMap[metadata.name ?? 'default'].resources.push({
+          getOrCreateEggObject: this.eggContainerFactory.getOrCreateEggObject.bind(
+            this.eggContainerFactory,
+          ),
+          proto,
+          meta: resource,
+        });
+      }
+      for (const tool of metadata.tools) {
+        if (!this.registerMap[metadata.name ?? 'default']) {
+          this.registerMap[metadata.name ?? 'default'] = {
+            prompts: [],
+            resources: [],
+            tools: [],
+          };
+        }
+        this.registerMap[metadata.name ?? 'default'].tools.push({
+          getOrCreateEggObject: this.eggContainerFactory.getOrCreateEggObject.bind(
+            this.eggContainerFactory,
+          ),
+          proto,
+          meta: tool,
+        });
+      }
+      this.registeredControllerProtos.push(proto);
+    }
+  }
+}

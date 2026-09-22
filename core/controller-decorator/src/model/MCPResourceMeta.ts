@@ -1,0 +1,42 @@
+import type { MethodMeta, MiddlewareFunc } from '@eggjs/tegg-types';
+import { ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { ResourceMetadata } from '@modelcontextprotocol/sdk/server/mcp.js';
+
+export class MCPResourceMeta implements MethodMeta {
+  readonly name: string;
+  readonly needAcl: boolean;
+  readonly aclCode?: string;
+  readonly mcpName?: string;
+  readonly uri?: string;
+  readonly template?: ResourceTemplate;
+  readonly metadata?: ResourceMetadata;
+  readonly middlewares: readonly MiddlewareFunc[];
+  readonly extra?: number;
+  readonly contextParamIndex: number | undefined;
+
+  constructor(opt: {
+    name: string;
+    middlewares: MiddlewareFunc[];
+    contextParamIndex?: number;
+    needAcl?: boolean;
+    aclCode?: string,
+    mcpName?: string;
+    uri?: string;
+    template?: ConstructorParameters<typeof ResourceTemplate>;
+    metadata?: ResourceMetadata;
+    extra?: number;
+  }) {
+    this.name = opt.name;
+    this.needAcl = !!opt.needAcl;
+    this.uri = opt.uri;
+    this.metadata = opt.metadata;
+    if (opt.template) {
+      this.template = new ResourceTemplate(opt.template[0], opt.template[1]);
+    }
+    this.middlewares = opt.middlewares;
+    this.aclCode = opt.aclCode;
+    this.mcpName = opt.mcpName;
+    this.extra = opt.extra;
+    this.contextParamIndex = opt.contextParamIndex;
+  }
+}

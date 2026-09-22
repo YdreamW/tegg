@@ -2,7 +2,7 @@ import mm from 'egg-mock';
 import path from 'path';
 import assert from 'assert';
 
-describe('test/params.test.ts', () => {
+describe('plugin/controller/test/http/request.test.ts', () => {
   let app;
 
   beforeEach(() => {
@@ -41,12 +41,31 @@ describe('test/params.test.ts', () => {
         .post('/apps/testRequest')
         .send(param)
         .set('test', headerKey)
+        .set('cookie', 'test=foo')
         .expect(200)
         .expect(res => {
           assert(res.body.headers.test === headerKey);
           assert(res.body.method === 'POST');
           assert(res.body.requestBody === JSON.stringify(param));
+          assert(res.body.cookies === 'foo');
         });
+    });
+
+    it('stream should work', async () => {
+      await app.httpRequest()
+        .get('/apps/stream')
+        .expect(200)
+        .expect(res => {
+          assert(res.text.includes('流式内容5'));
+        });
+    });
+
+    it('error stream should work', async () => {
+      await assert.rejects(
+        app.httpRequest()
+          .get('/apps/error_stream')
+          .expect(200)
+        , /Error: aborted/);
     });
   }
 

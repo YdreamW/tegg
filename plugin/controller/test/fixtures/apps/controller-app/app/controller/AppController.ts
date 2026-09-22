@@ -7,12 +7,15 @@ import {
   HTTPMethodEnum,
   HTTPParam,
   HTTPQuery,
+  HTTPHeaders,
+  IncomingHttpHeaders,
   Middleware,
   Inject,
 } from '@eggjs/tegg';
 import AppService from '../../modules/multi-module-service/AppService';
 import App from '../../modules/multi-module-common/model/App';
 import { countMw } from '../middleware/count_mw';
+import { webSocketFetchStreamCloseEvents } from './WebSocketTestState';
 
 @HTTPController({
   path: '/apps',
@@ -37,6 +40,17 @@ export class AppController {
 
   @HTTPMethod({
     method: HTTPMethodEnum.GET,
+    path: '/websocket-stream-events/:id',
+  })
+  getWebSocketStreamEvent(@HTTPParam() id: string) {
+    return {
+      event: webSocketFetchStreamCloseEvents.get(id),
+      pid: process.pid,
+    };
+  }
+
+  @HTTPMethod({
+    method: HTTPMethodEnum.GET,
     path: '',
   })
   async find(@Context() ctx: EggContext, @HTTPQuery() name: string) {
@@ -52,12 +66,13 @@ export class AppController {
     method: HTTPMethodEnum.POST,
     path: '',
   })
-  async save(@Context() ctx: EggContext, @HTTPBody() app: App) {
+  async save(@Context() ctx: EggContext, @HTTPBody() app: App, @HTTPHeaders() headers: IncomingHttpHeaders) {
     const traceId = await ctx.tracer.traceId;
     await this.appService.save(app);
     return {
       success: true,
       traceId,
+      sessionId: headers['x-session-id'],
     };
   }
 }

@@ -1,7 +1,6 @@
 import 'reflect-metadata';
-import { EggProtoImplClass } from '../model/EggPrototypeInfo';
+import type { EggProtoImplClass, MetaDataKey } from '@eggjs/tegg-types';
 
-export type MetaDataKey = symbol | string;
 
 export class MetadataUtil {
   static deleteMetaData(metadataKey: MetaDataKey, clazz: EggProtoImplClass) {
@@ -28,8 +27,26 @@ export class MetadataUtil {
     return !!this.getMetaData(metadataKey, clazz);
   }
 
+  static getOwnBooleanMetaData(metadataKey: MetaDataKey, clazz: EggProtoImplClass): boolean {
+    return !!this.getOwnMetaData(metadataKey, clazz);
+  }
+
   static getArrayMetaData<T>(metadataKey: MetaDataKey, clazz: EggProtoImplClass): Array<T> {
     return this.getMetaData(metadataKey, clazz) || [];
+  }
+
+  /**
+   * init array metadata
+   * not inherit parent metadata
+   * return value true means use default value
+   * return value false means use map value
+   */
+  static initArrayMetaData<T>(metadataKey: MetaDataKey, clazz: EggProtoImplClass, defaultValue: Array<T>): Array<T> {
+    const ownMetaData: Array<T> | undefined = this.getOwnMetaData(metadataKey, clazz);
+    if (!ownMetaData) {
+      this.defineMetaData(metadataKey, defaultValue, clazz);
+    }
+    return this.getOwnMetaData<Array<T>>(metadataKey, clazz)!;
   }
 
   /**

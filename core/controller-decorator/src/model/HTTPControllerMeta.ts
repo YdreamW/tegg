@@ -1,8 +1,7 @@
-import path from 'path';
-import { ControllerMetadata } from './ControllerMetadata';
-import { ControllerType, MiddlewareFunc } from './types';
+import path from 'node:path';
+import type { ControllerMetadata, EggPrototypeName, MiddlewareFunc } from '@eggjs/tegg-types';
+import { ControllerType } from '@eggjs/tegg-types';
 import { HTTPMethodMeta } from './HTTPMethodMeta';
-import { EggPrototypeName } from '@eggjs/core-decorator';
 
 export class HTTPControllerMeta implements ControllerMetadata {
   readonly protoName: EggPrototypeName;
@@ -15,6 +14,7 @@ export class HTTPControllerMeta implements ControllerMetadata {
   public readonly needAcl: boolean;
   public readonly aclCode?: string;
   public readonly hosts?: string[];
+  public readonly timeout?: number;
 
   constructor(
     className: string,
@@ -26,6 +26,7 @@ export class HTTPControllerMeta implements ControllerMetadata {
     needAcl: boolean,
     aclCode: string | undefined,
     hosts: string[] | undefined,
+    timeout: number | undefined,
   ) {
     this.protoName = protoName;
     this.controllerName = controllerName;
@@ -36,6 +37,7 @@ export class HTTPControllerMeta implements ControllerMetadata {
     this.needAcl = needAcl;
     this.aclCode = aclCode;
     this.hosts = hosts;
+    this.timeout = timeout;
   }
 
   getMethodRealPath(method: HTTPMethodMeta) {
@@ -75,5 +77,9 @@ export class HTTPControllerMeta implements ControllerMetadata {
       return method.aclCode;
     }
     return this.aclCode;
+  }
+
+  getMethodTimeout(method: HTTPMethodMeta): number | undefined {
+    return method.timeout || this.timeout;
   }
 }

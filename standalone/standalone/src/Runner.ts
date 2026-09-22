@@ -1,28 +1,49 @@
 import { ModuleConfigUtil, ModuleReference, ReadModuleReferenceOptions, RuntimeConfig } from '@eggjs/tegg-common-util';
 import {
-  EggPrototype, EggPrototypeLifecycleUtil,
+  EggPrototype,
+  EggPrototypeLifecycleUtil, GlobalGraph,
   LoadUnit,
   LoadUnitFactory,
-  LoadUnitLifecycleUtil, LoadUnitMultiInstanceProtoHook,
+  LoadUnitLifecycleUtil,
+  LoadUnitMultiInstanceProtoHook,
 } from '@eggjs/tegg-metadata';
 import {
   ContextHandler,
-  EggContainerFactory, EggContext, EggObjectLifecycleUtil,
+  EggContainerFactory,
+  EggContext,
+  EggObjectLifecycleUtil,
   LoadUnitInstance,
   LoadUnitInstanceFactory,
   ModuleLoadUnitInstance,
 } from '@eggjs/tegg-runtime';
-import { EggProtoImplClass, PrototypeUtil, ModuleConfigHolder, ModuleConfigs, ConfigSourceQualifierAttribute } from '@eggjs/tegg';
+import {
+  EggProtoImplClass,
+  PrototypeUtil,
+  ModuleConfigHolder,
+  ModuleConfigs,
+  ConfigSourceQualifierAttribute,
+  Logger,
+} from '@eggjs/tegg';
 import { StandaloneUtil, MainRunner } from '@eggjs/tegg/standalone';
 import { CrosscutAdviceFactory } from '@eggjs/tegg/aop';
-import { EggObjectAopHook, EggPrototypeCrossCutHook, LoadUnitAopHook } from '@eggjs/tegg-aop-runtime';
+import {
+  crossCutGraphHook,
+  EggObjectAopHook,
+  EggPrototypeCrossCutHook,
+  LoadUnitAopHook, pointCutGraphHook,
+} from '@eggjs/tegg-aop-runtime';
 
 import { EggModuleLoader } from './EggModuleLoader';
 import { InnerObject, StandaloneLoadUnit, StandaloneLoadUnitType } from './StandaloneLoadUnit';
 import { StandaloneContext } from './StandaloneContext';
 import { StandaloneContextHandler } from './StandaloneContextHandler';
 import { ConfigSourceLoadUnitHook } from './ConfigSourceLoadUnitHook';
-import { LoadUnitInnerClassHook } from './LoadUnitInnerClassHook';
+import { DalTableEggPrototypeHook } from '@eggjs/tegg-dal-plugin/lib/DalTableEggPrototypeHook';
+import { DalModuleLoadUnitHook } from '@eggjs/tegg-dal-plugin/lib/DalModuleLoadUnitHook';
+import { MysqlDataSourceManager } from '@eggjs/tegg-dal-plugin';
+import { SqlMapManager } from '@eggjs/tegg-dal-plugin/lib/SqlMapManager';
+import { TableModelManager } from '@eggjs/tegg-dal-plugin/lib/TableModelManager';
+import { TransactionPrototypeHook } from '@eggjs/tegg-dal-plugin/lib/TransactionPrototypeHook';
 
 export interface ModuleDependency extends ReadModuleReferenceOptions {
   baseDir: string;
@@ -38,6 +59,7 @@ export interface RunnerOptions {
   name?: string;
   innerObjectHandlers?: Record<string, InnerObject[]>;
   dependencies?: (string | ModuleDependency)[];
+  dump?: boolean;
 }
 
 export class Runner {
@@ -50,8 +72,10 @@ export class Runner {
   private runnerProto: EggPrototype;
   private configSourceEggPrototypeHook: ConfigSourceLoadUnitHook;
   private loadUnitMultiInstanceProtoHook: LoadUnitMultiInstanceProtoHook;
+  private dalTableEggPrototypeHook: DalTableEggPrototypeHook;
+  private dalModuleLoadUnitHook: DalModuleLoadUnitHook;
+  private transactionPrototypeHook: TransactionPrototypeHook;
 
-  private readonly loadUnitInnerClassHook: LoadUnitInnerClassHook;
   private readonly crosscutAdviceFactory: CrosscutAdviceFactory;
   private readonly loadUnitAopHook: LoadUnitAopHook;
   private readonly eggPrototypeCrossCutHook: EggPrototypeCrossCutHook;
@@ -65,17 +89,16 @@ export class Runner {
     this.cwd = cwd;
     this.env = options?.env;
     this.name = options?.name;
-    const moduleDirs = (options?.dependencies || []).concat(this.cwd);
-    this.moduleReferences = moduleDirs.reduce((list, baseDir) => {
-      const module = typeof baseDir === 'string' ? { baseDir } : baseDir;
-      return list.concat(...ModuleConfigUtil.readModuleReference(module.baseDir, module));
-    }, [] as readonly ModuleReference[]);
+    this.moduleReferences = Runner.getModuleReferences(this.cwd, options?.dependencies);
     this.moduleConfigs = {};
     this.innerObjects = {
       moduleConfigs: [{
         obj: new ModuleConfigs(this.moduleConfigs),
       }],
       moduleConfig: [],
+      mysqlDataSourceManager: [{
+        obj: MysqlDataSourceManager.instance,
+      }],
     };
 
     const runtimeConfig: Partial<RuntimeConfig> = {
@@ -88,6 +111,10 @@ export class Runner {
       obj: runtimeConfig,
     }];
 
+    // load module.yml and module.env.yml by default
+    if (!ModuleConfigUtil.configNames) {
+      ModuleConfigUtil.configNames = [ 'module.default', `module.${this.env}` ];
+    }
     for (const reference of this.moduleReferences) {
       const absoluteRef = {
         path: ModuleConfigUtil.resolveModuleDir(reference.path, this.cwd),
@@ -98,7 +125,7 @@ export class Runner {
       this.moduleConfigs[moduleName] = {
         name: moduleName,
         reference: absoluteRef,
-        config: ModuleConfigUtil.loadModuleConfigSync(absoluteRef.path, undefined, this.env) || {},
+        config: ModuleConfigUtil.loadModuleConfigSync(absoluteRef.path),
       };
     }
     for (const moduleConfig of Object.values(this.moduleConfigs)) {
@@ -119,12 +146,15 @@ export class Runner {
     } else if (options?.innerObjectHandlers) {
       Object.assign(this.innerObjects, options.innerObjectHandlers);
     }
-    this.loadUnitLoader = new EggModuleLoader(this.moduleReferences);
+    this.loadUnitLoader = new EggModuleLoader(this.moduleReferences, {
+      logger: ((this.innerObjects.logger && this.innerObjects.logger[0])?.obj as Logger) || console,
+      baseDir: this.cwd,
+      dump: options?.dump,
+    });
+    GlobalGraph.instance!.registerBuildHook(crossCutGraphHook);
+    GlobalGraph.instance!.registerBuildHook(pointCutGraphHook);
     const configSourceEggPrototypeHook = new ConfigSourceLoadUnitHook();
     LoadUnitLifecycleUtil.registerLifecycle(configSourceEggPrototypeHook);
-
-    this.loadUnitInnerClassHook = new LoadUnitInnerClassHook();
-    LoadUnitLifecycleUtil.registerLifecycle(this.loadUnitInnerClassHook);
 
     // TODO refactor with egg module
     // aop runtime
@@ -139,6 +169,16 @@ export class Runner {
 
     this.loadUnitMultiInstanceProtoHook = new LoadUnitMultiInstanceProtoHook();
     LoadUnitLifecycleUtil.registerLifecycle(this.loadUnitMultiInstanceProtoHook);
+
+    const loggerInnerObject = this.innerObjects.logger && this.innerObjects.logger[0];
+    const logger = (loggerInnerObject?.obj || console) as Logger;
+
+    this.dalModuleLoadUnitHook = new DalModuleLoadUnitHook(this.env ?? '', this.moduleConfigs, logger);
+    this.dalTableEggPrototypeHook = new DalTableEggPrototypeHook(logger);
+    this.transactionPrototypeHook = new TransactionPrototypeHook(this.moduleConfigs, logger);
+    EggPrototypeLifecycleUtil.registerLifecycle(this.dalTableEggPrototypeHook);
+    EggPrototypeLifecycleUtil.registerLifecycle(this.transactionPrototypeHook);
+    LoadUnitLifecycleUtil.registerLifecycle(this.dalModuleLoadUnitHook);
   }
 
   async load() {
@@ -154,6 +194,26 @@ export class Runner {
     });
     const loadUnits = await this.loadUnitLoader.load();
     return [ standaloneLoadUnit, ...loadUnits ];
+  }
+
+  static getModuleReferences(cwd: string, dependencies?: RunnerOptions['dependencies']) {
+    const moduleDirs = (dependencies || []).concat(cwd);
+    const allModuleReferences = moduleDirs.reduce((list, baseDir) => {
+      const module = typeof baseDir === 'string' ? { baseDir } : baseDir;
+      return list.concat(...ModuleConfigUtil.readModuleReference(module.baseDir, module));
+    }, [] as readonly ModuleReference[]);
+
+    // 去重模块引用，避免重复添加
+    return ModuleConfigUtil.deduplicateModules(allModuleReferences);
+  }
+
+  static async preLoad(cwd: string, dependencies?: RunnerOptions['dependencies']) {
+    const moduleReferences = Runner.getModuleReferences(cwd, dependencies);
+    await EggModuleLoader.preLoad(moduleReferences, {
+      baseDir: cwd,
+      logger: console,
+      dump: false,
+    });
   }
 
   async init() {
@@ -212,10 +272,6 @@ export class Runner {
       LoadUnitLifecycleUtil.deleteLifecycle(this.configSourceEggPrototypeHook);
     }
 
-    if (this.loadUnitInnerClassHook) {
-      LoadUnitLifecycleUtil.deleteLifecycle(this.loadUnitInnerClassHook);
-    }
-
     if (this.eggPrototypeCrossCutHook) {
       EggPrototypeLifecycleUtil.deleteLifecycle(this.eggPrototypeCrossCutHook);
     }
@@ -229,5 +285,20 @@ export class Runner {
     if (this.loadUnitMultiInstanceProtoHook) {
       LoadUnitLifecycleUtil.deleteLifecycle(this.loadUnitMultiInstanceProtoHook);
     }
+
+    if (this.dalTableEggPrototypeHook) {
+      EggPrototypeLifecycleUtil.deleteLifecycle(this.dalTableEggPrototypeHook);
+    }
+    if (this.dalModuleLoadUnitHook) {
+      LoadUnitLifecycleUtil.deleteLifecycle(this.dalModuleLoadUnitHook);
+    }
+    if (this.transactionPrototypeHook) {
+      EggPrototypeLifecycleUtil.deleteLifecycle(this.transactionPrototypeHook);
+    }
+    MysqlDataSourceManager.instance.clear();
+    SqlMapManager.instance.clear();
+    TableModelManager.instance.clear();
+    // clear configNames
+    ModuleConfigUtil.setConfigNames(undefined);
   }
 }

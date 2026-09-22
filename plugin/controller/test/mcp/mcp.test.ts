@@ -1,0 +1,1546 @@
+import mm from 'egg-mock';
+import path from 'path';
+import fs from 'fs/promises';
+import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import { CallToolResultSchema, ListToolsResultSchema, LoggingMessageNotificationSchema } from '@modelcontextprotocol/sdk/types.js';
+import type { CallToolRequest, ListToolsRequest, JSONRPCMessage } from '@modelcontextprotocol/sdk/types.js';
+import assert from 'assert';
+
+async function listTools(client: Client) {
+  const toolsRequest: ListToolsRequest = {
+    method: 'tools/list',
+    params: {},
+  };
+  const toolsResult = await client.request(toolsRequest, ListToolsResultSchema);
+
+  const tools: { name: string; description?: string; }[] = [];
+  for (const tool of toolsResult.tools) {
+    tools.push({
+      name: tool.name,
+      description: tool.description,
+    });
+  }
+  return tools;
+}
+async function startNotificationTool(client: Client, name?: string) {
+  // Call the notification tool using reasonable defaults
+  const request: CallToolRequest = {
+    method: 'tools/call',
+    params: {
+      name: name ?? 'start-notification-stream',
+      arguments: {
+        interval: 1000, // 1 second between notifications
+        count: 5, // Send 5 notifications
+      },
+    },
+  };
+  const result = await client.request(request, CallToolResultSchema);
+
+  const notifications: { text: string }[] = [];
+
+  result.content.forEach(item => {
+    if (item.type === 'text') {
+      notifications.push({
+        text: item.text,
+      });
+    } else {
+      notifications.push({
+        text: (item as any).data!.toString(),
+      });
+    }
+  });
+  return notifications;
+}
+
+async function waitForSseSyntheticMiddlewareEnd(app: { mcpSseSyntheticMiddlewareEndCount?: number }, previousCount: number) {
+  const start = Date.now();
+  while (Date.now() - start < 2000) {
+    if ((app.mcpSseSyntheticMiddlewareEndCount ?? 0) > previousCount) {
+      return;
+    }
+    await new Promise(resolve => setTimeout(resolve, 50));
+  }
+  assert.fail('SSE synthetic context middleware should finish after request response is sent');
+}
+
+describe('plugin/controller/test/mcp/mcp.test.ts', () => {
+
+
+  if (parseInt(process.version.slice(1, 3)) > 17) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { StreamableHTTPClientTransport } = require('@modelcontextprotocol/sdk/client/streamableHttp.js');
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { MCPControllerRegister } = require('../../lib/impl/mcp/MCPControllerRegister');
+    let app;
+
+    after(async () => {
+      await app.close();
+    });
+
+    afterEach(() => {
+      // mm.restore();
+    });
+
+    before(async () => {
+      mm(process.env, 'EGG_TYPESCRIPT', true);
+      mm(process, 'cwd', () => {
+        return path.join(__dirname, '../..');
+      });
+      app = mm.app({
+        baseDir: path.join(__dirname, '../fixtures/apps/mcp-app'),
+        framework: path.dirname(require.resolve('egg')),
+      });
+      await app.ready();
+    });
+
+    after(() => {
+      return app.close();
+    });
+
+    it('sse should work', async () => {
+      const sseClient = new Client({
+        name: 'sse-demo-client',
+        version: '1.0.0',
+      });
+      const baseUrl = await app.httpRequest()
+        .get('/mcp/sse').url;
+      const sseTransport = new SSEClientTransport(
+        new URL(baseUrl),
+        {
+          authProvider: {
+            get redirectUrl() { return 'http://localhost/callback'; },
+            get clientMetadata() { return { redirect_uris: [ 'http://localhost/callback' ] }; },
+            clientInformation: () => ({ client_id: 'test-client-id', client_secret: 'test-client-secret' }),
+            tokens: () => {
+              return {
+                access_token: Buffer.from('akita').toString('base64'),
+                token_type: 'Bearer',
+              };
+            },
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveTokens: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            redirectToAuthorization: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveCodeVerifier: () => {},
+            codeVerifier: () => '',
+          },
+        },
+      );
+      const pingMessages: JSONRPCMessage[] = [];
+      const sseNotifications: { level: string, data: string }[] = [];
+      sseClient.setNotificationHandler(LoggingMessageNotificationSchema, notification => {
+        sseNotifications.push({ level: notification.params.level, data: notification.params.data as string });
+      });
+      sseTransport.onmessage = message => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        if (message?.method === 'ping') {
+          pingMessages.push(message);
+        }
+      };
+      await sseClient.connect(sseTransport);
+      // tool
+      const tools = await listTools(sseClient);
+      assert.deepEqual(tools, [
+        {
+          name: 'start-notification-stream',
+          description: 'Starts sending periodic notifications for testing resumability',
+        },
+        {
+          description: undefined,
+          name: 'bar',
+        },
+        {
+          description: undefined,
+          name: 'mockError',
+        },
+        {
+          description: undefined,
+          name: 'echoUser',
+        },
+        {
+          description: undefined,
+          name: 'traceTest',
+        },
+      ]);
+
+      const syntheticMiddlewareEndCount = app.mcpSseSyntheticMiddlewareEndCount ?? 0;
+      const toolRes = await sseClient.callTool({
+        name: 'bar',
+        arguments: {
+          name: 'aaa',
+        },
+      });
+      await waitForSseSyntheticMiddlewareEnd(app, syntheticMiddlewareEndCount);
+      assert.deepEqual(toolRes, {
+        content: [{ type: 'text', text: 'npm package: aaa not found' }],
+      });
+
+      const userRes = await sseClient.callTool({
+        name: 'echoUser',
+        arguments: {},
+      });
+      assert.deepEqual(userRes, {
+        content: [{ type: 'text', text: 'hello akita' }],
+      });
+
+      const traceRes = await sseClient.callTool({
+        name: 'traceTest',
+        arguments: {},
+      });
+      assert.deepEqual(traceRes, {
+        content: [{ type: 'text', text: 'hello middleware' }],
+      });
+      // notification
+      const notificationResp = await startNotificationTool(sseClient);
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      assert.deepEqual(notificationResp, [{ text: 'Started sending periodic notifications every 1000ms' }]);
+      assert.deepEqual(sseNotifications, [
+        { level: 'info', data: 'Periodic notification #1' },
+        { level: 'info', data: 'Periodic notification #2' },
+        { level: 'info', data: 'Periodic notification #3' },
+        { level: 'info', data: 'Periodic notification #4' },
+        { level: 'info', data: 'Periodic notification #5' },
+      ]);
+
+      // resources
+      const resources = await sseClient.listResources();
+      assert.deepEqual(resources, {
+        resources: [
+          { uri: 'mcp://npm/egg?version=4.10.0', name: 'egg' },
+          { uri: 'mcp://npm/mcp?version=0.10.0', name: 'mcp' },
+        ],
+      });
+
+      const resourceRes = await sseClient.readResource({
+        uri: 'mcp://npm/egg?version=4.10.0',
+      });
+      assert.deepEqual(resourceRes, {
+        contents: [{ uri: 'mcp://npm/egg?version=4.10.0', text: 'MOCK TEXT' }],
+      });
+
+      // prompts
+      const prompts = await sseClient.listPrompts();
+      assert.deepEqual(prompts, {
+        prompts: [
+          { name: 'foo', arguments: [{ name: 'name', required: true }] },
+        ],
+      });
+
+      const promptRes = await sseClient.getPrompt({
+        name: 'foo',
+        arguments: {
+          name: 'bbb',
+        },
+      });
+      assert.deepEqual(promptRes, {
+        messages: [
+          {
+            role: 'user',
+            content: {
+              type: 'text',
+              text: 'Generate a concise but descriptive commit message for these changes:\n\nbbb',
+            },
+          },
+        ],
+      });
+      await sseTransport.close();
+
+
+      const middlewareStartTracelog = await fs.readFile(path.join(__dirname, '../fixtures/apps/mcp-app/logs/tracelog/mcpMiddlewareStart.log'), 'utf-8');
+      const middlewareEndTracelog = await fs.readFile(path.join(__dirname, '../fixtures/apps/mcp-app/logs/tracelog/mcpMiddlewareEnd.log'), 'utf-8');
+
+      assert.ok(middlewareStartTracelog.includes('mcp middleware start'));
+      assert.ok(middlewareEndTracelog.includes('mcp middleware end, arg:  {'));
+      assert.ok(pingMessages.length > 0);
+    });
+
+    it('streamable should work', async () => {
+      const streamableClient = new Client({
+        name: 'streamable-demo-client',
+        version: '1.0.0',
+      });
+      const baseUrl = await app.httpRequest()
+        .post('/mcp/stream').url;
+      const streamableTransport = new StreamableHTTPClientTransport(
+        new URL(baseUrl),
+        {
+          authProvider: {
+            get redirectUrl() { return 'http://localhost/callback'; },
+            get clientMetadata() { return { redirect_uris: [ 'http://localhost/callback' ] }; },
+            clientInformation: () => ({ client_id: 'test-client-id', client_secret: 'test-client-secret' }),
+            tokens: () => {
+              return {
+                access_token: Buffer.from('akita').toString('base64'),
+                token_type: 'Bearer',
+              };
+            },
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveTokens: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            redirectToAuthorization: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveCodeVerifier: () => {},
+            codeVerifier: () => '',
+          },
+          requestInit: { headers: { 'custom-session-id': 'custom-session-id' } },
+        },
+      );
+      const pingMessages: JSONRPCMessage[] = [];
+      const streamableNotifications: { level: string, data: string }[] = [];
+      streamableClient.setNotificationHandler(LoggingMessageNotificationSchema, notification => {
+        streamableNotifications.push({ level: notification.params.level, data: notification.params.data as string });
+      });
+      streamableTransport.onmessage = (...args) => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        if (args[0]?.method === 'ping') {
+          pingMessages.push(args[0]);
+        }
+      };
+      await streamableClient.connect(streamableTransport);
+      // tool
+      const tools = await listTools(streamableClient);
+      assert.deepEqual(streamableTransport.sessionId, 'custom-session-id');
+      assert.deepEqual(tools, [
+        {
+          name: 'start-notification-stream',
+          description: 'Starts sending periodic notifications for testing resumability',
+        },
+        {
+          description: undefined,
+          name: 'bar',
+        },
+        {
+          description: undefined,
+          name: 'mockError',
+        },
+        {
+          description: undefined,
+          name: 'echoUser',
+        },
+        {
+          description: undefined,
+          name: 'traceTest',
+        },
+      ]);
+
+      const toolRes = await streamableClient.callTool({
+        name: 'bar',
+        arguments: {
+          name: 'aaa',
+        },
+      });
+      assert.deepEqual(toolRes, {
+        content: [{ type: 'text', text: 'npm package: aaa not found' }],
+      });
+
+      const userRes = await streamableClient.callTool({
+        name: 'echoUser',
+        arguments: {},
+      });
+      assert.deepEqual(userRes, {
+        content: [{ type: 'text', text: 'hello akita' }],
+      });
+
+      const traceRes = await streamableClient.callTool({
+        name: 'traceTest',
+        arguments: {},
+      });
+      assert.deepEqual(traceRes, {
+        content: [{ type: 'text', text: 'hello middleware' }],
+      });
+      // notification
+      const notificationResp = await startNotificationTool(streamableClient);
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      assert.deepEqual(notificationResp, [{ text: 'Started sending periodic notifications every 1000ms' }]);
+      assert.deepEqual(streamableNotifications, [
+        { level: 'info', data: 'Periodic notification #1' },
+        { level: 'info', data: 'Periodic notification #2' },
+        { level: 'info', data: 'Periodic notification #3' },
+        { level: 'info', data: 'Periodic notification #4' },
+        { level: 'info', data: 'Periodic notification #5' },
+      ]);
+
+      // resources
+      const resources = await streamableClient.listResources();
+      assert.deepEqual(resources, {
+        resources: [
+          { uri: 'mcp://npm/egg?version=4.10.0', name: 'egg' },
+          { uri: 'mcp://npm/mcp?version=0.10.0', name: 'mcp' },
+        ],
+      });
+
+      const resourceRes = await streamableClient.readResource({
+        uri: 'mcp://npm/egg?version=4.10.0',
+      });
+      assert.deepEqual(resourceRes, {
+        contents: [{ uri: 'mcp://npm/egg?version=4.10.0', text: 'MOCK TEXT' }],
+      });
+
+      // prompts
+      const prompts = await streamableClient.listPrompts();
+      assert.deepEqual(prompts, {
+        prompts: [
+          { name: 'foo', arguments: [{ name: 'name', required: true }] },
+        ],
+      });
+
+      const promptRes = await streamableClient.getPrompt({
+        name: 'foo',
+        arguments: {
+          name: 'bbb',
+        },
+      });
+      assert.deepEqual(promptRes, {
+        messages: [
+          {
+            role: 'user',
+            content: {
+              type: 'text',
+              text: 'Generate a concise but descriptive commit message for these changes:\n\nbbb',
+            },
+          },
+        ],
+      });
+
+      await streamableTransport.terminateSession();
+      await streamableClient.close();
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      const register = MCPControllerRegister.instance!;
+      assert.equal(register.mcpConfig.getEventStore(), undefined);
+      assert.equal(register.streamTransports['custom-session-id'], undefined);
+      assert.equal(register.pingIntervals['custom-session-id'], undefined);
+
+      const logContent = await fs.readFile(path.join(__dirname, '../fixtures/apps/mcp-app/logs/mcp-app/mcp-app-web.log'));
+
+      assert.ok(logContent.includes('startNotificationStream finish'));
+
+      const middlewareStartTracelog = await fs.readFile(path.join(__dirname, '../fixtures/apps/mcp-app/logs/tracelog/mcpMiddlewareStart.log'), 'utf-8');
+      const middlewareEndTracelog = await fs.readFile(path.join(__dirname, '../fixtures/apps/mcp-app/logs/tracelog/mcpMiddlewareEnd.log'), 'utf-8');
+
+      assert.ok(middlewareStartTracelog.includes(' POST /mcp/stream] mcp middleware start'));
+      assert.ok(middlewareEndTracelog.includes(' POST /mcp/stream] mcp middleware end, arg: '));
+      assert.ok(pingMessages.length > 0);
+    });
+
+    it('streamable idle session should be cleaned when client does not terminate session', async () => {
+      const streamableClient = new Client({
+        name: 'streamable-idle-client',
+        version: '1.0.0',
+      });
+      const baseUrl = await app.httpRequest()
+        .post('/mcp/stream').url;
+      const streamableTransport = new StreamableHTTPClientTransport(
+        new URL(baseUrl),
+        {
+          authProvider: {
+            get redirectUrl() { return 'http://localhost/callback'; },
+            get clientMetadata() { return { redirect_uris: [ 'http://localhost/callback' ] }; },
+            clientInformation: () => ({ client_id: 'test-client-id', client_secret: 'test-client-secret' }),
+            tokens: () => {
+              return {
+                access_token: Buffer.from('akita').toString('base64'),
+                token_type: 'Bearer',
+              };
+            },
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveTokens: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            redirectToAuthorization: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveCodeVerifier: () => {},
+            codeVerifier: () => '',
+          },
+          requestInit: { headers: { 'custom-session-id': 'custom-session-id-idle' } },
+        },
+      );
+      const register = MCPControllerRegister.instance!;
+      const originalIdleTimeout = (register.mcpConfig as any)._streamSessionIdleTimeout;
+      (register.mcpConfig as any)._streamSessionIdleTimeout = 50;
+      try {
+        await streamableClient.connect(streamableTransport);
+        await listTools(streamableClient);
+        assert.equal(streamableTransport.sessionId, 'custom-session-id-idle');
+        assert.ok(register.streamTransports['custom-session-id-idle']);
+
+        await streamableClient.close();
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        assert.equal(register.streamTransports['custom-session-id-idle'], undefined);
+        assert.equal(register.pingIntervals['custom-session-id-idle'], undefined);
+      } finally {
+        (register.mcpConfig as any)._streamSessionIdleTimeout = originalIdleTimeout;
+        await streamableClient.close().catch(() => undefined);
+      }
+    });
+
+    it('streamable idle session should be cleaned while client stream is still open', async () => {
+      const streamableClient = new Client({
+        name: 'streamable-open-idle-client',
+        version: '1.0.0',
+      });
+      const baseUrl = await app.httpRequest()
+        .post('/mcp/stream').url;
+      const streamableTransport = new StreamableHTTPClientTransport(
+        new URL(baseUrl),
+        {
+          authProvider: {
+            get redirectUrl() { return 'http://localhost/callback'; },
+            get clientMetadata() { return { redirect_uris: [ 'http://localhost/callback' ] }; },
+            clientInformation: () => ({ client_id: 'test-client-id', client_secret: 'test-client-secret' }),
+            tokens: () => {
+              return {
+                access_token: Buffer.from('akita').toString('base64'),
+                token_type: 'Bearer',
+              };
+            },
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveTokens: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            redirectToAuthorization: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveCodeVerifier: () => {},
+            codeVerifier: () => '',
+          },
+          requestInit: { headers: { 'custom-session-id': 'custom-session-id-open-idle' } },
+        },
+      );
+      const register = MCPControllerRegister.instance!;
+      const originalIdleTimeout = (register.mcpConfig as any)._streamSessionIdleTimeout;
+      (register.mcpConfig as any)._streamSessionIdleTimeout = 50;
+      try {
+        await streamableClient.connect(streamableTransport);
+        await listTools(streamableClient);
+        assert.equal(streamableTransport.sessionId, 'custom-session-id-open-idle');
+        assert.ok(register.streamTransports['custom-session-id-open-idle']);
+        assert.ok((register as any).streamCleanupTimers['custom-session-id-open-idle']);
+
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        assert.equal(register.streamTransports['custom-session-id-open-idle'], undefined);
+        assert.equal(register.pingIntervals['custom-session-id-open-idle'], undefined);
+        assert.equal((register as any).streamCleanupTimers['custom-session-id-open-idle'], undefined);
+      } finally {
+        (register.mcpConfig as any)._streamSessionIdleTimeout = originalIdleTimeout;
+        await streamableClient.close().catch(() => undefined);
+      }
+    });
+
+    it('stateless streamable should work', async () => {
+      const streamableClient = new Client({
+        name: 'streamable-demo-client',
+        version: '1.0.0',
+      });
+      const baseUrl = await app.httpRequest()
+        .post('/mcp/stateless/stream').url;
+      const streamableTransport = new StreamableHTTPClientTransport(
+        new URL(baseUrl),
+        {
+          authProvider: {
+            get redirectUrl() { return 'http://localhost/callback'; },
+            get clientMetadata() { return { redirect_uris: [ 'http://localhost/callback' ] }; },
+            clientInformation: () => ({ client_id: 'test-client-id', client_secret: 'test-client-secret' }),
+            tokens: () => {
+              return {
+                access_token: Buffer.from('akita').toString('base64'),
+                token_type: 'Bearer',
+              };
+            },
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveTokens: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            redirectToAuthorization: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveCodeVerifier: () => {},
+            codeVerifier: () => '',
+          },
+        },
+      );
+      const streamableNotifications: { level: string, data: string }[] = [];
+      streamableClient.setNotificationHandler(LoggingMessageNotificationSchema, notification => {
+        streamableNotifications.push({ level: notification.params.level, data: notification.params.data as string });
+      });
+      await streamableClient.connect(streamableTransport);
+      // tool
+      const tools = await listTools(streamableClient);
+      assert.deepEqual(tools, [
+        {
+          name: 'start-notification-stream',
+          description: 'Starts sending periodic notifications for testing resumability',
+        },
+        {
+          description: undefined,
+          name: 'bar',
+        },
+        {
+          description: undefined,
+          name: 'mockError',
+        },
+        {
+          description: undefined,
+          name: 'echoUser',
+        },
+        {
+          description: undefined,
+          name: 'traceTest',
+        },
+      ]);
+
+      const toolRes = await streamableClient.callTool({
+        name: 'bar',
+        arguments: {
+          name: 'aaa',
+        },
+      });
+      assert.deepEqual(toolRes, {
+        content: [{ type: 'text', text: 'npm package: aaa not found' }],
+      });
+
+      const userRes = await streamableClient.callTool({
+        name: 'echoUser',
+        arguments: {},
+      });
+      assert.deepEqual(userRes, {
+        content: [{ type: 'text', text: 'hello akita' }],
+      });
+
+      const traceRes = await streamableClient.callTool({
+        name: 'traceTest',
+        arguments: {},
+      });
+      assert.deepEqual(traceRes, {
+        content: [{ type: 'text', text: 'hello middleware' }],
+      });
+      // notification
+      const notificationResp = await startNotificationTool(streamableClient);
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      assert.deepEqual(notificationResp, [{ text: 'Started sending periodic notifications every 1000ms' }]);
+      assert.deepEqual(streamableNotifications, [
+        { level: 'info', data: 'Periodic notification #1' },
+        { level: 'info', data: 'Periodic notification #2' },
+        { level: 'info', data: 'Periodic notification #3' },
+        { level: 'info', data: 'Periodic notification #4' },
+        { level: 'info', data: 'Periodic notification #5' },
+      ]);
+
+      // resources
+      const resources = await streamableClient.listResources();
+      assert.deepEqual(resources, {
+        resources: [
+          { uri: 'mcp://npm/egg?version=4.10.0', name: 'egg' },
+          { uri: 'mcp://npm/mcp?version=0.10.0', name: 'mcp' },
+        ],
+      });
+
+      const resourceRes = await streamableClient.readResource({
+        uri: 'mcp://npm/egg?version=4.10.0',
+      });
+      assert.deepEqual(resourceRes, {
+        contents: [{ uri: 'mcp://npm/egg?version=4.10.0', text: 'MOCK TEXT' }],
+      });
+
+      // prompts
+      const prompts = await streamableClient.listPrompts();
+      assert.deepEqual(prompts, {
+        prompts: [
+          { name: 'foo', arguments: [{ name: 'name', required: true }] },
+        ],
+      });
+
+      const promptRes = await streamableClient.getPrompt({
+        name: 'foo',
+        arguments: {
+          name: 'bbb',
+        },
+      });
+      assert.deepEqual(promptRes, {
+        messages: [
+          {
+            role: 'user',
+            content: {
+              type: 'text',
+              text: 'Generate a concise but descriptive commit message for these changes:\n\nbbb',
+            },
+          },
+        ],
+      });
+
+      await streamableTransport.terminateSession();
+      await streamableClient.close();
+
+
+      const middlewareStartTracelog = await fs.readFile(path.join(__dirname, '../fixtures/apps/mcp-app/logs/tracelog/mcpMiddlewareStart.log'), 'utf-8');
+      const middlewareEndTracelog = await fs.readFile(path.join(__dirname, '../fixtures/apps/mcp-app/logs/tracelog/mcpMiddlewareEnd.log'), 'utf-8');
+
+      assert.ok(middlewareStartTracelog.includes(' POST /mcp/stateless/stream] mcp middleware start'));
+      assert.ok(middlewareEndTracelog.includes(' POST /mcp/stateless/stream] mcp middleware end, arg:  {'));
+    });
+
+    it('multiple sse should work', async () => {
+      const sseClient = new Client({
+        name: 'sse-demo-client',
+        version: '1.0.0',
+      });
+      const baseUrl = await app.httpRequest()
+        .get('/mcp/test/sse').url;
+      const sseTransport = new SSEClientTransport(
+        new URL(baseUrl),
+        {
+          authProvider: {
+            get redirectUrl() { return 'http://localhost/callback'; },
+            get clientMetadata() { return { redirect_uris: [ 'http://localhost/callback' ] }; },
+            clientInformation: () => ({ client_id: 'test-client-id', client_secret: 'test-client-secret' }),
+            tokens: () => {
+              return {
+                access_token: Buffer.from('akita').toString('base64'),
+                token_type: 'Bearer',
+              };
+            },
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveTokens: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            redirectToAuthorization: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveCodeVerifier: () => {},
+            codeVerifier: () => '',
+          },
+        },
+      );
+      const sseNotifications: { level: string, data: string }[] = [];
+      sseClient.setNotificationHandler(LoggingMessageNotificationSchema, notification => {
+        sseNotifications.push({ level: notification.params.level, data: notification.params.data as string });
+      });
+      await sseClient.connect(sseTransport);
+      // tool
+      const tools = await listTools(sseClient);
+      assert.deepEqual(tools, [
+        {
+          name: 'test-start-notification-stream',
+          description: 'Starts sending periodic notifications for testing resumability',
+        },
+        {
+          description: undefined,
+          name: 'testBar',
+        },
+        {
+          description: undefined,
+          name: 'testEchoUser',
+        },
+        {
+          description: undefined,
+          name: 'testTraceTest',
+        },
+      ]);
+
+      const toolRes = await sseClient.callTool({
+        name: 'testBar',
+        arguments: {
+          name: 'aaa',
+        },
+      });
+      assert.deepEqual(toolRes, {
+        content: [{ type: 'text', text: 'npm package: aaa not found' }],
+      });
+
+      const userRes = await sseClient.callTool({
+        name: 'testEchoUser',
+        arguments: {},
+      });
+      assert.deepEqual(userRes, {
+        content: [{ type: 'text', text: 'hello akita' }],
+      });
+
+      const traceRes = await sseClient.callTool({
+        name: 'testTraceTest',
+        arguments: {},
+      });
+      assert.deepEqual(traceRes, {
+        content: [{ type: 'text', text: 'hello middleware' }],
+      });
+      // notification
+      const notificationResp = await startNotificationTool(sseClient, 'test-start-notification-stream');
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      assert.deepEqual(notificationResp, [{ text: 'Started sending periodic notifications every 1000ms' }]);
+      assert.deepEqual(sseNotifications, [
+        { level: 'info', data: 'Periodic notification #1' },
+        { level: 'info', data: 'Periodic notification #2' },
+        { level: 'info', data: 'Periodic notification #3' },
+        { level: 'info', data: 'Periodic notification #4' },
+        { level: 'info', data: 'Periodic notification #5' },
+      ]);
+
+      // resources
+      const resources = await sseClient.listResources();
+      assert.deepEqual(resources, {
+        resources: [
+          { uri: 'mcp://npm/testEgg?version=4.10.0', name: 'testEgg' },
+          { uri: 'mcp://npm/testMcp?version=0.10.0', name: 'testMcp' },
+        ],
+      });
+
+      const resourceRes = await sseClient.readResource({
+        uri: 'mcp://npm/testEgg?version=4.10.0',
+      });
+      assert.deepEqual(resourceRes, {
+        contents: [{ uri: 'mcp://npm/testEgg?version=4.10.0', text: 'MOCK TEXT' }],
+      });
+
+      // prompts
+      const prompts = await sseClient.listPrompts();
+      assert.deepEqual(prompts, {
+        prompts: [
+          { name: 'testFoo', arguments: [{ name: 'name', required: true }] },
+        ],
+      });
+
+      const promptRes = await sseClient.getPrompt({
+        name: 'testFoo',
+        arguments: {
+          name: 'bbb',
+        },
+      });
+      assert.deepEqual(promptRes, {
+        messages: [
+          {
+            role: 'user',
+            content: {
+              type: 'text',
+              text: 'Generate a concise but descriptive commit message for these changes:\n\nbbb',
+            },
+          },
+        ],
+      });
+      await sseTransport.close();
+
+
+      const middlewareStartTracelog = await fs.readFile(path.join(__dirname, '../fixtures/apps/mcp-app/logs/tracelog/mcpMiddlewareStart.log'), 'utf-8');
+      const middlewareEndTracelog = await fs.readFile(path.join(__dirname, '../fixtures/apps/mcp-app/logs/tracelog/mcpMiddlewareEnd.log'), 'utf-8');
+
+      assert.ok(middlewareStartTracelog.includes('mcp middleware start'));
+      assert.ok(middlewareEndTracelog.includes('mcp middleware end'));
+    });
+
+    it('multiple sse client should work', async () => {
+      const sseClient1 = new Client({
+        name: 'sse-demo-client-1',
+        version: '1.0.0',
+      });
+      const baseUrl = await app.httpRequest()
+        .get('/mcp/test/sse').url;
+      const sseTransport1 = new SSEClientTransport(
+        new URL(baseUrl),
+        {
+          authProvider: {
+            get redirectUrl() { return 'http://localhost/callback'; },
+            get clientMetadata() { return { redirect_uris: [ 'http://localhost/callback' ] }; },
+            clientInformation: () => ({ client_id: 'test-client-id', client_secret: 'test-client-secret' }),
+            tokens: () => {
+              return {
+                access_token: Buffer.from('akita').toString('base64'),
+                token_type: 'Bearer',
+              };
+            },
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveTokens: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            redirectToAuthorization: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveCodeVerifier: () => {},
+            codeVerifier: () => '',
+          },
+        },
+      );
+
+      const sseClient2 = new Client({
+        name: 'sse-demo-client-2',
+        version: '1.0.0',
+      });
+      const sseTransport2 = new SSEClientTransport(
+        new URL(baseUrl),
+        {
+          authProvider: {
+            get redirectUrl() { return 'http://localhost/callback'; },
+            get clientMetadata() { return { redirect_uris: [ 'http://localhost/callback' ] }; },
+            clientInformation: () => ({ client_id: 'test-client-id', client_secret: 'test-client-secret' }),
+            tokens: () => {
+              return {
+                access_token: Buffer.from('akita').toString('base64'),
+                token_type: 'Bearer',
+              };
+            },
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveTokens: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            redirectToAuthorization: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveCodeVerifier: () => {},
+            codeVerifier: () => '',
+          },
+        },
+      );
+      await sseClient1.connect(sseTransport1);
+      // tool
+      const tools1 = await listTools(sseClient1);
+      assert.deepEqual(tools1, [
+        {
+          name: 'test-start-notification-stream',
+          description: 'Starts sending periodic notifications for testing resumability',
+        },
+        {
+          description: undefined,
+          name: 'testBar',
+        },
+        {
+          description: undefined,
+          name: 'testEchoUser',
+        },
+        {
+          description: undefined,
+          name: 'testTraceTest',
+        },
+      ]);
+
+      const toolRes1 = await sseClient1.callTool({
+        name: 'testBar',
+        arguments: {
+          name: 'aaa',
+        },
+      });
+      assert.deepEqual(toolRes1, {
+        content: [{ type: 'text', text: 'npm package: aaa not found' }],
+      });
+
+      await sseClient2.connect(sseTransport2);
+      const tools2 = await listTools(sseClient2);
+      assert.deepEqual(tools2, [
+        {
+          name: 'test-start-notification-stream',
+          description: 'Starts sending periodic notifications for testing resumability',
+        },
+        {
+          description: undefined,
+          name: 'testBar',
+        },
+        {
+          description: undefined,
+          name: 'testEchoUser',
+        },
+        {
+          description: undefined,
+          name: 'testTraceTest',
+        },
+      ]);
+
+      const toolRes2 = await sseClient2.callTool({
+        name: 'testBar',
+        arguments: {
+          name: 'aaa',
+        },
+      });
+      assert.deepEqual(toolRes2, {
+        content: [{ type: 'text', text: 'npm package: aaa not found' }],
+      });
+
+      const userRes1 = await sseClient1.callTool({
+        name: 'testEchoUser',
+        arguments: {},
+      });
+      assert.deepEqual(userRes1, {
+        content: [{ type: 'text', text: 'hello akita' }],
+      });
+
+      const userRes2 = await sseClient2.callTool({
+        name: 'testEchoUser',
+        arguments: {},
+      });
+      assert.deepEqual(userRes2, {
+        content: [{ type: 'text', text: 'hello akita' }],
+      });
+
+      const traceRes1 = await sseClient1.callTool({
+        name: 'testTraceTest',
+        arguments: {},
+      });
+      assert.deepEqual(traceRes1, {
+        content: [{ type: 'text', text: 'hello middleware' }],
+      });
+
+      const traceRes2 = await sseClient2.callTool({
+        name: 'testTraceTest',
+        arguments: {},
+      });
+      assert.deepEqual(traceRes2, {
+        content: [{ type: 'text', text: 'hello middleware' }],
+      });
+      await sseTransport1.close();
+      await sseTransport2.close();
+    });
+
+    it('multiple streamable should work', async () => {
+      const streamableClient = new Client({
+        name: 'streamable-demo-client',
+        version: '1.0.0',
+      });
+      const baseUrl = await app.httpRequest()
+        .post('/mcp/test/stream').url;
+      const streamableTransport = new StreamableHTTPClientTransport(
+        new URL(baseUrl),
+        {
+          authProvider: {
+            get redirectUrl() { return 'http://localhost/callback'; },
+            get clientMetadata() { return { redirect_uris: [ 'http://localhost/callback' ] }; },
+            clientInformation: () => ({ client_id: 'test-client-id', client_secret: 'test-client-secret' }),
+            tokens: () => {
+              return {
+                access_token: Buffer.from('akita').toString('base64'),
+                token_type: 'Bearer',
+              };
+            },
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveTokens: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            redirectToAuthorization: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveCodeVerifier: () => {},
+            codeVerifier: () => '',
+          },
+          requestInit: { headers: { 'custom-session-id': 'custom-session-id' } },
+        },
+      );
+      const streamableNotifications: { level: string, data: string }[] = [];
+      streamableClient.setNotificationHandler(LoggingMessageNotificationSchema, notification => {
+        streamableNotifications.push({ level: notification.params.level, data: notification.params.data as string });
+      });
+      await streamableClient.connect(streamableTransport);
+      // tool
+      const tools = await listTools(streamableClient);
+      assert.deepEqual(streamableTransport.sessionId, 'custom-session-id');
+      assert.deepEqual(tools, [
+        {
+          name: 'test-start-notification-stream',
+          description: 'Starts sending periodic notifications for testing resumability',
+        },
+        {
+          description: undefined,
+          name: 'testBar',
+        },
+        {
+          description: undefined,
+          name: 'testEchoUser',
+        },
+        {
+          description: undefined,
+          name: 'testTraceTest',
+        },
+      ]);
+
+      const toolRes = await streamableClient.callTool({
+        name: 'testBar',
+        arguments: {
+          name: 'aaa',
+        },
+      });
+      assert.deepEqual(toolRes, {
+        content: [{ type: 'text', text: 'npm package: aaa not found' }],
+      });
+
+      const userRes = await streamableClient.callTool({
+        name: 'testEchoUser',
+        arguments: {},
+      });
+      assert.deepEqual(userRes, {
+        content: [{ type: 'text', text: 'hello akita' }],
+      });
+
+      const traceRes = await streamableClient.callTool({
+        name: 'testTraceTest',
+        arguments: {},
+      });
+      assert.deepEqual(traceRes, {
+        content: [{ type: 'text', text: 'hello middleware' }],
+      });
+      // notification
+      const notificationResp = await startNotificationTool(streamableClient, 'test-start-notification-stream');
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      assert.deepEqual(notificationResp, [{ text: 'Started sending periodic notifications every 1000ms' }]);
+      assert.deepEqual(streamableNotifications, [
+        { level: 'info', data: 'Periodic notification #1' },
+        { level: 'info', data: 'Periodic notification #2' },
+        { level: 'info', data: 'Periodic notification #3' },
+        { level: 'info', data: 'Periodic notification #4' },
+        { level: 'info', data: 'Periodic notification #5' },
+      ]);
+
+      // resources
+      const resources = await streamableClient.listResources();
+      assert.deepEqual(resources, {
+        resources: [
+          { uri: 'mcp://npm/testEgg?version=4.10.0', name: 'testEgg' },
+          { uri: 'mcp://npm/testMcp?version=0.10.0', name: 'testMcp' },
+        ],
+      });
+
+      const resourceRes = await streamableClient.readResource({
+        uri: 'mcp://npm/testEgg?version=4.10.0',
+      });
+      assert.deepEqual(resourceRes, {
+        contents: [{ uri: 'mcp://npm/testEgg?version=4.10.0', text: 'MOCK TEXT' }],
+      });
+
+      // prompts
+      const prompts = await streamableClient.listPrompts();
+      assert.deepEqual(prompts, {
+        prompts: [
+          { name: 'testFoo', arguments: [{ name: 'name', required: true }] },
+        ],
+      });
+
+      const promptRes = await streamableClient.getPrompt({
+        name: 'testFoo',
+        arguments: {
+          name: 'bbb',
+        },
+      });
+      assert.deepEqual(promptRes, {
+        messages: [
+          {
+            role: 'user',
+            content: {
+              type: 'text',
+              text: 'Generate a concise but descriptive commit message for these changes:\n\nbbb',
+            },
+          },
+        ],
+      });
+
+      await streamableTransport.terminateSession();
+      await streamableClient.close();
+
+      const logContent = await fs.readFile(path.join(__dirname, '../fixtures/apps/mcp-app/logs/mcp-app/mcp-app-web.log'));
+
+      assert.ok(logContent.includes('startNotificationStream finish'));
+
+
+      const middlewareStartTracelog = await fs.readFile(path.join(__dirname, '../fixtures/apps/mcp-app/logs/tracelog/mcpMiddlewareStart.log'), 'utf-8');
+      const middlewareEndTracelog = await fs.readFile(path.join(__dirname, '../fixtures/apps/mcp-app/logs/tracelog/mcpMiddlewareEnd.log'), 'utf-8');
+
+      assert.ok(middlewareStartTracelog.includes(' POST /mcp/test/stream] mcp middleware start'));
+      assert.ok(middlewareEndTracelog.includes(' POST /mcp/test/stream] mcp middleware end'));
+    });
+
+    it('multiple streamable client should work', async () => {
+      const streamableClient1 = new Client({
+        name: 'streamable-demo-client-1',
+        version: '1.0.0',
+      });
+      const baseUrl = await app.httpRequest()
+        .post('/mcp/test/stream').url;
+      const streamableTransport1 = new StreamableHTTPClientTransport(
+        new URL(baseUrl),
+        {
+          authProvider: {
+            get redirectUrl() { return 'http://localhost/callback'; },
+            get clientMetadata() { return { redirect_uris: [ 'http://localhost/callback' ] }; },
+            clientInformation: () => ({ client_id: 'test-client-id', client_secret: 'test-client-secret' }),
+            tokens: () => {
+              return {
+                access_token: Buffer.from('akita').toString('base64'),
+                token_type: 'Bearer',
+              };
+            },
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveTokens: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            redirectToAuthorization: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveCodeVerifier: () => {},
+            codeVerifier: () => '',
+          },
+          requestInit: { headers: { 'custom-session-id': 'custom-session-id' } },
+        },
+      );
+      await streamableClient1.connect(streamableTransport1);
+      // tool
+      const tools1 = await listTools(streamableClient1);
+      assert.deepEqual(streamableTransport1.sessionId, 'custom-session-id');
+      assert.deepEqual(tools1, [
+        {
+          name: 'test-start-notification-stream',
+          description: 'Starts sending periodic notifications for testing resumability',
+        },
+        {
+          description: undefined,
+          name: 'testBar',
+        },
+        {
+          description: undefined,
+          name: 'testEchoUser',
+        },
+        {
+          description: undefined,
+          name: 'testTraceTest',
+        },
+      ]);
+
+      const toolRes1 = await streamableClient1.callTool({
+        name: 'testBar',
+        arguments: {
+          name: 'aaa',
+        },
+      });
+      assert.deepEqual(toolRes1, {
+        content: [{ type: 'text', text: 'npm package: aaa not found' }],
+      });
+
+      const streamableClient2 = new Client({
+        name: 'streamable-demo-client-2',
+        version: '1.0.0',
+      });
+      const streamableTransport2 = new StreamableHTTPClientTransport(
+        new URL(baseUrl),
+        {
+          authProvider: {
+            get redirectUrl() { return 'http://localhost/callback'; },
+            get clientMetadata() { return { redirect_uris: [ 'http://localhost/callback' ] }; },
+            clientInformation: () => ({ client_id: 'test-client-id', client_secret: 'test-client-secret' }),
+            tokens: () => {
+              return {
+                access_token: Buffer.from('akita').toString('base64'),
+                token_type: 'Bearer',
+              };
+            },
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveTokens: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            redirectToAuthorization: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveCodeVerifier: () => {},
+            codeVerifier: () => '',
+          },
+          requestInit: { headers: { 'custom-session-id': 'custom-session-id-2' } },
+        },
+      );
+      await streamableClient2.connect(streamableTransport2);
+      const tools2 = await listTools(streamableClient2);
+      assert.deepEqual(streamableTransport2.sessionId, 'custom-session-id-2');
+      assert.deepEqual(tools2, [
+        {
+          name: 'test-start-notification-stream',
+          description: 'Starts sending periodic notifications for testing resumability',
+        },
+        {
+          description: undefined,
+          name: 'testBar',
+        },
+        {
+          description: undefined,
+          name: 'testEchoUser',
+        },
+        {
+          description: undefined,
+          name: 'testTraceTest',
+        },
+      ]);
+
+      const toolRes2 = await streamableClient2.callTool({
+        name: 'testBar',
+        arguments: {
+          name: 'aaa',
+        },
+      });
+      assert.deepEqual(toolRes2, {
+        content: [{ type: 'text', text: 'npm package: aaa not found' }],
+      });
+
+      const userRes1 = await streamableClient1.callTool({
+        name: 'testEchoUser',
+        arguments: {},
+      });
+      assert.deepEqual(userRes1, {
+        content: [{ type: 'text', text: 'hello akita' }],
+      });
+
+      const userRes2 = await streamableClient2.callTool({
+        name: 'testEchoUser',
+        arguments: {},
+      });
+      assert.deepEqual(userRes2, {
+        content: [{ type: 'text', text: 'hello akita' }],
+      });
+
+      const traceRes1 = await streamableClient1.callTool({
+        name: 'testTraceTest',
+        arguments: {},
+      });
+      assert.deepEqual(traceRes1, {
+        content: [{ type: 'text', text: 'hello middleware' }],
+      });
+
+      const traceRes2 = await streamableClient2.callTool({
+        name: 'testTraceTest',
+        arguments: {},
+      });
+      assert.deepEqual(traceRes2, {
+        content: [{ type: 'text', text: 'hello middleware' }],
+      });
+
+      await streamableTransport1.terminateSession();
+      await streamableClient1.close();
+
+      await streamableTransport2.terminateSession();
+      await streamableClient2.close();
+    });
+
+    it('multiple stateless streamable should work', async () => {
+      const streamableClient = new Client({
+        name: 'streamable-demo-client',
+        version: '1.0.0',
+      });
+      const baseUrl = await app.httpRequest()
+        .post('/mcp/test/stateless/stream').url;
+      const streamableTransport = new StreamableHTTPClientTransport(
+        new URL(baseUrl),
+        {
+          authProvider: {
+            get redirectUrl() { return 'http://localhost/callback'; },
+            get clientMetadata() { return { redirect_uris: [ 'http://localhost/callback' ] }; },
+            clientInformation: () => ({ client_id: 'test-client-id', client_secret: 'test-client-secret' }),
+            tokens: () => {
+              return {
+                access_token: Buffer.from('akita').toString('base64'),
+                token_type: 'Bearer',
+              };
+            },
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveTokens: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            redirectToAuthorization: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveCodeVerifier: () => {},
+            codeVerifier: () => '',
+          },
+        },
+      );
+      const streamableNotifications: { level: string, data: string }[] = [];
+      streamableClient.setNotificationHandler(LoggingMessageNotificationSchema, notification => {
+        streamableNotifications.push({ level: notification.params.level, data: notification.params.data as string });
+      });
+      await streamableClient.connect(streamableTransport);
+      // tool
+      const tools = await listTools(streamableClient);
+      assert.deepEqual(tools, [
+        {
+          name: 'test-start-notification-stream',
+          description: 'Starts sending periodic notifications for testing resumability',
+        },
+        {
+          description: undefined,
+          name: 'testBar',
+        },
+        {
+          description: undefined,
+          name: 'testEchoUser',
+        },
+        {
+          description: undefined,
+          name: 'testTraceTest',
+        },
+      ]);
+
+      const toolRes = await streamableClient.callTool({
+        name: 'testBar',
+        arguments: {
+          name: 'aaa',
+        },
+      });
+      assert.deepEqual(toolRes, {
+        content: [{ type: 'text', text: 'npm package: aaa not found' }],
+      });
+
+      const userRes = await streamableClient.callTool({
+        name: 'testEchoUser',
+        arguments: {},
+      });
+      assert.deepEqual(userRes, {
+        content: [{ type: 'text', text: 'hello akita' }],
+      });
+
+      const traceRes = await streamableClient.callTool({
+        name: 'testTraceTest',
+        arguments: {},
+      });
+      assert.deepEqual(traceRes, {
+        content: [{ type: 'text', text: 'hello middleware' }],
+      });
+      // notification
+      const notificationResp = await startNotificationTool(streamableClient, 'test-start-notification-stream');
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      assert.deepEqual(notificationResp, [{ text: 'Started sending periodic notifications every 1000ms' }]);
+      assert.deepEqual(streamableNotifications, [
+        { level: 'info', data: 'Periodic notification #1' },
+        { level: 'info', data: 'Periodic notification #2' },
+        { level: 'info', data: 'Periodic notification #3' },
+        { level: 'info', data: 'Periodic notification #4' },
+        { level: 'info', data: 'Periodic notification #5' },
+      ]);
+
+      // resources
+      const resources = await streamableClient.listResources();
+      assert.deepEqual(resources, {
+        resources: [
+          { uri: 'mcp://npm/testEgg?version=4.10.0', name: 'testEgg' },
+          { uri: 'mcp://npm/testMcp?version=0.10.0', name: 'testMcp' },
+        ],
+      });
+
+      const resourceRes = await streamableClient.readResource({
+        uri: 'mcp://npm/testEgg?version=4.10.0',
+      });
+      assert.deepEqual(resourceRes, {
+        contents: [{ uri: 'mcp://npm/testEgg?version=4.10.0', text: 'MOCK TEXT' }],
+      });
+
+      // prompts
+      const prompts = await streamableClient.listPrompts();
+      assert.deepEqual(prompts, {
+        prompts: [
+          { name: 'testFoo', arguments: [{ name: 'name', required: true }] },
+        ],
+      });
+
+      const promptRes = await streamableClient.getPrompt({
+        name: 'testFoo',
+        arguments: {
+          name: 'bbb',
+        },
+      });
+      assert.deepEqual(promptRes, {
+        messages: [
+          {
+            role: 'user',
+            content: {
+              type: 'text',
+              text: 'Generate a concise but descriptive commit message for these changes:\n\nbbb',
+            },
+          },
+        ],
+      });
+
+      await streamableTransport.terminateSession();
+      await streamableClient.close();
+
+
+      const middlewareStartTracelog = await fs.readFile(path.join(__dirname, '../fixtures/apps/mcp-app/logs/tracelog/mcpMiddlewareStart.log'), 'utf-8');
+      const middlewareEndTracelog = await fs.readFile(path.join(__dirname, '../fixtures/apps/mcp-app/logs/tracelog/mcpMiddlewareEnd.log'), 'utf-8');
+
+      assert.ok(middlewareStartTracelog.includes(' /mcp/test/stateless/stream] mcp middleware start'));
+      assert.ok(middlewareEndTracelog.includes(' /mcp/test/stateless/stream] mcp middleware end'));
+    });
+
+    it('sse session should be cleaned up after close', async () => {
+      const sseClient = new Client({
+        name: 'sse-cleanup-client',
+        version: '1.0.0',
+      });
+      const baseUrl = await app.httpRequest()
+        .get('/mcp/sse').url;
+      const sseTransport = new SSEClientTransport(
+        new URL(baseUrl),
+        {
+          authProvider: {
+            get redirectUrl() { return 'http://localhost/callback'; },
+            get clientMetadata() { return { redirect_uris: [ 'http://localhost/callback' ] }; },
+            clientInformation: () => ({ client_id: 'test-client-id', client_secret: 'test-client-secret' }),
+            tokens: () => {
+              return {
+                access_token: Buffer.from('akita').toString('base64'),
+                token_type: 'Bearer',
+              };
+            },
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveTokens: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            redirectToAuthorization: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            saveCodeVerifier: () => {},
+            codeVerifier: () => '',
+          },
+        },
+      );
+      await sseClient.connect(sseTransport);
+
+      // Call a tool to ensure session is active
+      const toolRes = await sseClient.callTool({
+        name: 'bar',
+        arguments: { name: 'aaa' },
+      });
+      assert.deepEqual(toolRes, {
+        content: [{ type: 'text', text: 'npm package: aaa not found' }],
+      });
+
+      // Verify session exists in MCPControllerRegister.instance before close
+      const register = MCPControllerRegister.instance!;
+      assert(register, 'MCPControllerRegister.instance should exist');
+      const sessionIds = Object.keys(register.transports);
+      assert(sessionIds.length > 0, 'should have at least one active SSE transport');
+
+      // Record the session id for this connection
+      const activeSessionId = sessionIds[sessionIds.length - 1];
+      assert(register.transports[activeSessionId], 'transport should exist for session');
+      assert(register.sseConnections.has(activeSessionId), 'sseConnections should have the session');
+
+      // Close the SSE transport
+      await sseTransport.close();
+
+      // Wait for cleanup to propagate
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Verify session is cleaned up
+      assert(!register.transports[activeSessionId], 'transport should be cleaned up after close');
+      assert(!register.sseConnections.has(activeSessionId), 'sseConnections should be cleaned up after close');
+    });
+
+    it('should return 400 when checkAndRunProxy returns false for non-existent session', async () => {
+      // Register a hook that returns false for checkAndRunProxy (simulating session not found)
+      const testHook = {
+        async checkAndRunProxy() {
+          return false;
+        },
+      };
+      MCPControllerRegister.addHook(testHook);
+
+      try {
+        // Make a request to the SSE message endpoint with a non-existent sessionId
+        const response = await app.httpRequest()
+          .post('/mcp/message')
+          .query({ sessionId: 'non-existent-session-id' })
+          .set('Content-Type', 'application/json')
+          .send(JSON.stringify({
+            jsonrpc: '2.0',
+            method: 'tools/list',
+            id: 1,
+          }));
+
+        assert.equal(response.status, 400);
+        assert.deepEqual(response.body, {
+          jsonrpc: '2.0',
+          error: {
+            code: -32602,
+            message: 'Bad Request: Session not found',
+          },
+          id: null,
+        });
+      } finally {
+        // Clean up: remove the test hook
+        const hookIndex = MCPControllerRegister.hooks.indexOf(testHook);
+        if (hookIndex > -1) {
+          MCPControllerRegister.hooks.splice(hookIndex, 1);
+        }
+      }
+    });
+  }
+});

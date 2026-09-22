@@ -4,7 +4,7 @@ import path from 'path';
 import { EggControllerLoader } from '../../lib/EggControllerLoader';
 import { ControllerMetadataUtil } from '@eggjs/tegg';
 
-describe('test/lib/EggModuleLoader.test.ts', () => {
+describe('plugin/controller/test/lib/EggModuleLoader.test.ts', () => {
   beforeEach(() => {
     mm(process.env, 'EGG_TYPESCRIPT', true);
   });
@@ -17,7 +17,7 @@ describe('test/lib/EggModuleLoader.test.ts', () => {
     const controllerDir = path.join(__dirname, '../fixtures/apps/controller-app/app/controller');
     const loader = new EggControllerLoader(controllerDir);
     const clazzs = loader.load();
-    assert(clazzs.length === 6);
+    assert.strictEqual(clazzs.length, 10);
     const AppController = clazzs[0];
     const metadata = ControllerMetadataUtil.getControllerMetadata(AppController);
     assert(metadata);

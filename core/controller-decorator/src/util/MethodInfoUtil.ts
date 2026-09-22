@@ -1,17 +1,25 @@
-import { EggProtoImplClass, MetadataUtil } from '@eggjs/core-decorator';
+import { MetadataUtil } from '@eggjs/core-decorator';
 import { MapUtil } from '@eggjs/tegg-common-util';
-import { ControllerTypeLike, MiddlewareFunc } from '../model';
-
-const METHOD_CONTROLLER_TYPE_MAP = Symbol.for('EggPrototype#controller#mthods');
-const METHOD_CONTROLLER_HOST = Symbol.for('EggPrototype#controller#mthods#host');
-const METHOD_CONTEXT_INDEX = Symbol.for('EggPrototype#controller#method#context');
-const METHOD_MIDDLEWARES = Symbol.for('EggPrototype#method#middlewares');
-const METHOD_ACL = Symbol.for('EggPrototype#method#acl');
+import {
+  IAdvice,
+  METHOD_ACL,
+  METHOD_AOP_MIDDLEWARES,
+  METHOD_AOP_REGISTER_MAP,
+  METHOD_CONTEXT_INDEX,
+  METHOD_CONTROLLER_HOST,
+  METHOD_CONTROLLER_TYPE_MAP,
+  METHOD_MIDDLEWARES,
+  METHOD_TIMEOUT_METADATA,
+} from '@eggjs/tegg-types';
+import type { ControllerTypeLike, EggProtoImplClass, MiddlewareFunc } from '@eggjs/tegg-types';
 
 type METHOD_MAP = Map<string, ControllerTypeLike | string[]>;
+type MethodAopRegisterMap = Map<string, boolean>;
 type MethodContextIndexMap = Map<string, number>;
 type MethodMiddlewareMap = Map<string, MiddlewareFunc[]>;
+type MethodAopMiddlewareMap = Map<string, EggProtoImplClass<IAdvice>[]>;
 type MethodAclMap = Map<string, string | undefined>;
+type MethodTimeoutMap = Map<string, number>;
 
 export default class MethodInfoUtil {
   static setMethodControllerType(clazz: EggProtoImplClass, methodName: string, controllerType: ControllerTypeLike) {
@@ -45,6 +53,17 @@ export default class MethodInfoUtil {
     return methodMiddlewareMap?.get(methodName) || [];
   }
 
+  static addMethodAopMiddleware(middleware: EggProtoImplClass<IAdvice>, clazz: EggProtoImplClass, methodName: string) {
+    const methodMiddlewareMap: MethodAopMiddlewareMap = MetadataUtil.initOwnMapMetaData(METHOD_AOP_MIDDLEWARES, clazz, new Map());
+    const methodMiddlewares = MapUtil.getOrStore(methodMiddlewareMap, methodName, []);
+    methodMiddlewares.push(middleware);
+  }
+
+  static getMethodAopMiddlewares(clazz: EggProtoImplClass, methodName: string): EggProtoImplClass<IAdvice>[] {
+    const methodMiddlewareMap: MethodAopMiddlewareMap | undefined = MetadataUtil.getMetaData(METHOD_AOP_MIDDLEWARES, clazz);
+    return methodMiddlewareMap?.get(methodName) || [];
+  }
+
   static setMethodAcl(code: string | undefined, clazz: EggProtoImplClass, methodName: string) {
     const methodAclMap: MethodAclMap = MetadataUtil.initOwnMapMetaData(METHOD_ACL, clazz, new Map());
     methodAclMap.set(methodName, code);
@@ -68,5 +87,30 @@ export default class MethodInfoUtil {
   static getMethodHosts(clazz: EggProtoImplClass, methodName: string): string[] | undefined {
     const methodControllerMap: METHOD_MAP | undefined = MetadataUtil.getMetaData(METHOD_CONTROLLER_HOST, clazz);
     return methodControllerMap?.get(methodName) as string[] | undefined;
+  }
+
+  static getMethods(clazz: EggProtoImplClass): string[] {
+    const methodControllerMap: METHOD_MAP | undefined = MetadataUtil.getMetaData(METHOD_CONTROLLER_TYPE_MAP, clazz);
+    return Array.from(methodControllerMap?.keys() || []);
+  }
+
+  static shouldRegisterAopMiddlewarePointCut(clazz: EggProtoImplClass, methodName: string): boolean {
+    const methodControllerMap: MethodAopRegisterMap | undefined = MetadataUtil.getMetaData(METHOD_AOP_REGISTER_MAP, clazz);
+    return !(methodControllerMap && methodControllerMap.get(methodName));
+  }
+
+  static registerAopMiddlewarePointcut(clazz: EggProtoImplClass, methodName: string) {
+    const methodControllerMap: MethodAopRegisterMap = MetadataUtil.initOwnMapMetaData(METHOD_AOP_REGISTER_MAP, clazz, new Map());
+    methodControllerMap.set(methodName, true);
+  }
+
+  static setMethodTimeout(timeout: number, clazz: EggProtoImplClass, methodName: string) {
+    const methodAclMap: MethodTimeoutMap = MetadataUtil.initOwnMapMetaData(METHOD_TIMEOUT_METADATA, clazz, new Map());
+    methodAclMap.set(methodName, timeout);
+  }
+
+  static getMethodTimeout(clazz: EggProtoImplClass, methodName: string): number | undefined {
+    const methodAclMap: MethodTimeoutMap | undefined = MetadataUtil.getMetaData(METHOD_TIMEOUT_METADATA, clazz);
+    return methodAclMap?.get(methodName);
   }
 }

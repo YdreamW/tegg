@@ -1,10 +1,7 @@
+import { MapUtil, ObjectUtils } from '@eggjs/tegg-common-util';
+import { PROPERTY_QUALIFIER_META_DATA, QUALIFIER_META_DATA } from '@eggjs/tegg-types';
+import type { EggProtoImplClass, QualifierAttribute, QualifierInfo, QualifierValue } from '@eggjs/tegg-types';
 import { MetadataUtil } from './MetadataUtil';
-import { MapUtil } from '@eggjs/tegg-common-util';
-import { EggProtoImplClass } from '../model/EggPrototypeInfo';
-import { QualifierAttribute, QualifierInfo, QualifierValue } from '../model/QualifierInfo';
-
-const QUALIFIER_META_DATA = Symbol.for('EggPrototype#qualifier');
-const PROPERTY_QUALIFIER_META_DATA = Symbol.for('EggPrototype#propertyQualifier');
 
 export class QualifierUtil {
   static addProtoQualifier(clazz: EggProtoImplClass, attribute: QualifierAttribute, value: QualifierValue) {
@@ -25,6 +22,16 @@ export class QualifierUtil {
       });
     }
     return res;
+  }
+
+  static addInjectQualifier(clazz: EggProtoImplClass, property: PropertyKey | undefined, parameterIndex: number | undefined, attribute: QualifierAttribute, value: QualifierValue) {
+    if (typeof parameterIndex === 'number') {
+      const argNames = ObjectUtils.getConstructorArgNameList(clazz);
+      const argName = argNames[parameterIndex];
+      QualifierUtil.addProperQualifier(clazz, argName, attribute, value);
+    } else {
+      QualifierUtil.addProperQualifier((clazz as any).constructor, property!, attribute, value);
+    }
   }
 
   static addProperQualifier(clazz: EggProtoImplClass, property: PropertyKey, attribute: QualifierAttribute, value: QualifierValue) {
@@ -58,5 +65,36 @@ export class QualifierUtil {
     const properQualifiers: Map<PropertyKey, Map<QualifierAttribute, QualifierValue>> | undefined = MetadataUtil.getMetaData(PROPERTY_QUALIFIER_META_DATA, clazz);
     const qualifiers = properQualifiers?.get(property);
     return qualifiers?.get(attribute);
+  }
+
+  static matchQualifiers(clazzQualifiers: QualifierInfo[], requestQualifiers: QualifierInfo[]): boolean {
+    for (const request of requestQualifiers) {
+      if (!clazzQualifiers.find(t => t.attribute === request.attribute && t.value === request.value)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  static equalQualifiers(clazzQualifiers: QualifierInfo[], requestQualifiers: QualifierInfo[]): boolean {
+    if (clazzQualifiers.length !== requestQualifiers.length) return false;
+    return QualifierUtil.matchQualifiers(clazzQualifiers, requestQualifiers);
+  }
+
+  static mergeQualifiers(...qualifiers: QualifierInfo[][]): QualifierInfo[] {
+    const result: QualifierInfo[] = [];
+    const temp: Record<QualifierAttribute, QualifierValue> = {};
+    for (const qualifierList of qualifiers) {
+      for (const { attribute, value } of qualifierList) {
+        temp[attribute] = value;
+      }
+    }
+    for (const key of Reflect.ownKeys(temp)) {
+      result.push({
+        attribute: key,
+        value: temp[key],
+      });
+    }
+    return result;
   }
 }
