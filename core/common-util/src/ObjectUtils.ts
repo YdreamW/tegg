@@ -34,4 +34,8 @@ export class ObjectUtils {
     }).filter(arg => arg.length);
     return argNames;
   }
+
+  static isObject(val: any): boolean {
+    return val !== null && typeof val === 'object';
+  }
 }
